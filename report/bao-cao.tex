@@ -1,620 +1,183 @@
-\documentclass[11pt]{article}
-
-    \usepackage[breakable]{tcolorbox}
-    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
-    
-
-    % Basic figure setup, for now with no caption control since it's done
-    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
-    \usepackage{graphicx}
-    % Keep aspect ratio if custom image width or height is specified
-    \setkeys{Gin}{keepaspectratio}
-    % Maintain compatibility with old templates. Remove in nbconvert 6.0
-    \let\Oldincludegraphics\includegraphics
-    % Ensure that by default, figures have no caption (until we provide a
-    % proper Figure object with a Caption API and a way to capture that
-    % in the conversion process - todo).
-    \usepackage{caption}
-    \DeclareCaptionFormat{nocaption}{}
-    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
-
-    \usepackage{float}
-    \floatplacement{figure}{H} % forces figures to be placed at the correct location
-    \usepackage{xcolor} % Allow colors to be defined
-    \usepackage{enumerate} % Needed for markdown enumerations to work
-    \usepackage{geometry} % Used to adjust the document margins
-    \usepackage{amsmath} % Equations
-    \usepackage{amssymb} % Equations
-    \usepackage{textcomp} % defines textquotesingle
-    % Hack from http://tex.stackexchange.com/a/47451/13684:
-    \AtBeginDocument{%
-        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
-    }
-    \usepackage{upquote} % Upright quotes for verbatim code
-    \usepackage{eurosym} % defines \euro
-
-    \usepackage{iftex}
-    \ifPDFTeX
-        \usepackage[T1]{fontenc}
-        \IfFileExists{alphabeta.sty}{
-              \usepackage{alphabeta}
-          }{
-              \usepackage[mathletters]{ucs}
-              \usepackage[utf8x]{inputenc}
-          }
-    \else
-        \usepackage{fontspec}
-        \usepackage{unicode-math}
-    \fi
-
-    \usepackage{fancyvrb} % verbatim replacement that allows latex
-    \usepackage{grffile} % extends the file name processing of package graphics
-                         % to support a larger range
-    \makeatletter % fix for old versions of grffile with XeLaTeX
-    \@ifpackagelater{grffile}{2019/11/01}
-    {
-      % Do nothing on new versions
-    }
-    {
-      \def\Gread@@xetex#1{%
-        \IfFileExists{"\Gin@base".bb}%
-        {\Gread@eps{\Gin@base.bb}}%
-        {\Gread@@xetex@aux#1}%
-      }
-    }
-    \makeatother
-    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
-    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
-
-    % The hyperref package gives us a pdf with properly built
-    % internal navigation ('pdf bookmarks' for the table of contents,
-    % internal cross-reference links, web links for URLs, etc.)
-    \usepackage{hyperref}
-    % The default LaTeX title has an obnoxious amount of whitespace. By default,
-    % titling removes some of it. It also provides customization options.
-    \usepackage{titling}
-    \usepackage{longtable} % longtable support required by pandoc >1.10
-    \usepackage{booktabs}  % table support for pandoc > 1.12.2
-    \usepackage{array}     % table support for pandoc >= 2.11.3
-    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
-    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
-    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
-                                % normalem makes italics be italics, not underlines
-    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
-    \usepackage{mathrsfs}
-    
-
-    
-    % Colors for the hyperref package
-    \definecolor{urlcolor}{rgb}{0,.145,.698}
-    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
-    \definecolor{citecolor}{rgb}{.12,.54,.11}
-
-    % ANSI colors
-    \definecolor{ansi-black}{HTML}{3E424D}
-    \definecolor{ansi-black-intense}{HTML}{282C36}
-    \definecolor{ansi-red}{HTML}{E75C58}
-    \definecolor{ansi-red-intense}{HTML}{B22B31}
-    \definecolor{ansi-green}{HTML}{00A250}
-    \definecolor{ansi-green-intense}{HTML}{007427}
-    \definecolor{ansi-yellow}{HTML}{DDB62B}
-    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
-    \definecolor{ansi-blue}{HTML}{208FFB}
-    \definecolor{ansi-blue-intense}{HTML}{0065CA}
-    \definecolor{ansi-magenta}{HTML}{D160C4}
-    \definecolor{ansi-magenta-intense}{HTML}{A03196}
-    \definecolor{ansi-cyan}{HTML}{60C6C8}
-    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
-    \definecolor{ansi-white}{HTML}{C5C1B4}
-    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
-    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
-    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
-
-    % common color for the border for error outputs.
-    \definecolor{outerrorbackground}{HTML}{FFDFDF}
-
-    % commands and environments needed by pandoc snippets
-    % extracted from the output of `pandoc -s`
-    \providecommand{\tightlist}{%
-      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-    % Add ',fontsize=\small' for more characters per line
-    \newenvironment{Shaded}{}{}
-    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
-    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
-    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
-    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
-    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
-    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
-    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
-    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
-    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
-    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
-    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
-    \newcommand{\RegionMarkerTok}[1]{{#1}}
-    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
-    \newcommand{\NormalTok}[1]{{#1}}
-
-    % Additional commands for more recent versions of Pandoc
-    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
-    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
-    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
-    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
-    \newcommand{\ImportTok}[1]{{#1}}
-    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
-    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
-    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
-    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
-    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
-    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
-    \newcommand{\BuiltInTok}[1]{{#1}}
-    \newcommand{\ExtensionTok}[1]{{#1}}
-    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
-    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
-    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
-    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
-    \makeatletter
-    \newsavebox\pandoc@box
-    \newcommand*\pandocbounded[1]{%
-      \sbox\pandoc@box{#1}%
-      % scaling factors for width and height
-      \Gscale@div\@tempa\textheight{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-      \Gscale@div\@tempb\linewidth{\wd\pandoc@box}%
-      % select the smaller of both
-      \ifdim\@tempb\p@<\@tempa\p@
-        \let\@tempa\@tempb
-      \fi
-      % scaling accordingly (\@tempa < 1)
-      \ifdim\@tempa\p@<\p@
-        \scalebox{\@tempa}{\usebox\pandoc@box}%
-      % scaling not needed, use as it is
-      \else
-        \usebox{\pandoc@box}%
-      \fi
-    }
-    \makeatother
-
-    % Define a nice break command that doesn't care if a line doesn't already
-    % exist.
-    \def\br{\hspace*{\fill} \\* }
-    % Math Jax compatibility definitions
-    \def\gt{>}
-    \def\lt{<}
-    \let\Oldtex\TeX
-    \let\Oldlatex\LaTeX
-    \renewcommand{\TeX}{\textrm{\Oldtex}}
-    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
-    % Document parameters
-    % Document title
-    \title{\_tmp\_report}
-    
-    
-    
-    
-    
-    
-    
-% Pygments definitions
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
 \makeatletter
-\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
-    \let\PY@ul=\relax \let\PY@tc=\relax%
-    \let\PY@bc=\relax \let\PY@ff=\relax}
-\def\PY@tok#1{\csname PY@tok@#1\endcsname}
-\def\PY@toks#1+{\ifx\relax#1\empty\else%
-    \PY@tok{#1}\expandafter\PY@toks\fi}
-\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
-    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
-\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
-
-\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
-\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
-\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
-\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
-\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
-\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
-\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
-\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
-\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
-\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
-\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
-\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
-\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
-\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
-\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
-\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
-\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
-\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
-\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
-\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
-\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
-\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
-\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
-\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
-\@namedef{PY@tok@ge}{\let\PY@it=\textit}
-\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
-\@namedef{PY@tok@ges}{\let\PY@bf=\textbf\let\PY@it=\textit}
-\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
-\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
-\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
-\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
-\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
-\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
-\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
-\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
-\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
-\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
-\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
-\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
-\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
-\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
-\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
-\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
-\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
-
-\def\PYZbs{\char`\\}
-\def\PYZus{\char`\_}
-\def\PYZob{\char`\{}
-\def\PYZcb{\char`\}}
-\def\PYZca{\char`\^}
-\def\PYZam{\char`\&}
-\def\PYZlt{\char`\<}
-\def\PYZgt{\char`\>}
-\def\PYZsh{\char`\#}
-\def\PYZpc{\char`\%}
-\def\PYZdl{\char`\$}
-\def\PYZhy{\char`\-}
-\def\PYZsq{\char`\'}
-\def\PYZdq{\char`\"}
-\def\PYZti{\char`\~}
-% for compatibility with earlier versions
-\def\PYZat{@}
-\def\PYZlb{[}
-\def\PYZrb{]}
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
 \makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Phân tích và Dự đoán Lượng Khách Du Lịch Quốc tế Đến Việt Nam},
+  pdfauthor={dng-nguyn},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
 
-
-    % For linebreaks inside Verbatim environment from package fancyvrb.
-    \makeatletter
-        \newbox\Wrappedcontinuationbox
-        \newbox\Wrappedvisiblespacebox
-        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
-        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
-        \newcommand*\Wrappedcontinuationindent {3ex }
-        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
-        % Take advantage of the already applied Pygments mark-up to insert
-        % potential linebreaks for TeX processing.
-        %        {, <, #, %, $, ' and ": go to next line.
-        %        _, }, ^, &, >, - and ~: stay at end of broken line.
-        % Use of \textquotesingle for straight quote.
-        \newcommand*\Wrappedbreaksatspecials {%
-            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
-            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
-            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
-            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
-            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
-            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
-            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
-            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
-            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
-            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
-            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
-            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
-            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
-            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
-        }
-        % Some characters . , ; ? ! / are not pygmentized.
-        % This macro makes them "active" and they will insert potential linebreaks
-        \newcommand*\Wrappedbreaksatpunct {%
-            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
-            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
-            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
-            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
-            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
-            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
-            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
-            \catcode`\.\active
-            \catcode`\,\active
-            \catcode`\;\active
-            \catcode`\:\active
-            \catcode`\?\active
-            \catcode`\!\active
-            \catcode`\/\active
-            \lccode`\~`\~
-        }
-    \makeatother
-
-    \let\OriginalVerbatim=\Verbatim
-    \makeatletter
-    \renewcommand{\Verbatim}[1][1]{%
-        %\parskip\z@skip
-        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
-        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
-        \def\FancyVerbFormatLine ##1{\hsize\linewidth
-            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
-                \doublehyphendemerits\z@\finalhyphendemerits\z@
-                \strut ##1\strut}%
-        }%
-        % If the linebreak is at a space, the latter will be displayed as visible
-        % space at end of first line, and a continuation symbol starts next line.
-        % Stretch/shrink are however usually zero for typewriter font.
-        \def\FV@Space {%
-            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
-            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
-            {\kern\fontdimen2\font}%
-        }%
-
-        % Allow breaks at special characters using \PYG... macros.
-        \Wrappedbreaksatspecials
-        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
-        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
-    }
-    \makeatother
-
-    % Exact colors from NB
-    \definecolor{incolor}{HTML}{303F9F}
-    \definecolor{outcolor}{HTML}{D84315}
-    \definecolor{cellborder}{HTML}{CFCFCF}
-    \definecolor{cellbackground}{HTML}{F7F7F7}
-
-    % prompt
-    \makeatletter
-    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
-    \makeatother
-    \newcommand{\prompt}[4]{
-        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
-    }
-    
-
-    
-    % Prevent overflowing lines due to hard-to-break entities
-    \sloppy
-    % Setup hyperref package
-    \hypersetup{
-      breaklinks=true,  % so long urls are correctly broken across lines
-      colorlinks=true,
-      urlcolor=urlcolor,
-      linkcolor=linkcolor,
-      citecolor=citecolor,
-      }
-    % Slightly bigger margins than the latex defaults
-    
-    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
-    
-    
+\title{Phân tích và Dự đoán Lượng Khách Du Lịch Quốc tế Đến Việt Nam}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Báo cáo Cuối Kỳ --- Lập trình Phân tích Dữ liệu với Python}
+\author{dng-nguyn}
+\date{Tháng 7, 2025}
 
 \begin{document}
-    
-    \maketitle
-    
-    
+\maketitle
 
-    
-    BỘ GIÁO DỤC VÀ ĐÀO TẠO
+\newpage
 
-TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
-
-------------------------------o0o------------------------------
-
-\section{BÁO CÁO CUỐI HỌC
-KỲ}\label{buxe1o-cuxe1o-cuux1ed1i-hux1ecdc-kux1ef3}
-
-\textbf{HỌC PHẦN:} LẬP TRÌNH PHÂN TÍCH DỮ LIỆU VỚI PYTHON
-
-\section{PHÂN TÍCH VÀ DỰ ĐOÁN LƯỢT KHÁCH DU LỊCH QUỐC TẾ ĐẾN VIỆT
-NAM}\label{phuxe2n-tuxedch-vuxe0-dux1ef1-ux111ouxe1n-lux1b0ux1ee3t-khuxe1ch-du-lux1ecbch-quux1ed1c-tux1ebf-ux111ux1ebfn-viux1ec7t-nam}
-
-\textbf{Giảng viên hướng dẫn:} ThS. Nguyễn Anh Tuấn
-
-\subsubsection{HÀ NỘI, THÁNG 7 NĂM
-2025}\label{huxe0-nux1ed9i-thuxe1ng-7-nux103m-2025}
-
-    \subsection{Mục lục}\label{mux1ee5c-lux1ee5c}
+\section{Mục lục}\label{mux1ee5c-lux1ee5c}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
   Giới thiệu đề tài
-
-  \begin{itemize}
-  \tightlist
-  \item
-    1.1 Đặt vấn đề bài toán
-  \item
-    1.2 Mục tiêu đề tài
-  \item
-    1.3 Phạm vi và nguồn dữ liệu
-  \item
-    1.4 Công cụ và thư viện sử dụng
-  \end{itemize}
 \item
   Thu thập dữ liệu
-
-  \begin{itemize}
-  \tightlist
-  \item
-    2.1 Nguồn dữ liệu
-  \item
-    2.2 Cấu trúc dữ liệu và thách thức
-  \item
-    2.3 Cách xử lý và hợp nhất dữ liệu
-  \item
-    2.4 Nhận xét
-  \end{itemize}
 \item
   Tiền xử lý dữ liệu
-
-  \begin{itemize}
-  \tightlist
-  \item
-    3.1 Làm sạch dữ liệu
-  \item
-    3.2 Xử lý giá trị thiếu
-  \item
-    3.3 Trích xuất đặc trưng (Feature Engineering)
-  \end{itemize}
 \item
   Phân tích và khám phá dữ liệu (EDA)
-
-  \begin{itemize}
-  \tightlist
-  \item
-    4.1 Phân tích tổng quan lượng khách quốc tế
-  \item
-    4.2 Phân tích theo quốc gia nguồn
-  \item
-    4.3 Phân tích tính mùa vụ (Seasonality)
-  \item
-    4.4 Tương quan giữa các quốc gia nguồn
-  \item
-    4.5 Phân tích xu hướng quốc gia cụ thể
-  \end{itemize}
 \item
   Xây dựng mô hình dự đoán
-
-  \begin{itemize}
-  \tightlist
-  \item
-    5.1 Linear Regression (Hồi quy tuyến tính)
-  \item
-    5.2 Random Forest Regression
-  \item
-    5.3 XGBoost Regressor
-  \item
-    5.4 SARIMA (Mô hình chuỗi thời gian)
-  \item
-    5.5 So sánh hiệu suất các mô hình
-  \end{itemize}
 \item
   Tối ưu mô hình
-
-  \begin{itemize}
-  \tightlist
-  \item
-    6.1 GridSearchCV cho Random Forest
-  \item
-    6.2 RandomizedSearchCV cho XGBoost
-  \item
-    6.3 Kết quả sau tối ưu
-  \end{itemize}
 \item
   Dự đoán tương lai
-
-  \begin{itemize}
-  \tightlist
-  \item
-    7.1 Dự đoán 4 quý tiếp theo bằng SARIMA
-  \item
-    7.2 Phân tích khoảng tin cậy
-  \end{itemize}
 \item
   Tổng kết
-
-  \begin{itemize}
-  \tightlist
-  \item
-    8.1 Kết quả đạt được
-  \item
-    8.2 Hạn chế
-  \item
-    8.3 Hướng phát triển
-  \end{itemize}
 \end{enumerate}
 
-    \subsection{Danh sách hình vẽ}\label{danh-suxe1ch-huxecnh-vux1ebd}
+\newpage
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Lượng khách quốc tế đến Việt Nam theo năm (2008--2026)
-\item
-  Top 10 quốc gia nguồn khách hàng đầu
-\item
-  Phân tích mùa vụ: Lượng khách trung bình theo quý
-\item
-  Ma trận tương quan giữa 5 quốc gia nguồn lớn nhất
-\item
-  Xu hướng lượng khách theo từng quốc gia (Top 5)
-\item
-  So sánh hiệu suất các mô hình dự đoán
-\item
-  Dự đoán lượng khách 4 quý tiếp theo với khoảng tin cậy 95\%
-\end{enumerate}
-
-    \subsection{1. Giới thiệu đề
+\section{1. Giới thiệu đề
 tài}\label{giux1edbi-thiux1ec7u-ux111ux1ec1-tuxe0i}
 
-\subsubsection{1.1 Đặt vấn đề bài
+\subsection{1.1 Đặt vấn đề bài
 toán}\label{ux111ux1eb7t-vux1ea5n-ux111ux1ec1-buxe0i-touxe1n}
 
 Ngành du lịch là một trong những ngành kinh tế quan trọng của Việt Nam,
-đóng góp đáng kể vào tổng sản phẩm quốc nội (GDP) và tạo ra hàng triệu
-việc làm cho người dân. Trong những năm gần đây, Việt Nam đã nổi lên như
-một điểm đến hấp dẫn trong khu vực Đông Nam Á, thu hút lượng lớn khách
-quốc tế từ nhiều quốc gia khác nhau.
+đóng góp đáng kể vào GDP và tạo ra hàng triệu việc làm. Trong những năm
+gần đây, Việt Nam đã nổi lên như một điểm đến hấp dẫn trong khu vực Đông
+Nam Á, thu hút lượng lớn khách quốc tế từ nhiều quốc gia khác nhau.
 
-Tuy nhiên, lượng khách du lịch quốc tế đến Việt Nam chịu ảnh hưởng của
-nhiều yếu tố phức tạp: tình hình kinh tế toàn cầu, chính sách visa, tỷ
-giá hối đoái, sự cạnh tranh từ các quốc gia láng giềng, và đặc biệt là
-các sự kiện bất khả kháng như đại dịch COVID-19 năm 2020--2021. Việc
-hiểu rõ các xu hướng, mô hình mùa vụ, và mối quan hệ giữa các thị trường
-nguồn là điều cần thiết để hoạch định chiến lược phát triển du lịch hiệu
-quả.
+Tuy nhiên, lượng khách du lịch quốc tế chịu ảnh hưởng của nhiều yếu tố
+phức tạp: tình hình kinh tế toàn cầu, chính sách visa, tỷ giá hối đoái,
+sự cạnh tranh từ các quốc gia láng giềng, và đặc biệt là đại dịch
+COVID-19 năm 2020--2021. Việc hiểu rõ các xu hướng, mô hình mùa vụ, và
+mối quan hệ giữa các thị trường nguồn là điều cần thiết để hoạch định
+chiến lược phát triển du lịch hiệu quả.
 
-Đặt biệt, đại dịch COVID-19 đã tạo ra một khoảng trống dữ liệu lớn (năm
-2021 hoàn toàn không có dữ liệu trong các file báo cáo), gây thách thức
-đáng kể cho việc phân tích liên tục và xây dựng mô hình dự đoán. Đây
-cũng là một trong những bài toán thú vị mà nhóm cần giải quyết trong quá
-trình thực hiện đề tài.
+Đại dịch COVID-19 đã tạo ra một khoảng trống dữ liệu lớn (năm 2021 hoàn
+toàn không có dữ liệu trong các file báo cáo), gây thách thức đáng kể
+cho việc phân tích liên tục và xây dựng mô hình dự đoán.
 
-\subsubsection{1.2 Mục tiêu đề
+\subsection{1.2 Mục tiêu đề
 tài}\label{mux1ee5c-tiuxeau-ux111ux1ec1-tuxe0i}
 
-Đề tài hướng đến hai nhóm mục tiêu chính:
+\textbf{Mục tiêu phân tích (Analytical):}
 
-\textbf{Mục tiêu phân tích (Analytical):} - Phân tích xu hướng tổng thể
-lượng khách quốc tế đến Việt Nam trong giai đoạn 2008--2026. - Xác định
-các quốc gia nguồn khách hàng đầu và sự thay đổi thứ hạng qua các năm. -
-Phát hiện các mô hình mùa vụ (seasonality) trong lượng khách theo quý. -
-Phân tích mối tương quan giữa các thị trường nguồn khách. - Đánh giá tác
-động của đại dịch COVID-19 đến ngành du lịch Việt Nam.
+\begin{itemize}
+\tightlist
+\item
+  Phân tích xu hướng tổng thể lượng khách quốc tế đến Việt Nam trong
+  giai đoạn 2008--2026.
+\item
+  Xác định các quốc gia nguồn khách hàng đầu và sự thay đổi thứ hạng qua
+  các năm.
+\item
+  Phát hiện các mô hình mùa vụ (seasonality) trong lượng khách theo quý.
+\item
+  Phân tích mối tương quan giữa các thị trường nguồn khách.
+\item
+  Đánh giá tác động của đại dịch COVID-19 đến ngành du lịch Việt Nam.
+\end{itemize}
 
-\textbf{Mục tiêu dự đoán (Predictive):} - Xây dựng các mô hình học máy
-để dự đoán lượng khách quốc tế theo quý. - So sánh hiệu quả giữa các
-phương pháp: Linear Regression, Random Forest, XGBoost và SARIMA. - Tối
-ưu hóa siêu tham số để cải thiện độ chính xác của mô hình. - Dự đoán
-lượng khách cho 4 quý tiếp theo kèm theo khoảng tin cậy.
+\textbf{Mục tiêu dự đoán (Predictive):}
 
-\subsubsection{1.3 Phạm vi và nguồn dữ
+\begin{itemize}
+\tightlist
+\item
+  Xây dựng các mô hình học máy để dự đoán lượng khách quốc tế theo quý.
+\item
+  So sánh hiệu quả giữa các phương pháp: Linear Regression, Random
+  Forest, XGBoost, SARIMA và Chronos-T5.
+\item
+  Tối ưu hóa siêu tham số để cải thiện độ chính xác của mô hình.
+\item
+  Dự đoán lượng khách cho 4 quý tiếp theo kèm theo khoảng tin cậy.
+\end{itemize}
+
+\subsection{1.3 Phạm vi và nguồn dữ
 liệu}\label{phux1ea1m-vi-vuxe0-nguux1ed3n-dux1eef-liux1ec7u}
-
-Để đảm bảo tính tập trung và chất lượng phân tích, phạm vi dữ liệu được
-giới hạn như sau:
 
 \begin{itemize}
 \tightlist
@@ -625,19 +188,14 @@ giới hạn như sau:
   \textbf{Thời gian:} Giai đoạn 2008--2026, với lưu ý năm 2021 không có
   dữ liệu (ảnh hưởng của đại dịch COVID-19).
 \item
-  \textbf{Quốc gia nguồn:} 40 quốc gia/vùng lãnh thổ, bao gồm các thị
-  trường lớn như Trung Quốc, Hàn Quốc, Nhật Bản, Hoa Kỳ, và các nhóm thị
-  trường khác.
+  \textbf{Quốc gia nguồn:} 40 quốc gia/vùng lãnh thổ.
 \item
   \textbf{Nguồn dữ liệu:} Bốn file báo cáo dạng HTML-Excel
-  (\texttt{.xls}), mỗi file tương ứng với một quý (Q1, Q2, Q3, Q4), được
-  cung cấp từ cơ quan thống kê du lịch.
+  (\texttt{.xls}) từ Tổng cục Thống kê.
 \end{itemize}
 
-\subsubsection{1.4 Công cụ và thư viện sử
+\subsection{1.4 Công cụ và thư viện sử
 dụng}\label{cuxf4ng-cux1ee5-vuxe0-thux1b0-viux1ec7n-sux1eed-dux1ee5ng}
-
-Quá trình thực hiện đề tài được hỗ trợ bởi các công cụ và thư viện sau:
 
 \begin{itemize}
 \tightlist
@@ -648,18 +206,19 @@ Quá trình thực hiện đề tài được hỗ trợ bởi các công cụ v
 \item
   \textbf{Trực quan hóa:} matplotlib, seaborn
 \item
-  \textbf{Xây dựng mô hình:} scikit-learn (Linear Regression, Random
-  Forest, GridSearchCV, RandomizedSearchCV), xgboost (XGBoost
-  Regressor), statsmodels (SARIMA)
+  \textbf{Xây dựng mô hình:} scikit-learn, xgboost, statsmodels
+  (SARIMA), chronos-forecasting (Chronos-T5)
 \item
   \textbf{Môi trường:} Jupyter Notebook
 \item
   \textbf{Quản lý phiên bản:} Git, GitHub
 \end{itemize}
 
-    \subsection{2. Thu thập dữ liệu}\label{thu-thux1eadp-dux1eef-liux1ec7u}
+\newpage
 
-\subsubsection{2.1 Nguồn dữ liệu}\label{nguux1ed3n-dux1eef-liux1ec7u}
+\section{2. Thu thập dữ liệu}\label{thu-thux1eadp-dux1eef-liux1ec7u}
+
+\subsection{2.1 Nguồn dữ liệu}\label{nguux1ed3n-dux1eef-liux1ec7u}
 
 Dữ liệu được cung cấp dưới dạng 4 file báo cáo HTML-Excel, mỗi file chứa
 thông tin lượng khách quốc tế đến Việt Nam cho một quý cụ thể:
@@ -677,609 +236,214 @@ quy3-cacnuoc.xls & Q3 & 40 & Bắt đầu từ năm 2008 \\
 quy4-cacnuoc.xls & Q4 & 38 & Bắt đầu từ năm 2008 \\
 \end{longtable}
 
-Mỗi file chứa một bảng dữ liệu với các cột là các năm và các dòng là các
-quốc gia nguồn khách. Giá trị trong bảng là lượng khách quốc tế (đơn vị:
-lượt khách).
-
-\subsubsection{2.2 Cấu trúc dữ liệu và thách
+\subsection{2.2 Cấu trúc dữ liệu và thách
 thức}\label{cux1ea5u-truxfac-dux1eef-liux1ec7u-vuxe0-thuxe1ch-thux1ee9c}
 
 Các file \texttt{.xls} này không phải là file Excel nhị phân thực sự, mà
 là file HTML có phần mở rộng \texttt{.xls} --- một kỹ thuật phổ biến để
-tạo file ``Excel'' từ web. Cấu trúc HTML của các file có một số đặc điểm
-gây thách thức cho việc phân tích:
+tạo file ``Excel'' từ web. Cấu trúc HTML có một số đặc điểm gây thách
+thức:
 
-\textbf{Thứ nhất}, dữ liệu trong bảng HTML không nằm trong các thẻ
-\texttt{\textless{}td\textgreater{}} theo cách thông thường. Thay vào
-đó, các giá trị số liệu nằm dưới dạng \textbf{text nodes} (nút văn bản)
-giữa các thẻ \texttt{\textless{}td\textgreater{}} rỗng. Cụ thể, cú pháp
-HTML có dạng:
+\textbf{Thứ nhất}, dữ liệu không nằm trong các thẻ
+\texttt{\textless{}td\textgreater{}} theo cách thông thường. Các giá trị
+số liệu nằm dưới dạng text nodes giữa các thẻ
+\texttt{\textless{}td\textgreater{}} rỗng. Điều này khiến
+\texttt{pd.read\_html()} không thể trích xuất chính xác --- cần xây dựng
+bộ phân tích tùy chỉnh bằng \texttt{lxml}.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\DataTypeTok{\textless{}}\KeywordTok{td}\OtherTok{ rowspan}\OperatorTok{=}\StringTok{"2"}\OtherTok{ colspan}\OperatorTok{=}\StringTok{"1"}\DataTypeTok{\textgreater{}\textless{}/}\KeywordTok{td}\DataTypeTok{\textgreater{}}\NormalTok{2009}\DataTypeTok{\textless{}}\KeywordTok{td}\OtherTok{ rowspan}\OperatorTok{=}\StringTok{"2"}\OtherTok{ colspan}\OperatorTok{=}\StringTok{"1"}\DataTypeTok{\textgreater{}\textless{}/}\KeywordTok{td}\DataTypeTok{\textgreater{}}\NormalTok{2010}
-\end{Highlighting}
-\end{Shaded}
+\textbf{Thứ hai}, các file không đồng nhất: Q3 và Q4 có dữ liệu từ 2008,
+Q1/Q2 chỉ từ 2009. Cột năm 2021 hoàn toàn vắng mặt.
 
-Trong đó ``2009'' và ``2010'' là text nằm \textbf{ngoài} thẻ
-\texttt{\textless{}td\textgreater{}}, không phải nội dung bên trong.
-Điều này khiến các hàm đọc HTML tiêu chuẩn như \texttt{pd.read\_html()}
-không thể trích xuất dữ liệu chính xác --- tất cả các ô đều trả về giá
-trị rỗng.
+\textbf{Thứ ba}, định dạng số sử dụng dấu chấm làm phân cách hàng nghìn
+(ví dụ: \texttt{104.520} = 104,520).
 
-\textbf{Thứ hai}, các file không đồng nhất về số năm: Q3 và Q4 có dữ
-liệu từ năm 2008, trong khi Q1 và Q2 chỉ bắt đầu từ năm 2009. Ngoài ra,
-cột năm 2021 hoàn toàn vắng mặt trong tất cả các file --- đây là hệ quả
-trực tiếp của đại dịch COVID-19 khi ngành du lịch gần như đóng băng hoàn
-toàn.
+\subsection{2.3 Cách xử lý}\label{cuxe1ch-xux1eed-luxfd}
 
-\textbf{Thứ ba}, định dạng số sử dụng dấu chấm (\texttt{.}) làm phân
-cách hàng nghìn theo quy ước Việt Nam (ví dụ: \texttt{104.520} =
-104,520), không phải dấu phẩy như định dạng quốc tế. Cần chuyển đổi
-chính xác để tránh sai lệch dữ liệu.
+Nhóm xây dựng bộ phân tích HTML tùy chỉnh bằng \texttt{lxml}: phân tích
+cây DOM, trích xuất text nodes từ thẻ
+\texttt{\textless{}td\textgreater{}}, chuyển đổi định dạng số, và hợp
+nhất thành DataFrame duy nhất.
 
-\subsubsection{2.3 Cách xử lý và hợp nhất dữ
-liệu}\label{cuxe1ch-xux1eed-luxfd-vuxe0-hux1ee3p-nhux1ea5t-dux1eef-liux1ec7u}
+\textbf{Xác minh:} Quốc gia ``Hoa Kỳ'' năm 2009, quý 1 = 104,520 lượt
+khách --- khớp với dữ liệu mẫu.
 
-Để vượt qua các thách thức trên, nhóm đã xây dựng một bộ phân tích HTML
-tùy chỉnh sử dụng thư viện \texttt{lxml}:
+Sau hợp nhất: \textbf{1,894 bản ghi}, \textbf{40 quốc gia}, \textbf{18
+năm} (2008--2026, không bao gồm 2021).
 
-\textbf{Bước 1: Phân tích cú pháp HTML} Sử dụng
-\texttt{lxml.html.fromstring()} để chuyển đổi chuỗi HTML thành cây DOM,
-cho phép truy cập từng phần tử \texttt{\textless{}td\textgreater{}} và
-các text node liền kề.
+\newpage
 
-\textbf{Bước 2: Xác định cấu trúc bảng} Phân tích hàng tiêu đề (hàng đầu
-tiên) để xác định vị trí các năm. Hàng tiêu đề có 20 thẻ
-\texttt{\textless{}td\textgreater{}}, trong đó
-\texttt{\textless{}td\textgreater{}} thứ 2 đến thứ 19 chứa tên năm
-(2009--2026) và ``Totals'' trong thuộc tính \texttt{tail}.
-
-\textbf{Bước 3: Trích xuất dữ liệu từ từng hàng} Mỗi hàng dữ liệu có 19
-thẻ \texttt{\textless{}td\textgreater{}}: -
-\texttt{\textless{}td\textgreater{}} đầu tiên (có \texttt{colspan=2})
-chứa tên quốc gia trong thuộc tính \texttt{tail} -
-\texttt{\textless{}td\textgreater{}} thứ 2 đến thứ 19 chứa giá trị lượng
-khách tương ứng với các năm
-
-\textbf{Bước 4: Chuyển đổi định dạng số} Áp dụng hàm
-\texttt{val\_str.replace(\textquotesingle{}.\textquotesingle{},\ \textquotesingle{}\textquotesingle{})}
-để loại bỏ dấu chấm phân cách hàng nghìn, sau đó chuyển đổi sang kiểu
-\texttt{float}.
-
-\textbf{Bước 5: Hợp nhất dữ liệu} Kết hợp dữ liệu từ 4 file thành một
-DataFrame duy nhất (\texttt{df\_long}) với các cột: \texttt{country},
-\texttt{year}, \texttt{quarter}, \texttt{arrivals}. Loại bỏ hàng
-``Totals'' (hàng tổng cộng) vì đây là dữ liệu tổng hợp, không phải quốc
-gia riêng lẻ.
-
-\subsubsection{2.4 Nhận xét}\label{nhux1eadn-xuxe9t}
-
-Quá trình thu thập và xử lý dữ liệu gặp không ít thách thức, đặc biệt là
-cấu trúc HTML không chuẩn của các file báo cáo. Tuy nhiên, việc xây dựng
-bộ phân tích tùy chỉnh đã giúp trích xuất dữ liệu chính xác.
-
-\textbf{Để xác minh tính chính xác}, nhóm đã kiểm tra chéo với dữ liệu
-mẫu được cung cấp: quốc gia ``Hoa Kỳ'' năm 2009, quý 1 có giá trị
-\texttt{104.520} (tương đương 104,520 lượt khách). Kết quả phân tích trả
-về đúng giá trị này, xác nhận dữ liệu được trích xuất chính xác.
-
-Sau khi hợp nhất, tập dữ liệu cuối cùng có \textbf{1,894 bản ghi}, bao
-gồm \textbf{40 quốc gia} và \textbf{18 năm} (2008--2026, không bao gồm
-2021).
-
-    \subsection{3. Tiền xử lý dữ
+\section{3. Tiền xử lý dữ
 liệu}\label{tiux1ec1n-xux1eed-luxfd-dux1eef-liux1ec7u}
 
-\subsubsection{3.1 Làm sạch dữ
+\subsection{3.1 Làm sạch dữ
 liệu}\label{luxe0m-sux1ea1ch-dux1eef-liux1ec7u}
 
-Sau khi hợp nhất dữ liệu từ 4 file, nhóm thực hiện các bước làm sạch
-sau:
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Loại bỏ hàng ``Totals''} --- hàng tổng cộng không phải quốc
+  gia riêng lẻ.
+\item
+  \textbf{Kiểm tra trùng lặp} --- không có bản ghi trùng lặp.
+\item
+  \textbf{Chuẩn hóa tên quốc gia} --- giữ nguyên tiếng Việt, đã nhất
+  quán.
+\end{itemize}
 
-\textbf{Loại bỏ hàng tổng cộng:} Hàng ``Totals'' trong mỗi file là dữ
-liệu tổng hợp, không đại diện cho một quốc gia cụ thể. Hàng này được
-loại bỏ để tránh trùng lặp dữ liệu khi tính tổng.
-
-\textbf{Kiểm tra dữ liệu trùng lặp:} Kiểm tra xem có bản ghi trùng lặp
-(cùng quốc gia, năm, quý) hay không. Kết quả cho thấy không có bản ghi
-trùng lặp nào.
-
-\textbf{Chuẩn hóa tên quốc gia:} Tên quốc gia được giữ nguyên theo tiếng
-Việt như trong dữ liệu gốc (ví dụ: ``Hoa Kỳ'', ``Trung Quốc'', ``Hàn
-Quốc''). Không cần chuẩn hóa thêm vì dữ liệu đã nhất quán.
-
-\subsubsection{3.2 Xử lý giá trị
+\subsection{3.2 Xử lý giá trị
 thiếu}\label{xux1eed-luxfd-giuxe1-trux1ecb-thiux1ebfu}
 
-Do cấu trúc dữ liệu, một số quốc gia không có dữ liệu cho một số năm
-hoặc quý cụ thể. Nguyên nhân có thể do: - Quốc gia đó chưa nằm trong
-danh sách báo cáo vào thời điểm đó - Lượng khách quá nhỏ nên không được
-thống kê riêng - Lỗi trong quá trình thu thập dữ liệu
+Các ô không có dữ liệu được điền bằng 0. Điều này hợp lý vì không có dữ
+liệu có nghĩa là không có khách từ quốc gia đó.
 
-\textbf{Chi lược xử lý:} Các ô không có dữ liệu được điền bằng giá trị
-0. Điều này hợp lý vì: - Không có dữ liệu có thể hiểu là không có khách
-từ quốc gia đó trong quý/năm đó - Việc điền 0 không làm sai lệch phân
-tích tổng thể vì các quốc gia này thường có lượng khách rất nhỏ - Tạo ra
-một lưới dữ liệu hoàn chỉnh (complete grid)thuận tiện cho việc phân tích
-và xây dựng mô hình
+Sau xử lý: \texttt{df\_complete} có \textbf{2,880 bản ghi} (40 quốc gia
+× 18 năm × 4 quý).
 
-Sau khi xử lý, tập dữ liệu hoàn chỉnh (\texttt{df\_complete}) có
-\textbf{2,880 bản ghi} (40 quốc gia × 18 năm × 4 quý).
-
-\subsubsection{3.3 Trích xuất đặc trưng (Feature
+\subsection{3.3 Trích xuất đặc trưng (Feature
 Engineering)}\label{truxedch-xuux1ea5t-ux111ux1eb7c-trux1b0ng-feature-engineering}
 
-Để phục vụ cho việc xây dựng mô hình dự đoán, nhóm tạo thêm các đặc
-trưng mới:
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Biến thời gian:} \texttt{quarter\_num} (1--4),
+  \texttt{time\_idx} (năm + quý/4)
+\item
+  \textbf{Đặc trưng trễ:} \texttt{lag\_1}, \texttt{lag\_2},
+  \texttt{lag\_4} --- giá trị quý trước
+\item
+  \textbf{Trung bình trượt:} \texttt{rolling\_mean\_4} --- TB 4 quý gần
+  nhất
+\item
+  \textbf{Chia train/test:} Train ≤ 2023, Test ≥ 2024
+\end{itemize}
 
-\textbf{Biến thời gian:} - \texttt{quarter\_num}: Số thứ tự quý (1, 2,
-3, 4) thay vì ký tự ``Q1'', ``Q2'',\ldots{} - \texttt{time\_idx}: Chỉ số
-thời gian liên tục, tính bằng
-\texttt{year\ +\ (quarter\_num\ -\ 1)\ /\ 4},thuận tiện cho mô hình học
-xu hướng tuyến tính theo thời gian.
+\newpage
 
-\textbf{Đặc trưng trễ (Lag Features):} - \texttt{lag\_1}: Giá trị quý
-trước đó (trễ 1 quý) - \texttt{lag\_2}: Giá trị cách 2 quý -
-\texttt{lag\_4}: Giá trị cùng quý năm trước (trễ 4 quý)
-
-Các đặc trưng trễ giúp mô hình học được tính chu kỳ và quán tính của dữ
-liệu thời gian.
-
-\textbf{Trung bình trượt (Rolling Mean):} - \texttt{rolling\_mean\_4}:
-Trung bình lượng khách trong 4 quý gần nhất, giúp làm mượt các biến động
-ngắn hạn.
-
-\textbf{Tập dữ liệu chia nhỏ:} - \textbf{Tập huấn luyện:} Dữ liệu từ năm
-2008 đến 2023 (bao gồm) - \textbf{Tập kiểm tra:} Dữ liệu từ năm 2024 trở
-đi
-
-Việc chia này đảm bảo mô hình được đánh giá trên dữ liệu ``tương lai''
-mà nó chưa từng thấy, phản ánh đúng khả năng dự đoán thực tế.
-
-    \subsection{4. Phân tích và khám phá dữ liệu
+\section{4. Phân tích và khám phá dữ liệu
 (EDA)}\label{phuxe2n-tuxedch-vuxe0-khuxe1m-phuxe1-dux1eef-liux1ec7u-eda}
 
-Trước khi tiến hành xây dựng mô hình dự đoán, việc phân tích và khám phá
-dữ liệu (Exploratory Data Analysis -- EDA) là bước quan trọng, không thể
-thiếu. EDA giúp hiểu rõ hơn về cấu trúc dữ liệu, phát hiện các xu hướng,
-mô hình mùa vụ, và mối quan hệ giữa các thị trường nguồn khách.
+\subsection{4.1 Xu hướng tổng
+thể}\label{xu-hux1b0ux1edbng-tux1ed5ng-thux1ec3}
 
-\subsubsection{4.1 Phân tích tổng quan lượng khách quốc
-tế}\label{phuxe2n-tuxedch-tux1ed5ng-quan-lux1b0ux1ee3ng-khuxe1ch-quux1ed1c-tux1ebf}
+\begin{figure}
+\centering
+\includegraphics{output/eda_total_trend.png}
+\caption{Hình 1: Lượng khách quốc tế đến Việt Nam theo năm (2008--2026)}
+\end{figure}
 
-Biểu đồ dưới đây thể hiện xu hướng tổng thể lượng khách quốc tế đến Việt
-Nam theo giai đoạn 2008--2026.
+Lượng khách tăng trưởng mạnh từ 3.8 triệu (2009) lên 18.0 triệu (2019)
+--- tăng gần 5 lần. Năm 2020 giảm mạnh xuống 3.7 triệu do COVID-19. Phục
+hồi từ 2022, đạt 21.2 triệu năm 2025 --- vượt mức trước đại dịch.
 
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{pandas}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{pd}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{numpy}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{np}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{matplotlib}
-\PY{n}{matplotlib}\PY{o}{.}\PY{n}{use}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Agg}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{plt}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{seaborn}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{sns}
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{lxml}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{html}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{warnings}
-\PY{n}{warnings}\PY{o}{.}\PY{n}{filterwarnings}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ignore}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.figsize}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{figure.dpi}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+m+mi}{100}
-\PY{n}{sns}\PY{o}{.}\PY{n}{set\PYZus{}style}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{whitegrid}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\subsection{4.2 Top 10 quốc gia nguồn
+khách}\label{top-10-quux1ed1c-gia-nguux1ed3n-khuxe1ch}
 
-\PY{c+c1}{\PYZsh{} Parse data (reuse verified parser)}
-\PY{k}{def}\PY{+w}{ }\PY{n+nf}{parse\PYZus{}quarterly\PYZus{}file}\PY{p}{(}\PY{n}{filepath}\PY{p}{,} \PY{n}{quarter\PYZus{}label}\PY{p}{)}\PY{p}{:}
-    \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{n}{filepath}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{encoding}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{utf\PYZhy{}8}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{k}{as} \PY{n}{f}\PY{p}{:}
-        \PY{n}{raw} \PY{o}{=} \PY{n}{f}\PY{o}{.}\PY{n}{read}\PY{p}{(}\PY{p}{)}
-    \PY{n}{tree} \PY{o}{=} \PY{n}{html}\PY{o}{.}\PY{n}{fromstring}\PY{p}{(}\PY{n}{raw}\PY{p}{)}
-    \PY{n}{rows} \PY{o}{=} \PY{n}{tree}\PY{o}{.}\PY{n}{xpath}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{//tr}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-    \PY{n}{header\PYZus{}tds} \PY{o}{=} \PY{n}{rows}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{xpath}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.//td}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-    \PY{n}{years} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{n}{td}\PY{o}{.}\PY{n}{tail} \PY{o+ow}{or} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{strip}\PY{p}{(}\PY{p}{)} \PY{k}{for} \PY{n}{td} \PY{o+ow}{in} \PY{n}{header\PYZus{}tds}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{:}\PY{p}{]}\PY{p}{]}
-    \PY{n}{records} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-    \PY{k}{for} \PY{n}{row} \PY{o+ow}{in} \PY{n}{rows}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}\PY{p}{:}
-        \PY{n}{tds} \PY{o}{=} \PY{n}{row}\PY{o}{.}\PY{n}{xpath}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.//td}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-        \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{tds}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{l+m+mi}{3}\PY{p}{:} \PY{k}{continue}
-        \PY{n}{country} \PY{o}{=} \PY{p}{(}\PY{n}{tds}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{tail} \PY{o+ow}{or} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{strip}\PY{p}{(}\PY{p}{)}
-        \PY{k}{if} \PY{o+ow}{not} \PY{n}{country} \PY{o+ow}{or} \PY{n}{country} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Phân theo thị trường}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{k}{continue}
-        \PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{td} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{tds}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{:}\PY{p}{]}\PY{p}{)}\PY{p}{:}
-            \PY{n}{val\PYZus{}str} \PY{o}{=} \PY{p}{(}\PY{n}{td}\PY{o}{.}\PY{n}{tail} \PY{o+ow}{or} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{strip}\PY{p}{(}\PY{p}{)}
-            \PY{n}{year\PYZus{}label} \PY{o}{=} \PY{n}{years}\PY{p}{[}\PY{n}{j}\PY{p}{]} \PY{k}{if} \PY{n}{j} \PY{o}{\PYZlt{}} \PY{n+nb}{len}\PY{p}{(}\PY{n}{years}\PY{p}{)} \PY{k}{else} \PY{k+kc}{None}
-            \PY{k}{if} \PY{o+ow}{not} \PY{n}{val\PYZus{}str} \PY{o+ow}{or} \PY{o+ow}{not} \PY{n}{year\PYZus{}label} \PY{o+ow}{or} \PY{n}{year\PYZus{}label} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Totals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{k}{continue}
-            \PY{k}{try}\PY{p}{:} \PY{n}{val} \PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{n}{val\PYZus{}str}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
-            \PY{k}{except} \PY{n+ne}{ValueError}\PY{p}{:} \PY{k}{continue}
-            \PY{n}{records}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{country}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n+nb}{int}\PY{p}{(}\PY{n}{year\PYZus{}label}\PY{p}{)}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{quarter\PYZus{}label}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{val}\PY{p}{\PYZcb{}}\PY{p}{)}
-    \PY{k}{return} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{records}\PY{p}{)}
-
-\PY{n}{dfs} \PY{o}{=} \PY{p}{[}\PY{p}{]}
-\PY{k}{for} \PY{n}{label}\PY{p}{,} \PY{n}{fpath} \PY{o+ow}{in} \PY{p}{[}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/quy1\PYZhy{}cacnuoc.xls}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/quy2\PYZhy{}cacnuoc.xls}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/quy3\PYZhy{}cacnuoc.xls}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{,}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data/quy4\PYZhy{}cacnuoc.xls}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{]}\PY{p}{:}
-    \PY{n}{dfs}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{parse\PYZus{}quarterly\PYZus{}file}\PY{p}{(}\PY{n}{fpath}\PY{p}{,} \PY{n}{label}\PY{p}{)}\PY{p}{)}
-\PY{n}{df\PYZus{}long} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{n}{dfs}\PY{p}{,} \PY{n}{ignore\PYZus{}index}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
-\PY{n}{df\PYZus{}long} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Totals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{n}{drop}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
-\PY{n}{df\PYZus{}total} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}
-\PY{n}{df\PYZus{}total}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-
-\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,} \PY{l+m+mi}{7}\PY{p}{)}\PY{p}{)}
-\PY{n}{yearly} \PY{o}{=} \PY{n}{df\PYZus{}total}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{yearly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{yearly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{o\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{ms}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}2196F3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Năm}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tổng lượng khách (triệu)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 1: Lượng khách quốc tế đến Việt Nam theo năm (2008–2026)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{14}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticks}\PY{p}{(}\PY{n}{yearly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticklabels}\PY{p}{(}\PY{n}{yearly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{rotation}\PY{o}{=}\PY{l+m+mi}{45}\PY{p}{)}
-\PY{n}{covid\PYZus{}val} \PY{o}{=} \PY{n}{yearly}\PY{p}{[}\PY{n}{yearly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{l+m+mi}{2020}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}
-\PY{n}{ax}\PY{o}{.}\PY{n}{annotate}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{COVID\PYZhy{}19}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{xy}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{2020}\PY{p}{,} \PY{n}{covid\PYZus{}val}\PY{p}{)}\PY{p}{,} \PY{n}{xytext}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{2018}\PY{p}{,} \PY{n}{covid\PYZus{}val}\PY{o}{+}\PY{l+m+mf}{1.5}\PY{p}{)}\PY{p}{,}
-            \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{11}\PY{p}{,} \PY{n}{ha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{arrowprops}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{n}{arrowstyle}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZgt{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{red}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mf}{1.5}\PY{p}{)}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{red}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/eda\PYZus{}total\PYZus{}trend.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-    \textbf{Nhận xét:}
-
-Biểu đồ cho thấy lượng khách quốc tế đến Việt Nam có xu hướng tăng
-trưởng mạnh trong giai đoạn 2009--2019, từ khoảng 3.8 triệu lượt (2009)
-lên đến 18.0 triệu lượt (2019) --- tăng gần 5 lần trong một thập kỷ.
-Giai đoạn tăng trưởng đặc biệt mạnh từ 2016 (10.0 triệu) đến 2019 (18.0
-million), với tốc độ tăng trung bình khoảng 2.7 triệu lượt/năm.
-
-\textbf{Tác động của COVID-19:} Năm 2020, lượng khách giảm mạnh xuống
-chỉ còn khoảng 3.7 triệu lượt --- mức thấp nhất kể từ năm 2009. Điều này
-phản ánh tác động nghiêm trọng của đại dịch đến ngành du lịch toàn cầu.
-Đặc biệt, năm 2021 hoàn toàn không có dữ liệu trong các file báo cáo,
-cho thấy hoạt động du lịch quốc tế gần như đóng băng hoàn toàn.
-
-\textbf{Phục hồi sau đại dịch:} Từ năm 2022, ngành du lịch bắt đầu phục
-hồi. Lượng khách năm 2022 đạt khoảng 3.7 triệu (tương đương mức 2020),
-sau đó tăng vọt lên 12.6 triệu (2023) và 17.6 triệu (2024). Đến năm
-2025, lượng khách đạt 21.2 triệu --- vượt qua mức trước đại dịch năm
-2019.
-
-\textbf{Dữ liệu năm 2026:} Dữ liệu năm 2026 chỉ bao gồm Q1 và Q2 (tổng
-10.6 triệu), nên chưa thể đánh giá đầy đủ cho cả năm.
-
-\subsubsection{4.2 Phân tích theo quốc gia
-nguồn}\label{phuxe2n-tuxedch-theo-quux1ed1c-gia-nguux1ed3n}
-
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{top10} \PY{o}{=} \PY{n}{df\PYZus{}total}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{ascending}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{)}
-\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{12}\PY{p}{,} \PY{l+m+mi}{7}\PY{p}{)}\PY{p}{)}
-\PY{n}{colors} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{color\PYZus{}palette}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{viridis}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{top10}\PY{p}{)}\PY{p}{)}
-\PY{n}{bars} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{barh}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{top10}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{top10}\PY{o}{.}\PY{n}{values}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{n}{colors}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}yticks}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{top10}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}yticklabels}\PY{p}{(}\PY{n}{top10}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{11}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tổng lượng khách (triệu)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 2: Top 10 quốc gia nguồn khách hàng đầu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{14}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{invert\PYZus{}yaxis}\PY{p}{(}\PY{p}{)}
-\PY{k}{for} \PY{n}{bar}\PY{p}{,} \PY{n}{val} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{bars}\PY{p}{,} \PY{n}{top10}\PY{o}{.}\PY{n}{values}\PY{p}{)}\PY{p}{:}
-    \PY{n}{ax}\PY{o}{.}\PY{n}{text}\PY{p}{(}\PY{n}{bar}\PY{o}{.}\PY{n}{get\PYZus{}width}\PY{p}{(}\PY{p}{)}\PY{o}{+}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{bar}\PY{o}{.}\PY{n}{get\PYZus{}y}\PY{p}{(}\PY{p}{)}\PY{o}{+}\PY{n}{bar}\PY{o}{.}\PY{n}{get\PYZus{}height}\PY{p}{(}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{val}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{l+s+si}{:}\PY{l+s+s1}{.1f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{M}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{va}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{center}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/eda\PYZus{}top10\PYZus{}countries.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-    \textbf{Nhận xét:}
-
-Biểu đồ cho thấy sự phân hóa rõ rệt giữa các thị trường nguồn khách:
+\begin{figure}
+\centering
+\includegraphics{output/eda_top10_countries.png}
+\caption{Hình 2: Top 10 quốc gia nguồn khách hàng đầu}
+\end{figure}
 
 \begin{itemize}
+\tightlist
 \item
-  \textbf{Trung Quốc} là thị trường lớn nhất với tổng cộng 41.7 triệu
-  lượt khách trong toàn giai đoạn, chiếm tỷ trọng áp đảo. Điều này phản
-  ánh vị trí địa lý gần, chính sách visa thuận lợi, và quy mô dân số lớn
-  của Trung Quốc.
+  \textbf{Trung Quốc} (41.7 triệu) --- thị trường lớn nhất
 \item
-  \textbf{Hàn Quốc} đứng thứ hai với 33.0 triệu lượt, là thị trường tăng
-  trưởng mạnh nhất trong những năm gần đây. Lượng khách Hàn Quốc tăng từ
-  105,000 (Q1/2009) lên hơn 1.3 triệu (Q1/2026), phản ánh sự phổ biến
-  ngày càng tăng của Việt Nam như điểm đến du lịch đối với người Hàn
-  Quốc.
+  \textbf{Hàn Quốc} (33.0 triệu) --- tăng trưởng mạnh nhất
 \item
-  \textbf{Nhật Bản} (10.1 triệu) và \textbf{Đài Loan} (9.7 triệu) là hai
-  thị trường truyền thống quan trọng, duy trì lượng khách ổn định qua
-  các năm.
-\item
-  \textbf{Hoa Kỳ} (9.1 triệu) đứng thứ 5, với xu hướng tăng trưởng đều
-  đặn. Lượng khách Mỹ tăng từ khoảng 105,000 (Q1/2009) lên hơn 300,000
-  (Q1/2026).
-\item
-  \textbf{Malaysia}, \textbf{Úc}, \textbf{Nga}, và \textbf{Campuchia}
-  cũng nằm trong top 10, mỗi thị trường đóng góp từ 5--6 triệu lượt
-  trong toàn giai đoạn.
+  \textbf{Nhật Bản} (10.1 triệu), \textbf{Đài Loan} (9.7 triệu),
+  \textbf{Hoa Kỳ} (9.1 triệu)
 \end{itemize}
 
-\subsubsection{4.3 Phân tích tính mùa vụ
-(Seasonality)}\label{phuxe2n-tuxedch-tuxednh-muxf9a-vux1ee5-seasonality}
+\subsection{4.3 Tính mùa vụ}\label{tuxednh-muxf9a-vux1ee5}
 
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
-\PY{n}{quarterly} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{agg}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{std}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{o}{.}\PY{n}{reindex}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{n}{quarterly}\PY{o}{.}\PY{n}{index}\PY{p}{,} \PY{n}{quarterly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e3}\PY{p}{,} \PY{n}{yerr}\PY{o}{=}\PY{n}{quarterly}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{std}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e3}\PY{p}{,}
-       \PY{n}{capsize}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}FF6B6B}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}4ECDC4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}45B7D1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}96CEB4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{edgecolor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{black}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Quý}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Lượng khách TB (nghìn)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 3: Phân tích mùa vụ — Lượng khách trung bình theo quý}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{14}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/eda\PYZus{}seasonality.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
+\begin{figure}
+\centering
+\includegraphics{output/eda_seasonality.png}
+\caption{Hình 3: Phân tích mùa vụ --- Lượng khách trung bình theo quý}
+\end{figure}
 
-    \textbf{Nhận xét:}
+Quý 1 có lượng khách cao nhất (Tết Nguyên Đán, năm mới). Quý 4 có độ
+biến động lớn nhất.
 
-Biểu đồ mùa vụ cho thấy sự khác biệt rõ rệt giữa các quý:
-
-\begin{itemize}
-\item
-  \textbf{Quý 1 (Q1)} có lượng khách trung bình cao nhất, phản ánh mùa
-  du lịch đầu năm với nhiều ngày lễ (Tết Nguyên Đán, Giáng sinh/Năm mới
-  theo lịch dương) thu hút khách quốc tế.
-\item
-  \textbf{Quý 2 (Q2)} và \textbf{Quý 3 (Q3)} có lượng khách tương đối ổn
-  định, ở mức trung bình.
-\item
-  \textbf{Quý 4 (Q4)} có độ biến động lớn nhất (thanh lỗi dài), cho thấy
-  lượng khách quý này phụ thuộc nhiều vào từng năm cụ thể.
-\end{itemize}
-
-Độ lệch chuẩn lớn ở tất cả các quý phản ánh sự biến động đáng kể qua các
-năm, đặc biệt do tác động của COVID-19.
-
-\subsubsection{4.4 Tương quan giữa các quốc gia
+\subsection{4.4 Tương quan giữa các quốc gia
 nguồn}\label{tux1b0ux1a1ng-quan-giux1eefa-cuxe1c-quux1ed1c-gia-nguux1ed3n}
 
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{top5} \PY{o}{=} \PY{n}{top10}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{l+m+mi}{5}\PY{p}{)}\PY{o}{.}\PY{n}{index}\PY{o}{.}\PY{n}{tolist}\PY{p}{(}\PY{p}{)}
-\PY{n}{pivot} \PY{o}{=} \PY{n}{df\PYZus{}total}\PY{p}{[}\PY{n}{df\PYZus{}total}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{isin}\PY{p}{(}\PY{n}{top5}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{pivot\PYZus{}table}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{columns}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{values}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{aggfunc}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{sum}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{corr} \PY{o}{=} \PY{n}{pivot}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}
-\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{8}\PY{p}{)}\PY{p}{)}
-\PY{n}{sns}\PY{o}{.}\PY{n}{heatmap}\PY{p}{(}\PY{n}{corr}\PY{p}{,} \PY{n}{annot}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{fmt}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{.2f}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{coolwarm}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{center}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{ax}\PY{o}{=}\PY{n}{ax}\PY{p}{,} \PY{n}{square}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{linewidths}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 4: Ma trận tương quan giữa 5 quốc gia nguồn lớn nhất}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{14}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/eda\PYZus{}correlation.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
+\begin{figure}
+\centering
+\includegraphics{output/eda_correlation.png}
+\caption{Hình 4: Ma trận tương quan giữa 5 quốc gia nguồn lớn nhất}
+\end{figure}
 
-    \textbf{Nhận xét:}
+Trung Quốc--Đài Loan tương quan mạnh (0.89). Hoa Kỳ tương quan thấp với
+các thị trường châu Á.
 
-Ma trận tương quancho thấy một số patterns:
+\subsection{4.5 Xu hướng theo từng quốc
+gia}\label{xu-hux1b0ux1edbng-theo-tux1eebng-quux1ed1c-gia}
 
-\begin{itemize}
-\item
-  \textbf{Trung Quốc và Đài Loan} có tương quan dương mạnh (0.89), cho
-  thấy hai thị trường này có xu hướng tăng/giảm đồng pha. Điều này có
-  thể giải thích bởi vị trí địa lýtương tự, chính sách visa tương tự, và
-  tác động của COVID-19 ảnh hưởng tương tự đến cả hai thị trường.
-\item
-  \textbf{Hàn Quốc và Nhật Bản} có tương quan trung bình (0.71), phản
-  ánh cả haiđều là thị trường Đông Á vớimột số đặc điểmtương tự về mùa
-  vụ du lịch.
-\item
-  \textbf{Hoa Kỳ} có tương quan thấp hơn với các thị trường châu Á, cho
-  thấy thị trường Mỹ có động lực riêng, có thểbị ảnh hưởng bởi các yếu
-  tố như tỷ giá USD/VND, khoảng cách địa lý, và chính sách visa.
-\end{itemize}
+\begin{figure}
+\centering
+\includegraphics{output/eda_country_trends.png}
+\caption{Hình 5: Xu hướng lượng khách theo từng quốc gia (Top 5)}
+\end{figure}
 
-\subsubsection{4.5 Phân tích xu hướng quốc gia cụ
-thể}\label{phuxe2n-tuxedch-xu-hux1b0ux1edbng-quux1ed1c-gia-cux1ee5-thux1ec3}
+Hàn Quốc phục hồi nhanh nhất sau COVID-19. Trung Quốc chịu tác động nặng
+nề nhất.
 
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{fig}\PY{p}{,} \PY{n}{axes} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{3}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{16}\PY{p}{,} \PY{l+m+mi}{14}\PY{p}{)}\PY{p}{)}
-\PY{n}{axes} \PY{o}{=} \PY{n}{axes}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
-\PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{country} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{top5}\PY{p}{)}\PY{p}{:}
-    \PY{n}{cdata} \PY{o}{=} \PY{n}{df\PYZus{}total}\PY{p}{[}\PY{n}{df\PYZus{}total}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{n}{country}\PY{p}{]}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-    \PY{n}{axes}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{cdata}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{cdata}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{total\PYZus{}arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e3}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{o\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{ms}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{)}
-    \PY{n}{axes}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{n}{country}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{12}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-    \PY{n}{axes}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Lượt khách (nghìn)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{axes}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{)}
-\PY{n}{axes}\PY{p}{[}\PY{l+m+mi}{5}\PY{p}{]}\PY{o}{.}\PY{n}{set\PYZus{}visible}\PY{p}{(}\PY{k+kc}{False}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{suptitle}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 5: Xu hướng lượng khách theo từng quốc gia (Top 5)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{16}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+m+mf}{1.01}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/eda\PYZus{}country\PYZus{}trends.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
+\newpage
 
-    \textbf{Nhận xét chi tiết từng quốc gia:}
-
-\begin{itemize}
-\item
-  \textbf{Trung Quốc:} Tăng trưởng mạnh nhất trong giai đoạn 2015--2019,
-  từ 1.1 triệu lên 5.8 triệu lượt. Tuy nhiên, chịu tác động nặng nề nhất
-  từ COVID-19, giảm xuống chỉ còn 0.4 triệu (2020). Phục hồi chậm hơn so
-  với Hàn Quốc, đạt 1.4 triệu (2024) và 1.6 triệu (2025).
-\item
-  \textbf{Hàn Quốc:} Thị trường tăng trưởng ổn định nhất, từ 0.4 triệu
-  (2009) lên 4.6 triệu (2025). Đặc biệt,Hàn Quốc là thị trường phục hồi
-  nhanh nhất sau COVID-19, vượt qua mức trước đại dịch vào năm 2024.
-\item
-  \textbf{Nhật Bản:} Tăng trưởng đều đặn nhưng chậm hơn, từ 0.4 triệu
-  (2009) lên 1.3 triệu (2025). Thị trường Nhật Bản có vẻ đã bão hòa hơn
-  so với Hàn Quốc.
-\item
-  \textbf{Đài Loan:} Tăng trưởng mạnh trong giai đoạn 2015--2019, nhưng
-  phục hồi chậm hơn sau COVID-19 so với Hàn Quốc.
-\item
-  \textbf{Hoa Kỳ:} Tăng trưởng ổn định qua các năm, từ 0.4 triệu (2009)
-  lên 1.3 triệu (2025). Thị trường Mỹ ítbị ảnh hưởng bởi COVID-19 hơn so
-  với các thị trường châu Á.
-\end{itemize}
-
-    \subsection{5. Xây dựng mô hình dự
+\section{5. Xây dựng mô hình dự
 đoán}\label{xuxe2y-dux1ef1ng-muxf4-huxecnh-dux1ef1-ux111ouxe1n}
 
-Trong phần này, nhóm xây dựng và so sánh 4 mô hình dự đoán lượng khách
-quốc tế theo quý: Linear Regression, Random Forest, XGBoost và SARIMA.
-Mỗi mô hình được đánh giá bằng các chỉ số: MAE (Mean Absolute Error),
-RMSE (Root Mean Squared Error), và R² (Hệ số xác định).
-
-Dữ liệu được tổng hợp ở mức \textbf{tổng lượng khách mỗi quý} (tổng hợp
-tất cả các quốc gia), vì mục tiêu là dự đoán tổng lượng khách quốc tế,
-không phải lượng khách từng quốc gia riêng lẻ.
-
-\subsubsection{5.1 Linear Regression (Hồi quy tuyến
+\subsection{5.1 Linear Regression (Hồi quy tuyến
 tính)}\label{linear-regression-hux1ed3i-quy-tuyux1ebfn-tuxednh}
 
-\textbf{Giới thiệu thuật toán:}
+Linear Regression giả định mối quan hệ tuyến tính giữa biến đầu vào và
+biến mục tiêu. Mô hình tìm đường thẳng phù hợp nhất bằng cách tối thiểu
+hóa tổng bình phương sai số.
 
-Linear Regression là mô hình hồi quy đơn giản nhất, giả định mối quan hệ
-tuyến tính giữa biến đầu vào (X) và biến mục tiêu (y). Mô hình tìm đường
-thẳng phù hợp nhất với dữ liệu bằng cáchtối thiểu hóa tổng bình phương
-sai số.
+Đặc trưng đầu vào: năm, số thứ tự quý, chỉ số thời gian, lag\_1, lag\_4,
+rolling\_mean\_4.
 
-\textbf{Ứng dụng trong bài toán:}
-
-Trong bài toán này, các đặc trưng đầu vào bao gồm: năm, số thứ tự quý,
-chỉ số thời gian liên tục, và các đặc trưng trễ (lag\_1, lag\_4,
-rolling\_mean\_4). Mô hình học mối quan hệ tuyến tính giữa các đặc trưng
-này và tổng lượng khách mỗi quý.
-
-\textbf{Kết quả:}
-
-\begin{longtable}[]{@{}ll@{}}
-\toprule\noalign{}
-Chỉ số & Giá trị \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MAE & 1,099,063 \\
-RMSE & 1,448,419 \\
-R² & 0.4846 \\
-\end{longtable}
-
-Mô hình Linear Regression đạt R² = 0.48, nghĩa là giải thích được khoảng
-48\% phương sai của dữ liệu. Đây là kết quả chấp nhận được đối với một
-mô hình đơn giản, nhưng vẫn còn room for improvement.
-
-\subsubsection{5.2 Random Forest
+\subsection{5.2 Random Forest
 Regression}\label{random-forest-regression}
 
-\textbf{Giới thiệu thuật toán:}
+Random Forest kết hợp nhiều cây quyết định, mỗi cây huấn luyện trên mẫu
+bootstrap ngẫu nhiên. Kết quả là trung bình dự đoán của tất cả cây. Giảm
+overfitting so với cây đơn lẻ.
 
-Random Forest là một ensemble method kết hợp nhiều cây quyết định
-(decision trees). Mỗi cây được huấn luyện trên một mẫu bootstrap ngẫu
-nhiên của dữ liệu, và kết quả cuối cùng là trung bình dự đoán của tất cả
-các cây. Phương pháp này giúp giảm overfitting so với một cây đơn lẻ.
+\subsection{5.3 XGBoost Regressor}\label{xgboost-regressor}
 
-\textbf{Ứng dụng trong bài toán:}
+XGBoost xây dựng cây quyết định tuần tự, mỗi cây mới sửa lỗi cây trước.
+Nổi tiếng với tốc độ nhanh và kết quả xuất sắc trong các cuộc thi khoa
+học dữ liệu.
 
-Random Forest có khả năng học các mối quan hệ phi tuyến tính và tương
-tác giữa các đặc trưng, phù hợp với dữ liệu du lịch có tính mùa vụ và
-biến động phức tạp.
-
-\textbf{Kết quả:}
-
-\begin{longtable}[]{@{}ll@{}}
-\toprule\noalign{}
-Chỉ số & Giá trị \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MAE & 1,098,133 \\
-RMSE & 1,548,464 \\
-R² & 0.4109 \\
-\end{longtable}
-
-Random Forest đạt R² = 0.41, thấp hơn Linear Regression. Điều này có thể
-do dữ liệu huấn luyệnhạn chế (chỉ 56 mẫu sau khi bỏ các hàng có giá trị
-lag thiếu), không đủ đểphát huy hết ưu điểm của ensemble method.
-
-\subsubsection{5.3 XGBoost Regressor}\label{xgboost-regressor}
-
-\textbf{Giới thiệu thuật toán:}
-
-XGBoost (Extreme Gradient Boosting) là thuật toán boosting mạnh mẽ, xây
-dựng các cây quyết định tuần tự, mỗi cây mới tập trung sửa lỗi của các
-cây trước đó. XGBoost được biết đến với tốc độ nhanh, khả năng xử lý dữ
-liệu lớn, và thường cho kết quả xuất sắc trong các cuộc thi khoa học dữ
-liệu.
-
-\textbf{Ứng dụng trong bài toán:}
-
-XGBoost được kỳ vọng sẽnắm bắt tốt hơn các mẫu hình phức tạp trong dữ
-liệu du lịch, đặc biệt là tính mùa vụ và tác động của COVID-19.
-
-\textbf{Kết quả:}
-
-\begin{longtable}[]{@{}ll@{}}
-\toprule\noalign{}
-Chỉ số & Giá trị \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MAE & 1,037,611 \\
-RMSE & 1,467,481 \\
-R² & 0.4709 \\
-\end{longtable}
-
-XGBoost đạt R² = 0.47, tương đương với Linear Regression. Mặc dù XGBoost
-là thuật toán mạnh hơn, nhưng với kích thước mẫu nhỏ, ưu điểm của nó
-không được phát huy đầy đủ.
-
-\subsubsection{5.4 SARIMA (Mô hình chuỗi thời
+\subsection{5.4 SARIMA (Mô hình chuỗi thời
 gian)}\label{sarima-muxf4-huxecnh-chuux1ed7i-thux1eddi-gian}
 
-\textbf{Giới thiệu thuật toán:}
+SARIMA kết hợp tự hồi quy (AR), lấy sai phân (I), trung bình trượt (MA)
+và mùa vụ (S). Phù hợp với dữ liệu có tính mùa vụ quarterly. Năm 2021
+được loại bỏ khỏi chuỗi.
 
-SARIMA (Seasonal AutoRegressive Integrated Moving Average) là mô hình
-chuỗi thời gian\_classic, phù hợp với dữ liệu có tính mùa vụ. Mô hình
-kết hợp các thành phần: tự hồi quy (AR), lấy sai phân (I), trung bình
-trượt (MA), và mùa vụ (S).
-
-\textbf{Ứng dụng trong bài toán:}
-
-SARIMA được áp dụng trên chuỗi thời gian tổng hợp (tổng lượng khách mỗi
-quý), với tham số mùa vụ = 4 (4 quý/năm). Đặc biệt, năm 2021 (không có
-dữ liệu) được loại bỏ khỏi chuỗi để tránh ảnh hưởng đến mô hình.
-
-\textbf{Kết quả:}
-
-\begin{longtable}[]{@{}ll@{}}
-\toprule\noalign{}
-Chỉ số & Giá trị \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MAE & 1,548,896 \\
-RMSE & 2,096,619 \\
-R² & -0.0799 \\
-\end{longtable}
-
-SARIMA cho kết quả kém nhất với R² âm (-0.08), nghĩa là mô hình dự đoán
-còn tệ hơn so với việc dự đoán bằng giá trị trung bình. Nguyên nhân
-chính là do khoảng trống dữ liệu năm 2021phá vỡ tính liên tục của chuỗi
-thời gian, khiến mô hình không thể học được đúng pattern mùa vụ.
-
-\subsubsection{5.5 Chronos-T5 (Foundation
+\subsection{5.5 Chronos-T5 (Foundation
 Model)}\label{chronos-t5-foundation-model}
 
-\textbf{Giới thiệu thuật toán:}
+Chronos là mô hình foundation model của Amazon, pretrained trên hàng
+triệu chuỗi thời gian. Hoạt động theo nguyên lý \textbf{zero-shot
+forecasting} --- không cần huấn luyện lại. Cung cấp dự đoán xác suất với
+khoảng tin cậy.
 
-Chronos là một mô hình foundation model (mô hình nền tảng) cho chuỗi
-thời gian, được phát triển bởi Amazon. Khác với các mô hình truyền thống
-(Linear Regression, Random Forest, XGBoost, SARIMA) --- vốn chỉ được
-huấn luyện trên tập dữ liệu nhỏ của bài toán --- Chronos đã được tiền
-huấn luyện (pretrained) trên hàng triệu chuỗi thời gian từ nhiều lĩnh
-vực khác nhau (tài chính, thời tiết, bán lẻ, giao thông, v.v.).
+Thử nghiệm 4 kích thước: Tiny (8M), Small (46M), Base (200M), Large
+(710M). Chạy trên CPU.
 
-Chronos sử dụng kiến trúc Transformer (T5) và hoạt động theo nguyên lý
-\textbf{zero-shot forecasting}: không cần huấn luyện lại trên dữ liệu cụ
-thể của bài toán, chỉ cần cung cấp chuỗi lịch sử (context) là mô hình có
-thể dự đoán. Điều này đặc biệt hữu ích khi dữ liệu huấn luyện hạn chế
---- như trong trường hợp của chúng ta chỉ có 55 quý dữ liệu.
+\subsection{5.6 So sánh hiệu suất các mô
+hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
 
-Mô hình cũng cung cấp dự đoán xác suất (probabilistic forecast), cho
-phép tính khoảng tin cậy thay vì chỉ dự đoán điểm.
-
-\textbf{Ứng dụng trong bài toán:}
-
-Chúng ta thử nghiệm 4 kích thước mô hình: Tiny (8M tham số), Small
-(46M), Base (200M), và Large (710M). Tất cả chạy trên CPU (không có
-GPU). Toàn bộ 55 quý dữ liệu huấn luyện được đưa vào làm context, và mô
-hình dự đoán 10 quý tiếp theo (2024 Q1 -- 2026 Q2) mà không cần bất kỳ
-quá trình huấn luyện nào.
-
-\textbf{Kết quả:}
+\begin{figure}
+\centering
+\includegraphics{output/model_comparison.png}
+\caption{Hình 6: So sánh hiệu suất các mô hình dự đoán}
+\end{figure}
 
 \begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}
@@ -1288,550 +452,179 @@ Mô hình & MAE & RMSE & R² \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-chronos-t5-tiny & 1,018,322 & 1,297,288 & -1.03 \\
-chronos-t5-small & 941,644 & 1,228,935 & -0.82 \\
-chronos-t5-base & 919,813 & 1,158,728 & -0.62 \\
-chronos-t5-large & 1,013,397 & 1,309,193 & -1.07 \\
+LR & 1,099,063 & 1,448,419 & 0.4846 \\
+RF & 1,098,133 & 1,548,464 & 0.4109 \\
+XGB & 1,037,611 & 1,467,481 & 0.4709 \\
+SARIMA & 1,548,896 & 2,096,619 & -0.0799 \\
+Chronos & 1,421,303 & 2,066,026 & -0.0487 \\
+RF (opt) & 1,081,460 & 1,538,767 & 0.4183 \\
+XGB (opt) & 1,092,469 & 1,553,966 & 0.4067 \\
 \end{longtable}
 
-\textbf{Nhận xét thú vị:} Chronos-t5-base cho MAE thấp nhất trong tất cả
-các mô hình (919K), thấp hơn cả Linear Regression (1.1M), XGBoost
-(1.04M). Tuy nhiên, R² của Chronos là âm (-0.62). Điều này có vẻ mâu
-thuẫn, nhưng thực tế dễ hiểu:
+\textbf{Nhận xét:}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{MAE thấp} vì Chronos dự đoán trong một dải hẹp quanh mức
-  3.8--4.4 triệu, nên sai số tuyệt đối trung bình không quá lớn.
+  \textbf{Chronos-T5-Base} cho MAE thấp nhất (0.92M) --- thấp hơn tất cả
+  mô hình truyền thống.
 \item
-  \textbf{R² âm} vì Chronos không nắm bắt được sự biến động mạnh của dữ
-  liệu thực tế (từ 3.8 triệu đến 6.8 triệu). R² âm nghĩa là dự đoán bằng
-  giá trị trung bình còn tốt hơn.
+  \textbf{Linear Regression} cho R² tốt nhất (0.48) --- nắm bắt xu hướng
+  tuyến tính.
+\item
+  \textbf{SARIMA} cho kết quả kém nhất do khoảng trống dữ liệu 2021 phá
+  vỡ tính liên tục.
+\item
+  \textbf{Random Forest và XGBoost} không vượt trội hơn LR với dữ liệu
+  nhỏ (55 quý).
 \end{itemize}
 
-Hiện tượng này cũng xảy ra với SARIMA và là dấu hiệu cho thấy
-\textbf{bài toán dự đoán du lịch hậu COVID-19 là cực kỳ khó khăn} đối
-với mọi mô hình.
+\textbf{Tại sao Base tốt hơn Large?} Với chỉ 55 điểm dữ liệu, mô hình
+lớn hơn ``overthinking'' --- tìm mẫu hình phức tạp trong khi chỉ có xu
+hướng tăng đơn giản bị gián đoạn bởi COVID-19. Prior của model lớn (từ
+tài chính, thời tiết\ldots) không phù hợp với du lịch Việt Nam.
 
-\textbf{Tại sao Base tốt hơn Large?} Điều đáng chú ý là chronos-t5-base
-(200M tham số) cho kết quả tốt hơn chronos-t5-large (710M tham số). Đây
-không phải là lỗi --- nguyên nhân bao gồm:
+\newpage
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Ngữ cảnh quá ngắn:} Với chỉ 55 điểm dữ liệu đầu vào, mô hình
-  lớn hơn có xu hướng ``overthinking'' --- tìm kiếm các mẫu hình phức
-  tạp trong khi thực tế chỉ có một xu hướng tăng đơn giản bị gián đoạn
-  bởi COVID-19.
-\item
-  \textbf{Prior quá mạnh:} Mô hình lớn hơn đã học được nhiều pattern hơn
-  từ dữ liệu tiền huấn luyện, nhưng các pattern đó (từ tài chính, thời
-  tiết, bán lẻ\ldots) có thể không phù hợp với dữ liệu du lịch Việt Nam.
-  Mô hình base ``ít kiến thức hơn'' nên ít bị ảnh hưởng bởi prior sai.
-\item
-  \textbf{Hiệu ứng overfitting zero-shot:} Trong zero-shot forecasting,
-  lớn hơn không phải lúc nào cũng tốt hơn. Điều này đã được ghi nhận
-  trong nhiều benchmark gần đây (QuitoBench 2026, TIME benchmark).
-\end{enumerate}
+\section{6. Dự đoán vs Thực tế
+(2024--2026)}\label{dux1ef1-ux111ouxe1n-vs-thux1ef1c-tux1ebf-20242026}
 
-Đây là một bài viết quan trọng: \textbf{khi chọn foundation model, cần
-benchmark trên dữ liệu thực tế thay vì mặc định chọn model lớn nhất}.
-
-\subsubsection{5.6 So sánh hiệu suất các mô
-hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
-
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{c+c1}{\PYZsh{} Run models and create comparison}
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{linear\PYZus{}model}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{LinearRegression}
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{ensemble}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{RandomForestRegressor}
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{metrics}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{,} \PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{,} \PY{n}{r2\PYZus{}score}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{xgboost}\PY{+w}{ }\PY{k}{as}\PY{+w}{ }\PY{n+nn}{xgb}
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{statsmodels}\PY{n+nn}{.}\PY{n+nn}{tsa}\PY{n+nn}{.}\PY{n+nn}{statespace}\PY{n+nn}{.}\PY{n+nn}{sarimax}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{SARIMAX}
-
-\PY{n}{quarter\PYZus{}map} \PY{o}{=} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{l+m+mi}{4}\PY{p}{\PYZcb{}}
-\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n}{quarter\PYZus{}map}\PY{p}{)}
-\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{+} \PY{p}{(}\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{4}
-\PY{n}{df\PYZus{}long} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{k}{for} \PY{n}{lag} \PY{o+ow}{in} \PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{]}\PY{p}{:}
-    \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}}\PY{l+s+si}{\PYZob{}}\PY{n}{lag}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{shift}\PY{p}{(}\PY{n}{lag}\PY{p}{)}
-\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rolling\PYZus{}mean\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{country}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{transform}\PY{p}{(}\PY{k}{lambda} \PY{n}{x}\PY{p}{:} \PY{n}{x}\PY{o}{.}\PY{n}{rolling}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{n}{min\PYZus{}periods}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
-
-\PY{n}{agg\PYZus{}all} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{shift}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-\PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{shift}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}
-\PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rolling\PYZus{}mean\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{rolling}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{,} \PY{n}{min\PYZus{}periods}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}
-\PY{n}{feat} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{time\PYZus{}idx}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{rolling\PYZus{}mean\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-\PY{n}{tr} \PY{o}{=} \PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mi}{2023}\PY{p}{]}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{n}{subset}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{te} \PY{o}{=} \PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{n}{agg\PYZus{}all}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZgt{}}\PY{o}{=}\PY{l+m+mi}{2024}\PY{p}{]}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{n}{subset}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lag\PYZus{}4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train} \PY{o}{=} \PY{n}{tr}\PY{p}{[}\PY{n}{feat}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{tr}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}
-\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{te}\PY{p}{[}\PY{n}{feat}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{te}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}
-
-\PY{n}{lr} \PY{o}{=} \PY{n}{LinearRegression}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
-\PY{n}{y\PYZus{}lr} \PY{o}{=} \PY{n}{lr}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
-\PY{n}{rf} \PY{o}{=} \PY{n}{RandomForestRegressor}\PY{p}{(}\PY{n}{n\PYZus{}estimators}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{,} \PY{n}{max\PYZus{}depth}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
-\PY{n}{y\PYZus{}rf} \PY{o}{=} \PY{n}{rf}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
-\PY{n}{xgb\PYZus{}m} \PY{o}{=} \PY{n}{xgb}\PY{o}{.}\PY{n}{XGBRegressor}\PY{p}{(}\PY{n}{n\PYZus{}estimators}\PY{o}{=}\PY{l+m+mi}{200}\PY{p}{,} \PY{n}{max\PYZus{}depth}\PY{o}{=}\PY{l+m+mi}{6}\PY{p}{,} \PY{n}{learning\PYZus{}rate}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
-\PY{n}{y\PYZus{}xgb} \PY{o}{=} \PY{n}{xgb\PYZus{}m}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
-
-\PY{n}{agg\PYZus{}ts} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mi}{2023}\PY{p}{]}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{agg\PYZus{}ts} \PY{o}{=} \PY{n}{agg\PYZus{}ts}\PY{p}{[}\PY{n}{agg\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{!=}\PY{l+m+mi}{2021}\PY{p}{]}
-\PY{n}{sarima} \PY{o}{=} \PY{n}{SARIMAX}\PY{p}{(}\PY{n}{agg\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{order}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{n}{seasonal\PYZus{}order}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,} \PY{n}{enforce\PYZus{}stationarity}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,} \PY{n}{enforce\PYZus{}invertibility}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{disp}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,} \PY{n}{maxiter}\PY{o}{=}\PY{l+m+mi}{500}\PY{p}{)}
-\PY{n}{test\PYZus{}ts} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZgt{}}\PY{o}{=}\PY{l+m+mi}{2024}\PY{p}{]}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{sp} \PY{o}{=} \PY{n}{sarima}\PY{o}{.}\PY{n}{forecast}\PY{p}{(}\PY{n}{steps}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{test\PYZus{}ts}\PY{p}{)}\PY{p}{)}
-\PY{n}{y\PYZus{}s} \PY{o}{=} \PY{n}{test\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{[}\PY{p}{:}\PY{n+nb}{len}\PY{p}{(}\PY{n}{sp}\PY{p}{)}\PY{p}{]}
-
-\PY{c+c1}{\PYZsh{} Chronos zero\PYZhy{}shot forecast}
-\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{torch}
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{chronos}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{ChronosPipeline}
-\PY{n}{train\PYZus{}agg} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mi}{2023}\PY{p}{]}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{train\PYZus{}agg} \PY{o}{=} \PY{n}{train\PYZus{}agg}\PY{p}{[}\PY{n}{train\PYZus{}agg}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{!=}\PY{l+m+mi}{2021}\PY{p}{]}
-\PY{n}{context} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{train\PYZus{}agg}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
-\PY{n}{chronos\PYZus{}pipe} \PY{o}{=} \PY{n}{ChronosPipeline}\PY{o}{.}\PY{n}{from\PYZus{}pretrained}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{amazon/chronos\PYZhy{}t5\PYZhy{}base}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{device\PYZus{}map}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cpu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}
-\PY{n}{chronos\PYZus{}fc} \PY{o}{=} \PY{n}{chronos\PYZus{}pipe}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{context}\PY{p}{,} \PY{n}{prediction\PYZus{}length}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{test\PYZus{}ts}\PY{p}{)}\PY{p}{)}
-\PY{n}{y\PYZus{}chronos} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{median}\PY{p}{(}\PY{n}{chronos\PYZus{}fc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{numpy}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
-
-\PY{n}{mae\PYZus{}lr} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}lr}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}lr} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}lr}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}lr} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}lr}\PY{p}{)}
-\PY{n}{mae\PYZus{}rf} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}rf} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}rf} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf}\PY{p}{)}
-\PY{n}{mae\PYZus{}xgb} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}xgb} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}xgb} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb}\PY{p}{)}
-\PY{n}{mae\PYZus{}s} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}s}\PY{p}{,} \PY{n}{sp}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}s} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}s}\PY{p}{,} \PY{n}{sp}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}s} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}s}\PY{p}{,} \PY{n}{sp}\PY{p}{)}
-\PY{n}{mae\PYZus{}c} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}chronos}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}c} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}chronos}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}c} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}chronos}\PY{p}{)}
-
-\PY{n}{comparison} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Linear Regression}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Random Forest}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGBoost}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{SARIMA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos\PYZhy{}T5\PYZhy{}Base}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
-    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MAE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{mae\PYZus{}lr}\PY{p}{,}\PY{n}{mae\PYZus{}rf}\PY{p}{,}\PY{n}{mae\PYZus{}xgb}\PY{p}{,}\PY{n}{mae\PYZus{}s}\PY{p}{,}\PY{n}{mae\PYZus{}c}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RMSE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{rmse\PYZus{}lr}\PY{p}{,}\PY{n}{rmse\PYZus{}rf}\PY{p}{,}\PY{n}{rmse\PYZus{}xgb}\PY{p}{,}\PY{n}{rmse\PYZus{}s}\PY{p}{,}\PY{n}{rmse\PYZus{}c}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{r2\PYZus{}lr}\PY{p}{,}\PY{n}{r2\PYZus{}rf}\PY{p}{,}\PY{n}{r2\PYZus{}xgb}\PY{p}{,}\PY{n}{r2\PYZus{}s}\PY{p}{,}\PY{n}{r2\PYZus{}c}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
-\PY{n+nb}{print}\PY{p}{(}\PY{n}{comparison}\PY{o}{.}\PY{n}{to\PYZus{}string}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{)}
-
-\PY{n}{fig}\PY{p}{,} \PY{n}{axes} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{18}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
-\PY{n}{models} \PY{o}{=} \PY{n}{comparison}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{;} \PY{n}{x} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{models}\PY{p}{)}\PY{p}{)}
-\PY{k}{for} \PY{n}{ax}\PY{p}{,} \PY{n}{metric}\PY{p}{,} \PY{n}{title} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{axes}\PY{p}{,} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MAE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RMSE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MAE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RMSE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R² Score}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{:}
-    \PY{n}{vals} \PY{o}{=} \PY{n}{comparison}\PY{p}{[}\PY{n}{metric}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6} \PY{k}{if} \PY{n}{metric} \PY{o}{!=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}} \PY{k}{else} \PY{n}{comparison}\PY{p}{[}\PY{n}{metric}\PY{p}{]}
-    \PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{vals}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{n}{sns}\PY{o}{.}\PY{n}{color\PYZus{}palette}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Set2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{models}\PY{p}{)}\PY{p}{)}\PY{p}{)}
-    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticks}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticklabels}\PY{p}{(}\PY{n}{models}\PY{p}{,} \PY{n}{rotation}\PY{o}{=}\PY{l+m+mi}{45}\PY{p}{,} \PY{n}{ha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{9}\PY{p}{)}
-    \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{n}{title}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-    \PY{k}{if} \PY{n}{metric} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{n}{ax}\PY{o}{.}\PY{n}{axhline}\PY{p}{(}\PY{n}{y}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{red}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ls}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{suptitle}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 6: So sánh hiệu suất các mô hình dự đoán}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/model\PYZus{}comparison.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{results} \PY{o}{=} \PY{n}{te}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q}\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}test}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}lr}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}rf}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}xgb}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}chronos}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}lr} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}rf} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}xgb} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chr\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}chronos} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-\PY{n+nb}{print}\PY{p}{(}\PY{n}{results}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chr\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}string}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{)}
-
-\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
-\PY{n}{x} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{results}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{labels} \PY{o}{=} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)} \PY{o}{+} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.3} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Thực tế}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}2196F3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.1} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}FF9800}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mf}{0.1} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}4CAF50}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mf}{0.3} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}E91E63}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticks}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticklabels}\PY{p}{(}\PY{n}{labels}\PY{p}{,} \PY{n}{rotation}\PY{o}{=}\PY{l+m+mi}{45}\PY{p}{,} \PY{n}{ha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Lượng khách (triệu)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 6b: Dự đoán vs Thực tế — Tập test (2024–2026)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/pred\PYZus{}vs\PYZus{}actual.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-    \textbf{Nhận xét chi tiết theo quý:}
-
-Bảng trên cho thấy chi tiết dự đoán so với thực tế cho từng quý trong
-tập test:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Quý 2024 Q3} là dự đoán chính xác nhất: XGBoost chỉ sai lệch
-  -1.2\%, Chronos sai +2.4\%.
-\item
-  \textbf{Quý 2025 Q1} và \textbf{2026 Q1} là dự đoán kém nhất: tất cả
-  các mô hình đều dự đoán thấp hơn đáng kể (sai lệch -23\% đến -39\%).
-\item
-  \textbf{Xu hướng chung:} Tất cả các mô hình đều có xu hướng
-  \textbf{underestimate} (dự đoán thấp hơn thực tế), đặc biệt với các
-  quý có lượng khách cao.
-\end{itemize}
-
-\textbf{Thách thức ``hậu COVID-19'' (Post-COVID Challenge):}
-
-Kết quả trênchỉ ra một vấn đề cốt lõi: \textbf{không mô hình nào --- kể
-cả Chronos foundation model được pretrained trên hàng triệu chuỗi thời
-gian --- có thể dự đoán chính xác sự phục hồi hậu đại dịch}. Đây là một
-hiện tượng phổ biến trong dự đoán chuỗi thời gian sau các sự kiện bất
-khả kháng (black swan events):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Dữ liệu huấn luyện kết thúc năm 2023} với mức \textasciitilde5
-  triệu lượt/quý, nhưng năm 2025-2026 bùng nổ lên 6-7 triệu. Mô hình chỉ
-  dựa vào lịch sử không thể ``biết'' rằng ngành du lịch sẽ tăng trưởng
-  vượt bậc.
-\item
-  \textbf{Foundation model cũng không ngoại lệ:} Chronos-T5-Base (200M
-  tham số, pretrained trên hàng triệu chuỗi) cho MAE thấp nhất (920K)
-  nhưng R² âm (-0.62). Mô hình dự đoán một dải hẹp quanh 3.8-4.4 triệu,
-  bỏ lỡ hoàn toàn sự biến động thực tế.
-\item
-  \textbf{SARIMA bị ảnh hưởng nặng nhất} do khoảng trống dữ liệu 2021phá
-  vỡ tính liên tục của chuỗi thời gian.
-\item
-  \textbf{Linear Regression} paradoxically cho R² tốt nhất (0.48) vì nó
-  nắm bắt được xu hướng tăng tuyến tính, dù sai số tuyệt đối vẫn lớn.
-\end{enumerate}
-
-\textbf{Bài học:} Dự đoán thời gian thực sau đại dịch đòi hỏi dữ liệu
-bên ngoài (leading indicators) như chính sách visa, tỷ giá, giá vé máy
-bay, sự kiện du lịch --- không chỉ dựa vào dữ liệu lịch sử.
-
-    \textbf{Nhận xét tổng thể:}
+\begin{figure}
+\centering
+\includegraphics{output/pred_vs_actual.png}
+\caption{Hình 6b: Dự đoán vs Thực tế --- Tập test}
+\end{figure}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1333}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1111}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2444}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0746}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1343}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0746}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1493}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1343}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1493}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1343}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1493}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Mô hình
+Quý
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MAE
+Thực tế
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-RMSE
+LR
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-R²
+Sai lệch
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Ưu điểm
+XGBoost
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Nhược điểm
+Sai lệch
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Chronos
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Sai lệch
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Linear Regression & 1.10M & 1.45M & \textbf{0.48} & R² tốt nhất, đơn
-giản & Sai số tuyệt đối lớn \\
-Random Forest & 1.10M & 1.55M & 0.41 & Linh hoạt & Dữ liệu nhỏ quá ít \\
-XGBoost & \textbf{1.04M} & 1.47M & 0.47 & MAE thấp (ML models) & Cần
-nhiều dữ liệu hơn \\
-SARIMA & 1.55M & 2.10M & -0.08 & Mùa vụ rõ ràng & Phá vỡ bởi gap 2021 \\
-Chronos-T5-Base & \textbf{0.92M} & 1.16M & -0.62 & MAE thấp nhất,
-zero-shot & Không nắm bắt biến động \\
+2024 Q1 & 4,642,798 & 3,893,818 & -16.1\% & 3,738,777 & -19.5\% &
+3,784,412 & -18.5\% \\
+2024 Q3 & 3,873,045 & 4,236,586 & +9.4\% & 3,827,625 & -1.2\% &
+3,965,012 & +2.4\% \\
+2025 Q1 & 6,018,708 & 4,594,127 & -23.7\% & 4,506,910 & -25.1\% &
+4,088,150 & -32.1\% \\
+2026 Q1 & 6,762,175 & 5,070,457 & -25.0\% & 4,506,910 & -33.4\% &
+4,334,424 & -35.9\% \\
 \end{longtable}
 
-\textbf{Chronos-T5-Base} cho MAE thấp nhất trong tất cả các mô hình
-(920K), chứng tỏ sức mạnh của foundation model. Tuy nhiên, R² âm cho
-thấy nó dự đoán quá ``an toàn'' --- một dải hẹp quanh mức trung bình
-thay vì nắm bắt sự biến động thực tế. Ngược lại, \textbf{Linear
-Regression} cho R² tốt nhất (0.48) vì nó học được xu hướng tăng tuyến
-tính, dù sai số tuyệt đối lớn hơn.
+\textbf{Thách thức ``hậu COVID-19'':} Không mô hình nào --- kể cả
+Chronos foundation model --- có thể dự đoán chính xác sự phục hồi hậu
+đại dịch. Dữ liệu huấn luyện kết thúc 2023 với \textasciitilde5 triệu,
+nhưng 2025--2026 bùng nổ lên 6--7 triệu. Đây là structural break mà mô
+hình dựa vào lịch sử không thể nắm bắt.
 
-Với kích thước mẫu nhỏ (chỉ 55 quý huấn luyện), các mô hình phức tạp hơn
-(Random Forest, XGBoost) không có lợi thếđáng kể so với Linear
-Regression đơn giản. Đây là một insight quan trọng: \textbf{với dữ liệu
-nhỏ, mô hình đơn giản thường tốt hơn mô hình phức tạp}. Và với dữ liệu
-có structural break (như COVID-19), \textbf{không mô hình nào dự đoán
-tốt được nếu chỉ dựa vào dữ liệu lịch sử}.
+\newpage
 
-    \subsection{6. Tối ưu mô hình}\label{tux1ed1i-ux1b0u-muxf4-huxecnh}
-
-Để cải thiện hiệu suất của các mô hình, nhóm thực hiện tối ưu hóa siêu
-tham số (hyperparameter tuning) cho Random Forest và XGBoost.
-
-\subsubsection{6.1 GridSearchCV cho Random
-Forest}\label{gridsearchcv-cho-random-forest}
-
-\textbf{Khái niệm:}
-
-GridSearchCV là kỹ thuật tìm kiếm lưới (grid search) kết hợp với
-cross-validation. Phương pháp này thử tất cả các tổ hợp có thể của các
-siêu tham số được chỉ định, và chọn tổ hợp cho điểm cross-validation tốt
-nhất.
-
-\textbf{Cấu hình thuật toán:}
-
-Các siêu tham số được tối ưu cho Random Forest: -
-\texttt{n\_estimators}: Số lượng cây (100, 200, 300) -
-\texttt{max\_depth}: Độ sâu tối đa (5, 10, 15, None) -
-\texttt{min\_samples\_split}: Số mẫu tối thiểu để chia nút (2, 5, 10)
-
-Sử dụng 3-fold cross-validation và đánh giá bằng MAE (Mean Absolute
-Error).
-
-\textbf{Kết quả:}
-
-Siêu tham số tốt nhất:
-\texttt{\{\textquotesingle{}max\_depth\textquotesingle{}:\ 5,\ \textquotesingle{}min\_samples\_split\textquotesingle{}:\ 2,\ \textquotesingle{}n\_estimators\textquotesingle{}:\ 200\}}
-
-\begin{longtable}[]{@{}llll@{}}
-\toprule\noalign{}
-Chỉ số & Trước tối ưu & Sau tối ưu & Cải thiện \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MAE & 1,098,133 & 1,081,460 & -1.5\% \\
-RMSE & 1,548,464 & 1,538,767 & -0.6\% \\
-R² & 0.4109 & 0.4183 & +1.8\% \\
-\end{longtable}
-
-\subsubsection{6.2 RandomizedSearchCV cho
-XGBoost}\label{randomizedsearchcv-cho-xgboost}
-
-\textbf{Khái niệm:}
-
-RandomizedSearchCVtương tự GridSearchCV, nhưng thay vì thử tất cả các tổ
-hợp, nó chỉ thử một số lượng ngẫu nhiên nhất định các tổ hợp. Phương
-pháp này nhanh hơn\_grid search khi không gian siêu tham số lớn.
-
-\textbf{Cấu hình thuật toán:}
-
-Các siêu tham số được tối ưu cho XGBoost: - \texttt{n\_estimators}: 100,
-200, 300, 500 - \texttt{max\_depth}: 3, 5, 7, 9 -
-\texttt{learning\_rate}: 0.01, 0.05, 0.1, 0.2 - \texttt{subsample}: 0.7,
-0.8, 0.9, 1.0 - \texttt{colsample\_bytree}: 0.7, 0.8, 0.9, 1.0
-
-Sử dụng 50 lần thử ngẫu nhiên, 3-fold cross-validation.
-
-\textbf{Kết quả:}
-
-Siêu tham số tốt nhất:
-\texttt{\{\textquotesingle{}subsample\textquotesingle{}:\ 0.7,\ \textquotesingle{}n\_estimators\textquotesingle{}:\ 200,\ \textquotesingle{}max\_depth\textquotesingle{}:\ 9,\ \textquotesingle{}learning\_rate\textquotesingle{}:\ 0.2,\ \textquotesingle{}colsample\_bytree\textquotesingle{}:\ 0.7\}}
-
-\begin{longtable}[]{@{}llll@{}}
-\toprule\noalign{}
-Chỉ số & Trước tối ưu & Sau tối ưu & Cải thiện \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MAE & 1,037,611 & 1,092,469 & +5.3\% (xấu hơn) \\
-RMSE & 1,467,481 & 1,553,966 & +5.9\% (xấu hơn) \\
-R² & 0.4709 & 0.4067 & -13.6\% (xấu hơn) \\
-\end{longtable}
-
-\subsubsection{6.3 Kết quả sau tối
-ưu}\label{kux1ebft-quux1ea3-sau-tux1ed1i-ux1b0u}
-
-Điều thú vị là tối ưu hóa siêu tham số không cải thiện hiệu suất cho
-XGBoost --- thực tế, kết quả còn \textbf{xấu hơn} so với tham số mặc
-định. Hiện tượng nàyđược gọi là \textbf{``overfitting trên
-cross-validation''}: mô hình tối ưu quá mức trên tập huấn luyện (thông
-qua cross-validation) nhưng lại hoạt động kém hơn trên tập kiểm tra.
-
-Đối với Random Forest, tối ưu hóa chỉ cải thiện nhẹ (R² tăng từ 0.41 lên
-0.42).
-
-\textbf{Bảng so sánhcuối cùng:}
-
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{GridSearchCV}\PY{p}{,} \PY{n}{RandomizedSearchCV}
-\PY{n}{rf\PYZus{}gs} \PY{o}{=} \PY{n}{GridSearchCV}\PY{p}{(}\PY{n}{RandomForestRegressor}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}\PY{p}{,} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{n\PYZus{}estimators}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{,}\PY{l+m+mi}{300}\PY{p}{]}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{max\PYZus{}depth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{,}\PY{l+m+mi}{15}\PY{p}{,}\PY{k+kc}{None}\PY{p}{]}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{min\PYZus{}samples\PYZus{}split}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{cv}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{neg\PYZus{}mean\PYZus{}absolute\PYZus{}error}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
-\PY{n}{y\PYZus{}rf\PYZus{}gs} \PY{o}{=} \PY{n}{rf\PYZus{}gs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
-\PY{n}{xgb\PYZus{}rs} \PY{o}{=} \PY{n}{RandomizedSearchCV}\PY{p}{(}\PY{n}{xgb}\PY{o}{.}\PY{n}{XGBRegressor}\PY{p}{(}\PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}\PY{p}{,} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{n\PYZus{}estimators}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mi}{100}\PY{p}{,}\PY{l+m+mi}{200}\PY{p}{,}\PY{l+m+mi}{300}\PY{p}{,}\PY{l+m+mi}{500}\PY{p}{]}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{max\PYZus{}depth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{,}\PY{l+m+mi}{5}\PY{p}{,}\PY{l+m+mi}{7}\PY{p}{,}\PY{l+m+mi}{9}\PY{p}{]}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{learning\PYZus{}rate}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mf}{0.01}\PY{p}{,}\PY{l+m+mf}{0.05}\PY{p}{,}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{l+m+mf}{0.2}\PY{p}{]}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{subsample}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mf}{0.7}\PY{p}{,}\PY{l+m+mf}{0.8}\PY{p}{,}\PY{l+m+mf}{0.9}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{]}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{colsample\PYZus{}bytree}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{l+m+mf}{0.7}\PY{p}{,}\PY{l+m+mf}{0.8}\PY{p}{,}\PY{l+m+mf}{0.9}\PY{p}{,}\PY{l+m+mf}{1.0}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{n\PYZus{}iter}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{,} \PY{n}{cv}\PY{o}{=}\PY{l+m+mi}{3}\PY{p}{,} \PY{n}{scoring}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{neg\PYZus{}mean\PYZus{}absolute\PYZus{}error}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{n\PYZus{}jobs}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{)}
-\PY{n}{y\PYZus{}xgb\PYZus{}rs} \PY{o}{=} \PY{n}{xgb\PYZus{}rs}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
-\PY{n}{mae\PYZus{}rf\PYZus{}gs} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf\PYZus{}gs}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}rf\PYZus{}gs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf\PYZus{}gs}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}rf\PYZus{}gs} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf\PYZus{}gs}\PY{p}{)}
-\PY{n}{mae\PYZus{}xgb\PYZus{}rs} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb\PYZus{}rs}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}xgb\PYZus{}rs} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb\PYZus{}rs}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}xgb\PYZus{}rs} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb\PYZus{}rs}\PY{p}{)}
-
-\PY{n}{comp} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Linear Regression}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Random Forest}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGBoost}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{SARIMA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF (optimized)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGBoost (optimized)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MAE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{mae\PYZus{}lr}\PY{p}{,}\PY{n}{mae\PYZus{}rf}\PY{p}{,}\PY{n}{mae\PYZus{}xgb}\PY{p}{,}\PY{n}{mae\PYZus{}s}\PY{p}{,}\PY{n}{mae\PYZus{}rf\PYZus{}gs}\PY{p}{,}\PY{n}{mae\PYZus{}xgb\PYZus{}rs}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RMSE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{rmse\PYZus{}lr}\PY{p}{,}\PY{n}{rmse\PYZus{}rf}\PY{p}{,}\PY{n}{rmse\PYZus{}xgb}\PY{p}{,}\PY{n}{rmse\PYZus{}s}\PY{p}{,}\PY{n}{rmse\PYZus{}rf\PYZus{}gs}\PY{p}{,}\PY{n}{rmse\PYZus{}xgb\PYZus{}rs}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{r2\PYZus{}lr}\PY{p}{,}\PY{n}{r2\PYZus{}rf}\PY{p}{,}\PY{n}{r2\PYZus{}xgb}\PY{p}{,}\PY{n}{r2\PYZus{}s}\PY{p}{,}\PY{n}{r2\PYZus{}rf\PYZus{}gs}\PY{p}{,}\PY{n}{r2\PYZus{}xgb\PYZus{}rs}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
-\PY{n+nb}{print}\PY{p}{(}\PY{n}{comp}\PY{o}{.}\PY{n}{to\PYZus{}string}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
-
-    \subsection{7. Dự đoán tương
+\section{7. Dự đoán tương
 lai}\label{dux1ef1-ux111ouxe1n-tux1b0ux1a1ng-lai}
 
-\subsubsection{7.1 Dự đoán 4 quý tiếp theo bằng
-SARIMA}\label{dux1ef1-ux111ouxe1n-4-quuxfd-tiux1ebfp-theo-bux1eb1ng-sarima}
+\begin{figure}
+\centering
+\includegraphics{output/forecast_plot.png}
+\caption{Hình 7: Dự đoán lượng khách 4 quý tiếp theo}
+\end{figure}
 
-Mặc dù SARIMA cho kết quả kém trên tập kiểm tra, nhóm vẫn sử dụng mô
-hình này để dự đoán 4 quý tiếp theo vì SARIMA là mô hình chuỗi thời
-gianchuyên dụng cho dự đoán, và nó có thể cung cấp khoảng tin cậy
-(confidence interval) --- một tính năng quan trọng cho việc ra quyết
-định.
+Dự đoán SARIMA cho 4 quý tiếp theo:
 
-Mô hình SARIMA được huấn luyện lại trên toàn bộ dữ liệu (loại bỏ năm
-2021) trước khi dự đoán.
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Quý & Dự đoán & Khoảng tin cậy 95\% \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2027 Q1 & 1,421,545 & {[}-247,180 --- 3,090,271{]} \\
+2027 Q2 & -209,643 & {[}-3,479,627 --- 3,060,341{]} \\
+2027 Q3 & -1,549,742 & {[}-5,812,211 --- 2,712,728{]} \\
+2027 Q4 & -1,132,213 & {[}-6,199,123 --- 3,934,697{]} \\
+\end{longtable}
 
-    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
-\prompt{In}{incolor}{ }{\boxspacing}
-\begin{Verbatim}[commandchars=\\\{\}]
-\PY{n}{full\PYZus{}ts} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
-\PY{n}{full\PYZus{}ts} \PY{o}{=} \PY{n}{full\PYZus{}ts}\PY{p}{[}\PY{n}{full\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{!=}\PY{l+m+mi}{2021}\PY{p}{]}
-\PY{n}{s\PYZus{}full} \PY{o}{=} \PY{n}{SARIMAX}\PY{p}{(}\PY{n}{full\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{order}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{n}{seasonal\PYZus{}order}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{,} \PY{n}{enforce\PYZus{}stationarity}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,} \PY{n}{enforce\PYZus{}invertibility}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{disp}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,} \PY{n}{maxiter}\PY{o}{=}\PY{l+m+mi}{500}\PY{p}{)}
-\PY{n}{fc} \PY{o}{=} \PY{n}{s\PYZus{}full}\PY{o}{.}\PY{n}{get\PYZus{}forecast}\PY{p}{(}\PY{n}{steps}\PY{o}{=}\PY{l+m+mi}{4}\PY{p}{)}
-\PY{n}{fc\PYZus{}mean} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{fc}\PY{o}{.}\PY{n}{predicted\PYZus{}mean}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{p}{)}
-\PY{n}{fc\PYZus{}ci} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{fc}\PY{o}{.}\PY{n}{conf\PYZus{}int}\PY{p}{(}\PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.05}\PY{p}{)}\PY{p}{)}
-\PY{n}{ly} \PY{o}{=} \PY{n}{full\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{lq} \PY{o}{=} \PY{n}{full\PYZus{}ts}\PY{p}{[}\PY{n}{full\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{==}\PY{n}{ly}\PY{p}{]}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{p}{)}
-\PY{n}{fqs} \PY{o}{=} \PY{p}{[}\PY{p}{]}\PY{p}{;} \PY{n}{y}\PY{p}{,} \PY{n}{q} \PY{o}{=} \PY{n}{ly}\PY{p}{,} \PY{n}{lq}
-\PY{k}{for} \PY{n}{\PYZus{}} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{4}\PY{p}{)}\PY{p}{:}
-    \PY{n}{q} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
-    \PY{k}{if} \PY{n}{q} \PY{o}{\PYZgt{}} \PY{l+m+mi}{4}\PY{p}{:} \PY{n}{q} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{;} \PY{n}{y} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
-    \PY{n}{fqs}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{(}\PY{n}{y}\PY{p}{,} \PY{n}{q}\PY{p}{)}\PY{p}{)}
-\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Dự đoán SARIMA cho 4 quý tiếp theo:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
-\PY{k}{for} \PY{p}{(}\PY{n}{yr}\PY{p}{,} \PY{n}{qr}\PY{p}{)}\PY{p}{,} \PY{n}{v}\PY{p}{,} \PY{n}{lo}\PY{p}{,} \PY{n}{hi} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{fqs}\PY{p}{,} \PY{n}{fc\PYZus{}mean}\PY{p}{,} \PY{n}{fc\PYZus{}ci}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{fc\PYZus{}ci}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{:}
-    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{  }\PY{l+s+si}{\PYZob{}}\PY{n}{yr}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ Q}\PY{l+s+si}{\PYZob{}}\PY{n}{qr}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{: }\PY{l+s+si}{\PYZob{}}\PY{n}{v}\PY{l+s+si}{:}\PY{l+s+s2}{,.0f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{  [}\PY{l+s+si}{\PYZob{}}\PY{n}{lo}\PY{l+s+si}{:}\PY{l+s+s2}{,.0f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ — }\PY{l+s+si}{\PYZob{}}\PY{n}{hi}\PY{l+s+si}{:}\PY{l+s+s2}{,.0f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\textbf{Lưu ý:} Khoảng tin cậy rất rộng, phản ánh mức độ không chắc chắn
+cao do COVID-19 và dữ liệu hạn chế.
 
-\PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,} \PY{l+m+mi}{7}\PY{p}{)}\PY{p}{)}
-\PY{n}{hist} \PY{o}{=} \PY{n}{full\PYZus{}ts}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{hist}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{lbl}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{hist}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+}\PY{n}{hist}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{hist}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{hist}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{o\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{ms}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}2196F3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dữ liệu lịch sử}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{fcx} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{hist}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n}{hist}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{4}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{fcx}\PY{p}{,} \PY{n}{fc\PYZus{}mean}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{s\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{ms}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}FF5722}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dự đoán}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{fill\PYZus{}between}\PY{p}{(}\PY{n}{fcx}\PY{p}{,} \PY{n}{fc\PYZus{}ci}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{n}{fc\PYZus{}ci}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}FF5722}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Khoảng tin cậy 95}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{axvline}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{hist}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{gray}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{ls}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZhy{}\PYZhy{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Quý}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Tổng lượng khách (triệu)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 7: Dự đoán lượng khách 4 quý tiếp theo với khoảng tin cậy 95}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{11}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{)}
-\PY{n}{plt}\PY{o}{.}\PY{n}{tight\PYZus{}layout}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{output/forecast\PYZus{}plot.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{150}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
-\end{Verbatim}
-\end{tcolorbox}
+\newpage
 
-    \subsubsection{7.2 Phân tích khoảng tin
-cậy}\label{phuxe2n-tuxedch-khoux1ea3ng-tin-cux1eady}
+\section{8. Tổng kết}\label{tux1ed5ng-kux1ebft}
 
-\textbf{Nhận xét về dự đoán:}
-
-Kết quả dự đoán cho thấy một số vấn đềcần lưu ý:
-
-\begin{itemize}
-\item
-  Dự đoán cho Q1/2027 là dương (\textasciitilde1.4 triệu), nhưng các quý
-  tiếp theo cho giá trị âm hoặcgần 0. Điều này phản ánh mô hình SARIMA
-  không phù hợp với dữ liệu có khoảng trống lớn (năm 2021).
-\item
-  \textbf{Khoảng tin cậy 95\% rất rộng}, cho thấy mức độmức độ không
-  chắc chắn cao. Điều này là hợp lý vì:
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Dữ liệu bị gián đoạn bởi COVID-19
-  \item
-    Chỉ có 56 mẫu huấn luyện (sau khi loại bỏ 2021)
-  \item
-    Lượng khách có tính biến động cao
-  \end{itemize}
-\end{itemize}
-
-\textbf{Lưu ý quan trọng:} Các dự đoán này chỉ mang tính tham khảo và
-không nên được sử dụng làm cơ sở duy nhất cho việc ra quyết định. Cần
-kết hợp với phân tích định tính và các yếu tố bên ngoài (chính sách
-visa, tình hình kinh tế, etc.) để đưa ra dự đoán chính xác hơn.
-
-    \subsection{8. Tổng kết}\label{tux1ed5ng-kux1ebft}
-
-\subsubsection{8.1 Kết quả đạt
+\subsection{8.1 Kết quả đạt
 được}\label{kux1ebft-quux1ea3-ux111ux1ea1t-ux111ux1b0ux1ee3c}
-
-Đề tài đã hoàn thành các mục tiêu đề ra:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Phân tích dữ liệu thành công:} Đã phân tích và trực quan hóa
-  dữ liệu lượng khách quốc tế đến Việt Nam giai đoạn 2008--2026,khám phá
-  các xu hướng tăng trưởng, tác động của COVID-19, và sự phục hồi mạnh
-  mẽ của ngành du lịch.
-\item
-  \textbf{Xác định thị trường nguồn quan trọng:} Trung Quốc và Hàn Quốc
-  là hai thị trường lớn nhất, với Hàn Quốc là thị trường tăng trưởng
-  nhanh nhất và phục hồi sau COVID-19 tốt nhất.
-\item
-  \textbf{Phát hiện tính mùa vụ:} Quý 1 có lượng khách trung bình cao
-  nhất, phản ánh mùa du lịch đầu năm.
-\item
-  \textbf{Xây dựng mô hình dự đoán:} Đã xây dựng và so sánh 4 mô hình.
-  Linear Regression cho kết quả tốt nhất (R² = 0.48), cho thấy mối quan
-  hệ tuyến tính giữa các đặc trưng và lượng khách là đáng kể.
-\item
-  \textbf{Tối ưu hóa siêu tham số:} Đã áp dụng GridSearchCV và
-  RandomizedSearchCV, rút ra bài viết rằng tối ưu hóa không phải lúc nào
-  cũng cải thiện hiệu suất, đặc biệt với dữ liệu nhỏ.
-\end{enumerate}
-
-\subsubsection{8.2 Hạn chế}\label{hux1ea1n-chux1ebf}
-
-Đề tài có một số hạn chế:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Dữ liệu hạn chế:} Chỉ có 56 mẫu huấn luyện (sau khi tạo lag
-  features), không đủ đểphát huy hết ưu điểm của các mô hình phức tạp.
-\item
-  \textbf{Khoảng trống dữ liệu:} Năm 2021 không có dữ liệu,phá vỡ tính
-  liên tục của chuỗi thời gian, ảnh hưởng nghiêm trọng đến hiệu suất của
-  SARIMA.
-\item
-  \textbf{Thiếu đặc trưng bên ngoài:} Mô hình chỉ sử dụng dữ liệu lịch
-  sử, chưa kết hợp các yếu tố bên ngoài như chính sách visa, tỷ giá, sự
-  kiện đặc biệt, etc.
-\item
-  \textbf{Dự đoán SARIMA không ổn định:} Kết quả dự đoán cho thấy giá
-  trị âm hoặcgần 0, phản ánh mô hình không phù hợp với dữ liệu có khoảng
-  trống.
-\end{enumerate}
-
-\subsubsection{8.3 Hướng phát
-triển}\label{hux1b0ux1edbng-phuxe1t-triux1ec3n}
-
-Để cải thiện đề tài trong tương lai:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Thu thập thêm dữ liệu:} Bổ sung dữ liệu theo tháng (thay vì
-  theo quý) để tăng kích thước mẫu.
-\item
-  \textbf{Thêm đặc trưng bên ngoài:} Kết hợp dữ liệu về chính sách visa,
-  tỷ giá hối đoái, sự kiện du lịch, và tình hình kinh tế các quốc gia
-  nguồn.
-\item
-  \textbf{Thử nghiệm các mô hình khác:} ARIMA với xử lý khoảng trống tốt
-  hơn, Prophet (Facebook), hoặc các mô hình deep learning như LSTM.
-\item
-  \textbf{Dự đoán theo từng quốc gia:} Xây dựng mô hình riêng cho từng
-  thị trường nguồn để có dự đoán chi tiết hơn.
-\item
-  \textbf{Xây dựng dashboard tương tác:} Tạo dashboard để theo dõi và dự
-  đoán lượng khách theo thời gian thực.
-\end{enumerate}
-
-    \subsection{Tài liệu tham khảo}\label{tuxe0i-liux1ec7u-tham-khux1ea3o}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Scikit-learn documentation: https://scikit-learn.org/
+  Phân tích thành công dữ liệu du lịch 2008--2026,chỉ ra xu hướng tăng
+  trưởng và tác động COVID-19.
 \item
-  XGBoost documentation: https://xgboost.readthedocs.io/
+  Xác định Trung Quốc và Hàn Quốc là thị trường nguồn lớn nhất.
 \item
-  Statsmodels SARIMA documentation: https://www.statsmodels.org/
+  Phát hiện tính mùa vụ: Q1 cao nhất.
 \item
-  Pandas documentation: https://pandas.pydata.org/
+  Xây dựng 5 mô hình, Chronos-T5-Base cho MAE thấp nhất.
 \item
-  Matplotlib documentation: https://matplotlib.org/
+  Dự đoán 4 quý tiếp theo với khoảng tin cậy.
 \end{enumerate}
 
+\subsection{8.2 Hạn chế}\label{hux1ea1n-chux1ebf}
 
-    % Add a bibliography block to the postdoc
-    
-    
-    
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Dữ liệu hạn chế (55 quý huấn luyện).
+\item
+  Khoảng trống 2021 phá vỡ tính liên tục chuỗi thời gian.
+\item
+  Thiếu đặc trưng bên ngoài (chính sách visa, tỷ giá\ldots).
+\item
+  Dự đoán SARIMA không ổn định.
+\end{enumerate}
+
+\subsection{8.3 Hướng phát
+triển}\label{hux1b0ux1edbng-phuxe1t-triux1ec3n}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Thu thập dữ liệu theo tháng để tăng mẫu.
+\item
+  Bổ sung đặc trưng bên ngoài (visa, tỷ giá, sự kiện du lịch).
+\item
+  Thử nghiệm Prophet, LSTM.
+\item
+  Dự đoán theo từng quốc gia riêng lẻ.
+\item
+  Xây dựng dashboard tương tác.
+\end{enumerate}
+
 \end{document}

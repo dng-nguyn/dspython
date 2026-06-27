@@ -23,12 +23,17 @@ code("""# Tải dữ liệu từ GSO (Tổng cục Thống kê)
 !ls data/""")
 
 # --- Imports ---
-code("""import pandas as pd
+code("""import os
+# Run from project root (handles nbconvert from notebooks/ dir)
+if os.path.basename(os.getcwd()) == 'notebooks':
+    os.chdir('..')
+
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from lxml import html
-import warnings, os
+import warnings
 warnings.filterwarnings('ignore')
 os.makedirs('output', exist_ok=True)
 plt.rcParams['figure.figsize'] = (12, 6)
@@ -252,7 +257,7 @@ for model_name in ['amazon/chronos-t5-tiny', 'amazon/chronos-t5-small',
     short = model_name.split('/')[-1]
     print(f'Loading {short}...', end=' ', flush=True)
     pipe = ChronosPipeline.from_pretrained(model_name, device_map='cpu', dtype=torch.float32)
-    fc = pipe.predict(context, prediction_length=len(test))
+    fc = pipe.predict(context, prediction_length=len(y_test))
     pred = np.median(fc[0].numpy(), axis=0)
     m = mean_absolute_error(y_test, pred)
     r = np.sqrt(mean_squared_error(y_test, pred))
