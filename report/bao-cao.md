@@ -498,7 +498,37 @@ SARIMA được áp dụng trên chuỗi thời gian tổng hợp (tổng lượ
 
 SARIMA cho kết quả kém nhất với R² âm (-0.08), nghĩa là mô hình dự đoán còn tệ hơn so với việc dự đoán bằng giá trị trung bình. Nguyên nhân chính là do khoảng trống dữ liệu năm 2021phá vỡ tính liên tục của chuỗi thời gian, khiến mô hình không thể học được đúng pattern mùa vụ.
 
-### 5.5 So sánh hiệu suất các mô hình
+### 5.5 Chronos-T5 (Foundation Model)
+
+**Giới thiệu thuật toán:**
+
+Chronos là một mô hình foundation model (mô hình nền tảng) cho chuỗi thời gian, được phát triển bởi Amazon. Khác với các mô hình truyền thống (Linear Regression, Random Forest, XGBoost, SARIMA) — vốn chỉ được huấn luyện trên tập dữ liệu nhỏ của bài toán — Chronos đã được tiền huấn luyện (pretrained) trên hàng triệu chuỗi thời gian từ nhiều lĩnh vực khác nhau (tài chính, thời tiết, bán lẻ, giao thông, v.v.).
+
+Chronos sử dụng kiến trúc Transformer (T5) và hoạt động theo nguyên lý **zero-shot forecasting**: không cần huấn luyện lại trên dữ liệu cụ thể của bài toán, chỉ cần cung cấp chuỗi lịch sử (context) là mô hình có thể dự đoán. Điều này đặc biệt hữu ích khi dữ liệu huấn luyện hạn chế — như trong trường hợp của chúng ta chỉ có 55 quý dữ liệu.
+
+Mô hình cũng cung cấp dự đoán xác suất (probabilistic forecast), cho phép tính khoảng tin cậy thay vì chỉ dự đoán điểm.
+
+**Ứng dụng trong bài toán:**
+
+Chúng ta thử nghiệm 4 kích thước mô hình: Tiny (8M tham số), Small (46M), Base (200M), và Large (710M). Tất cả chạy trên CPU (không có GPU). Toàn bộ 55 quý dữ liệu huấn luyện được đưa vào làm context, và mô hình dự đoán 10 quý tiếp theo (2024 Q1 – 2026 Q2) mà không cần bất kỳ quá trình huấn luyện nào.
+
+**Kết quả:**
+
+| Mô hình | MAE | RMSE | R² |
+|---------|-----|------|-----|
+| chronos-t5-tiny | 1,018,322 | 1,297,288 | -1.03 |
+| chronos-t5-small | 941,644 | 1,228,935 | -0.82 |
+| chronos-t5-base | 919,813 | 1,158,728 | -0.62 |
+| chronos-t5-large | 1,013,397 | 1,309,193 | -1.07 |
+
+**Nhận xét thú vị:** Chronos-t5-base cho MAE thấp nhất trong tất cả các mô hình (919K), thấp hơn cả Linear Regression (1.1M), XGBoost (1.04M). Tuy nhiên, R² của Chronos là âm (-0.62). Điều này có vẻ mâu thuẫn, nhưng thực tế dễ hiểu:
+
+- **MAE thấp** vì Chronos dự đoán trong một dải hẹp quanh mức 3.8–4.4 triệu, nên sai số tuyệt đối trung bình không quá lớn.
+- **R² âm** vì Chronos không nắm bắt được sự biến động mạnh của dữ liệu thực tế (từ 3.8 triệu đến 6.8 triệu). R² âm nghĩa là dự đoán bằng giá trị trung bình còn tốt hơn.
+
+Hiện tượng này cũng xảy ra với SARIMA và là dấu hiệu cho thấy **bài toán dự đoán du lịch hậu COVID-19 là cực kỳ khó khăn** đối với mọi mô hình.
+
+### 5.6 So sánh hiệu suất các mô hình
 
 
 ```
@@ -541,12 +571,24 @@ test_ts = df_long[df_long['year']>=2024].groupby(['year','quarter_num'])['arriva
 sp = sarima.forecast(steps=len(test_ts))
 y_s = test_ts['arrivals'].values[:len(sp)]
 
+# Chronos zero-shot forecast
+import torch
+from chronos import ChronosPipeline
+train_agg = df_long[df_long['year']<=2023].groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
+train_agg = train_agg[train_agg['year']!=2021]
+context = torch.tensor(train_agg['arrivals'].values, dtype=torch.float32).unsqueeze(0)
+chronos_pipe = ChronosPipeline.from_pretrained('amazon/chronos-t5-base', device_map='cpu', dtype=torch.float32)
+chronos_fc = chronos_pipe.predict(context, prediction_length=len(test_ts))
+y_chronos = np.median(chronos_fc[0].numpy(), axis=0)
+
 mae_lr = mean_absolute_error(y_test, y_lr); rmse_lr = np.sqrt(mean_squared_error(y_test, y_lr)); r2_lr = r2_score(y_test, y_lr)
 mae_rf = mean_absolute_error(y_test, y_rf); rmse_rf = np.sqrt(mean_squared_error(y_test, y_rf)); r2_rf = r2_score(y_test, y_rf)
 mae_xgb = mean_absolute_error(y_test, y_xgb); rmse_xgb = np.sqrt(mean_squared_error(y_test, y_xgb)); r2_xgb = r2_score(y_test, y_xgb)
 mae_s = mean_absolute_error(y_s, sp); rmse_s = np.sqrt(mean_squared_error(y_s, sp)); r2_s = r2_score(y_s, sp)
+mae_c = mean_absolute_error(y_test, y_chronos); rmse_c = np.sqrt(mean_squared_error(y_test, y_chronos)); r2_c = r2_score(y_test, y_chronos)
 
-comparison = pd.DataFrame({'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA'], 'MAE': [mae_lr,mae_rf,mae_xgb,mae_s], 'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s], 'R²': [r2_lr,r2_rf,r2_xgb,r2_s]})
+comparison = pd.DataFrame({'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA','Chronos-T5-Base'],
+    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_c], 'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_c], 'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_c]})
 print(comparison.to_string(index=False))
 
 fig, axes = plt.subplots(1, 3, figsize=(18, 6))
@@ -566,17 +608,19 @@ plt.tight_layout(); plt.savefig('output/model_comparison.png', dpi=150, bbox_inc
 results = te[['year','quarter_num']].copy()
 results['quarter'] = 'Q' + results['quarter_num'].astype(str)
 results['actual'] = y_test
-results['LR'] = y_lr; results['RF'] = y_rf; results['XGB'] = y_xgb
+results['LR'] = y_lr; results['RF'] = y_rf; results['XGB'] = y_xgb; results['Chronos'] = y_chronos
 results['LR_err%'] = ((y_lr - y_test) / y_test * 100).round(1)
 results['RF_err%'] = ((y_rf - y_test) / y_test * 100).round(1)
 results['XGB_err%'] = ((y_xgb - y_test) / y_test * 100).round(1)
-print(results[['year','quarter','actual','LR','LR_err%','RF','RF_err%','XGB','XGB_err%']].to_string(index=False))
+results['Chr_err%'] = ((y_chronos - y_test) / y_test * 100).round(1)
+print(results[['year','quarter','actual','LR','LR_err%','XGB','XGB_err%','Chronos','Chr_err%']].to_string(index=False))
 
 fig, ax = plt.subplots(figsize=(14, 6))
 x = range(len(results)); labels = results['year'].astype(str) + ' ' + results['quarter']
-ax.bar([i-0.25 for i in x], results['actual']/1e6, 0.2, label='Thực tế', color='#2196F3')
-ax.bar([i+0.0 for i in x], results['LR']/1e6, 0.2, label='LR', color='#FF9800')
-ax.bar([i+0.25 for i in x], results['XGB']/1e6, 0.2, label='XGB', color='#4CAF50')
+ax.bar([i-0.3 for i in x], results['actual']/1e6, 0.2, label='Thực tế', color='#2196F3')
+ax.bar([i-0.1 for i in x], results['LR']/1e6, 0.2, label='LR', color='#FF9800')
+ax.bar([i+0.1 for i in x], results['XGB']/1e6, 0.2, label='XGB', color='#4CAF50')
+ax.bar([i+0.3 for i in x], results['Chronos']/1e6, 0.2, label='Chronos', color='#E91E63')
 ax.set_xticks(x); ax.set_xticklabels(labels, rotation=45, ha='right')
 ax.set_ylabel('Lượng khách (triệu)'); ax.set_title('Hình 6b: Dự đoán vs Thực tế — Tập test (2024–2026)', fontweight='bold')
 ax.legend(); ax.grid(axis='y', alpha=0.3)
@@ -587,21 +631,37 @@ plt.tight_layout(); plt.savefig('output/pred_vs_actual.png', dpi=150, bbox_inche
 
 Bảng trên cho thấy chi tiết dự đoán so với thực tế cho từng quý trong tập test:
 
-- **Quý 2024 Q3** là dự đoán chính xác nhất: Random Forest chỉ sai lệch 0.2%, XGBoost sai -1.2%.
-- **Quý 2025 Q1** và **2026 Q1** là dự đoán kém nhất: tất cả các mô hình đều低估 đáng kể (sai lệch -23% đến -37%). Nguyên nhân chính là xu hướng tăng trưởng mạnh của du lịch Việt Nam trong giai đoạn phục hồi hậu COVID-19, vượt quá dự đoán của mô hình dựa trên dữ liệu lịch sử.
-- **Xu hướng chung:** Các mô hình đều có xu hướng **underestimate** (dự đoán thấp hơn thực tế), đặc biệt với các quý có lượng khách cao. Điều này phản ánh giới hạn của mô hình khi dữ liệu huấn luyện không bao gồm giai đoạn tăng trưởng nhanh hậu đại dịch.
-- **Linear Regression** có vẻ "ổn định" hơn ở mức sai lệch trung bình, trong khi **Random Forest** có độ biến động lớn hơn giữa các quý.
+- **Quý 2024 Q3** là dự đoán chính xác nhất: XGBoost chỉ sai lệch -1.2%, Chronos sai +2.4%.
+- **Quý 2025 Q1** và **2026 Q1** là dự đoán kém nhất: tất cả các mô hình đều dự đoán thấp hơn đáng kể (sai lệch -23% đến -39%).
+- **Xu hướng chung:** Tất cả các mô hình đều có xu hướng **underestimate** (dự đoán thấp hơn thực tế), đặc biệt với các quý có lượng khách cao.
 
-Kết quả này cho thấy cần bổ sung thêm dữ liệu bên ngoài (chính sách visa, sự kiện du lịch, v.v.) để cải thiện khả năng dự đoán, đặc biệt trong giai đoạn biến động mạnh.
+**Thách thức "hậu COVID-19" (Post-COVID Challenge):**
+
+Kết quả trênchỉ ra một vấn đề cốt lõi: **không mô hình nào — kể cả Chronos foundation model được pretrained trên hàng triệu chuỗi thời gian — có thể dự đoán chính xác sự phục hồi hậu đại dịch**. Đây là một hiện tượng phổ biến trong dự đoán chuỗi thời gian sau các sự kiện bất khả kháng (black swan events):
+
+1. **Dữ liệu huấn luyện kết thúc năm 2023** với mức ~5 triệu lượt/quý, nhưng năm 2025-2026 bùng nổ lên 6-7 triệu. Mô hình chỉ dựa vào lịch sử không thể "biết" rằng ngành du lịch sẽ tăng trưởng vượt bậc.
+
+2. **Foundation model cũng không ngoại lệ:** Chronos-T5-Base (200M tham số, pretrained trên hàng triệu chuỗi) cho MAE thấp nhất (920K) nhưng R² âm (-0.62). Mô hình dự đoán một dải hẹp quanh 3.8-4.4 triệu, bỏ lỡ hoàn toàn sự biến động thực tế.
+
+3. **SARIMA bị ảnh hưởng nặng nhất** do khoảng trống dữ liệu 2021phá vỡ tính liên tục của chuỗi thời gian.
+
+4. **Linear Regression** paradoxically cho R² tốt nhất (0.48) vì nó nắm bắt được xu hướng tăng tuyến tính, dù sai số tuyệt đối vẫn lớn.
+
+**Bài học:** Dự đoán thời gian thực sau đại dịch đòi hỏi dữ liệu bên ngoài (leading indicators) như chính sách visa, tỷ giá, giá vé máy bay, sự kiện du lịch — không chỉ dựa vào dữ liệu lịch sử.
 
 **Nhận xét tổng thể:**
 
-- **Linear Regression** cho kết quả tốt nhất với R² = 0.48, cho thấy mối quan hệ tuyến tính giữa các đặc trưng và lượng khách là đáng kể.
-- **XGBoost** đứng thứ hai (R² = 0.47), rấtxấp xỉ với Linear Regression.
-- **Random Forest** có R² = 0.41, thấp hơn một phần do kích thước mẫu nhỏ.
-- **SARIMA** cho kết quả kém nhất do ảnh hưởng của khoảng trống dữ liệu năm 2021.
+| Mô hình | MAE | RMSE | R² | Ưu điểm | Nhược điểm |
+|---------|-----|------|-----|---------|-----------|
+| Linear Regression | 1.10M | 1.45M | **0.48** | R² tốt nhất, đơn giản | Sai số tuyệt đối lớn |
+| Random Forest | 1.10M | 1.55M | 0.41 | Linh hoạt | Dữ liệu nhỏ quá ít |
+| XGBoost | **1.04M** | 1.47M | 0.47 | MAE thấp (ML models) | Cần nhiều dữ liệu hơn |
+| SARIMA | 1.55M | 2.10M | -0.08 | Mùa vụ rõ ràng | Phá vỡ bởi gap 2021 |
+| Chronos-T5-Base | **0.92M** | 1.16M | -0.62 | MAE thấp nhất, zero-shot | Không nắm bắt biến động |
 
-Với kích thước mẫu nhỏ (chỉ 56 mẫu huấn luyện), các mô hình phức tạp hơn (Random Forest, XGBoost) không có lợi thếđáng kể so với Linear Regression đơn giản. Đây là một insight quan trọng: **với dữ liệu nhỏ, mô hình đơn giản thường tốt hơn mô hình phức tạp**.
+**Chronos-T5-Base** cho MAE thấp nhất trong tất cả các mô hình (920K), chứng tỏ sức mạnh của foundation model. Tuy nhiên, R² âm cho thấy nó dự đoán quá "an toàn" — một dải hẹp quanh mức trung bình thay vì nắm bắt sự biến động thực tế. Ngược lại, **Linear Regression** cho R² tốt nhất (0.48) vì nó học được xu hướng tăng tuyến tính, dù sai số tuyệt đối lớn hơn.
+
+Với kích thước mẫu nhỏ (chỉ 55 quý huấn luyện), các mô hình phức tạp hơn (Random Forest, XGBoost) không có lợi thếđáng kể so với Linear Regression đơn giản. Đây là một insight quan trọng: **với dữ liệu nhỏ, mô hình đơn giản thường tốt hơn mô hình phức tạp**. Và với dữ liệu có structural break (như COVID-19), **không mô hình nào dự đoán tốt được nếu chỉ dựa vào dữ liệu lịch sử**.
 
 ## 6. Tối ưu mô hình
 

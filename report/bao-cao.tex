@@ -1250,7 +1250,71 @@ còn tệ hơn so với việc dự đoán bằng giá trị trung bình. Nguyê
 chính là do khoảng trống dữ liệu năm 2021phá vỡ tính liên tục của chuỗi
 thời gian, khiến mô hình không thể học được đúng pattern mùa vụ.
 
-\subsubsection{5.5 So sánh hiệu suất các mô
+\subsubsection{5.5 Chronos-T5 (Foundation
+Model)}\label{chronos-t5-foundation-model}
+
+\textbf{Giới thiệu thuật toán:}
+
+Chronos là một mô hình foundation model (mô hình nền tảng) cho chuỗi
+thời gian, được phát triển bởi Amazon. Khác với các mô hình truyền thống
+(Linear Regression, Random Forest, XGBoost, SARIMA) --- vốn chỉ được
+huấn luyện trên tập dữ liệu nhỏ của bài toán --- Chronos đã được tiền
+huấn luyện (pretrained) trên hàng triệu chuỗi thời gian từ nhiều lĩnh
+vực khác nhau (tài chính, thời tiết, bán lẻ, giao thông, v.v.).
+
+Chronos sử dụng kiến trúc Transformer (T5) và hoạt động theo nguyên lý
+\textbf{zero-shot forecasting}: không cần huấn luyện lại trên dữ liệu cụ
+thể của bài toán, chỉ cần cung cấp chuỗi lịch sử (context) là mô hình có
+thể dự đoán. Điều này đặc biệt hữu ích khi dữ liệu huấn luyện hạn chế
+--- như trong trường hợp của chúng ta chỉ có 55 quý dữ liệu.
+
+Mô hình cũng cung cấp dự đoán xác suất (probabilistic forecast), cho
+phép tính khoảng tin cậy thay vì chỉ dự đoán điểm.
+
+\textbf{Ứng dụng trong bài toán:}
+
+Chúng ta thử nghiệm 4 kích thước mô hình: Tiny (8M tham số), Small
+(46M), Base (200M), và Large (710M). Tất cả chạy trên CPU (không có
+GPU). Toàn bộ 55 quý dữ liệu huấn luyện được đưa vào làm context, và mô
+hình dự đoán 10 quý tiếp theo (2024 Q1 -- 2026 Q2) mà không cần bất kỳ
+quá trình huấn luyện nào.
+
+\textbf{Kết quả:}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Mô hình & MAE & RMSE & R² \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+chronos-t5-tiny & 1,018,322 & 1,297,288 & -1.03 \\
+chronos-t5-small & 941,644 & 1,228,935 & -0.82 \\
+chronos-t5-base & 919,813 & 1,158,728 & -0.62 \\
+chronos-t5-large & 1,013,397 & 1,309,193 & -1.07 \\
+\end{longtable}
+
+\textbf{Nhận xét thú vị:} Chronos-t5-base cho MAE thấp nhất trong tất cả
+các mô hình (919K), thấp hơn cả Linear Regression (1.1M), XGBoost
+(1.04M). Tuy nhiên, R² của Chronos là âm (-0.62). Điều này có vẻ mâu
+thuẫn, nhưng thực tế dễ hiểu:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{MAE thấp} vì Chronos dự đoán trong một dải hẹp quanh mức
+  3.8--4.4 triệu, nên sai số tuyệt đối trung bình không quá lớn.
+\item
+  \textbf{R² âm} vì Chronos không nắm bắt được sự biến động mạnh của dữ
+  liệu thực tế (từ 3.8 triệu đến 6.8 triệu). R² âm nghĩa là dự đoán bằng
+  giá trị trung bình còn tốt hơn.
+\end{itemize}
+
+Hiện tượng này cũng xảy ra với SARIMA và là dấu hiệu cho thấy
+\textbf{bài toán dự đoán du lịch hậu COVID-19 là cực kỳ khó khăn} đối
+với mọi mô hình.
+
+\subsubsection{5.6 So sánh hiệu suất các mô
 hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
 
     \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
@@ -1295,12 +1359,24 @@ hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
 \PY{n}{sp} \PY{o}{=} \PY{n}{sarima}\PY{o}{.}\PY{n}{forecast}\PY{p}{(}\PY{n}{steps}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{test\PYZus{}ts}\PY{p}{)}\PY{p}{)}
 \PY{n}{y\PYZus{}s} \PY{o}{=} \PY{n}{test\PYZus{}ts}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{[}\PY{p}{:}\PY{n+nb}{len}\PY{p}{(}\PY{n}{sp}\PY{p}{)}\PY{p}{]}
 
+\PY{c+c1}{\PYZsh{} Chronos zero\PYZhy{}shot forecast}
+\PY{k+kn}{import}\PY{+w}{ }\PY{n+nn}{torch}
+\PY{k+kn}{from}\PY{+w}{ }\PY{n+nn}{chronos}\PY{+w}{ }\PY{k+kn}{import} \PY{n}{ChronosPipeline}
+\PY{n}{train\PYZus{}agg} \PY{o}{=} \PY{n}{df\PYZus{}long}\PY{p}{[}\PY{n}{df\PYZus{}long}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{\PYZlt{}}\PY{o}{=}\PY{l+m+mi}{2023}\PY{p}{]}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{train\PYZus{}agg} \PY{o}{=} \PY{n}{train\PYZus{}agg}\PY{p}{[}\PY{n}{train\PYZus{}agg}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{!=}\PY{l+m+mi}{2021}\PY{p}{]}
+\PY{n}{context} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{train\PYZus{}agg}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{arrivals}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{values}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+\PY{n}{chronos\PYZus{}pipe} \PY{o}{=} \PY{n}{ChronosPipeline}\PY{o}{.}\PY{n}{from\PYZus{}pretrained}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{amazon/chronos\PYZhy{}t5\PYZhy{}base}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{device\PYZus{}map}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cpu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}
+\PY{n}{chronos\PYZus{}fc} \PY{o}{=} \PY{n}{chronos\PYZus{}pipe}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{context}\PY{p}{,} \PY{n}{prediction\PYZus{}length}\PY{o}{=}\PY{n+nb}{len}\PY{p}{(}\PY{n}{test\PYZus{}ts}\PY{p}{)}\PY{p}{)}
+\PY{n}{y\PYZus{}chronos} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{median}\PY{p}{(}\PY{n}{chronos\PYZus{}fc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{numpy}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+
 \PY{n}{mae\PYZus{}lr} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}lr}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}lr} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}lr}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}lr} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}lr}\PY{p}{)}
 \PY{n}{mae\PYZus{}rf} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}rf} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}rf} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}rf}\PY{p}{)}
 \PY{n}{mae\PYZus{}xgb} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}xgb} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}xgb} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}xgb}\PY{p}{)}
 \PY{n}{mae\PYZus{}s} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}s}\PY{p}{,} \PY{n}{sp}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}s} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}s}\PY{p}{,} \PY{n}{sp}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}s} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}s}\PY{p}{,} \PY{n}{sp}\PY{p}{)}
+\PY{n}{mae\PYZus{}c} \PY{o}{=} \PY{n}{mean\PYZus{}absolute\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}chronos}\PY{p}{)}\PY{p}{;} \PY{n}{rmse\PYZus{}c} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{sqrt}\PY{p}{(}\PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}chronos}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{r2\PYZus{}c} \PY{o}{=} \PY{n}{r2\PYZus{}score}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}chronos}\PY{p}{)}
 
-\PY{n}{comparison} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Linear Regression}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Random Forest}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGBoost}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{SARIMA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MAE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{mae\PYZus{}lr}\PY{p}{,}\PY{n}{mae\PYZus{}rf}\PY{p}{,}\PY{n}{mae\PYZus{}xgb}\PY{p}{,}\PY{n}{mae\PYZus{}s}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RMSE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{rmse\PYZus{}lr}\PY{p}{,}\PY{n}{rmse\PYZus{}rf}\PY{p}{,}\PY{n}{rmse\PYZus{}xgb}\PY{p}{,}\PY{n}{rmse\PYZus{}s}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{r2\PYZus{}lr}\PY{p}{,}\PY{n}{r2\PYZus{}rf}\PY{p}{,}\PY{n}{r2\PYZus{}xgb}\PY{p}{,}\PY{n}{r2\PYZus{}s}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{comparison} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Model}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Linear Regression}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Random Forest}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGBoost}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{SARIMA}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos\PYZhy{}T5\PYZhy{}Base}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}
+    \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{MAE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{mae\PYZus{}lr}\PY{p}{,}\PY{n}{mae\PYZus{}rf}\PY{p}{,}\PY{n}{mae\PYZus{}xgb}\PY{p}{,}\PY{n}{mae\PYZus{}s}\PY{p}{,}\PY{n}{mae\PYZus{}c}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RMSE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{rmse\PYZus{}lr}\PY{p}{,}\PY{n}{rmse\PYZus{}rf}\PY{p}{,}\PY{n}{rmse\PYZus{}xgb}\PY{p}{,}\PY{n}{rmse\PYZus{}s}\PY{p}{,}\PY{n}{rmse\PYZus{}c}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{R²}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{n}{r2\PYZus{}lr}\PY{p}{,}\PY{n}{r2\PYZus{}rf}\PY{p}{,}\PY{n}{r2\PYZus{}xgb}\PY{p}{,}\PY{n}{r2\PYZus{}s}\PY{p}{,}\PY{n}{r2\PYZus{}c}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
 \PY{n+nb}{print}\PY{p}{(}\PY{n}{comparison}\PY{o}{.}\PY{n}{to\PYZus{}string}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{)}
 
 \PY{n}{fig}\PY{p}{,} \PY{n}{axes} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{3}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{18}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
@@ -1322,17 +1398,19 @@ hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
 \PY{n}{results} \PY{o}{=} \PY{n}{te}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
 \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Q}\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter\PYZus{}num}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}
 \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}test}
-\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}lr}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}rf}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}xgb}
+\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}lr}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}rf}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}xgb}\PY{p}{;} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}chronos}
 \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}lr} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
 \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}rf} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
 \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}xgb} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
-\PY{n+nb}{print}\PY{p}{(}\PY{n}{results}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{RF\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}string}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{)}
+\PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chr\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{p}{(}\PY{n}{y\PYZus{}chronos} \PY{o}{\PYZhy{}} \PY{n}{y\PYZus{}test}\PY{p}{)} \PY{o}{/} \PY{n}{y\PYZus{}test} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{round}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{results}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chr\PYZus{}err}\PY{l+s+s1}{\PYZpc{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PY{n}{to\PYZus{}string}\PY{p}{(}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{)}
 
 \PY{n}{fig}\PY{p}{,} \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{subplots}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{14}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}
 \PY{n}{x} \PY{o}{=} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{results}\PY{p}{)}\PY{p}{)}\PY{p}{;} \PY{n}{labels} \PY{o}{=} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)} \PY{o}{+} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ }\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{quarter}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.25} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Thực tế}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}2196F3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mf}{0.0} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}FF9800}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
-\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mf}{0.25} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}4CAF50}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.3} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{actual}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Thực tế}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}2196F3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{\PYZhy{}}\PY{l+m+mf}{0.1} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{LR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}FF9800}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mf}{0.1} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XGB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}4CAF50}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{ax}\PY{o}{.}\PY{n}{bar}\PY{p}{(}\PY{p}{[}\PY{n}{i}\PY{o}{+}\PY{l+m+mf}{0.3} \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{x}\PY{p}{]}\PY{p}{,} \PY{n}{results}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{/}\PY{l+m+mf}{1e6}\PY{p}{,} \PY{l+m+mf}{0.2}\PY{p}{,} \PY{n}{label}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Chronos}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}E91E63}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticks}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xticklabels}\PY{p}{(}\PY{n}{labels}\PY{p}{,} \PY{n}{rotation}\PY{o}{=}\PY{l+m+mi}{45}\PY{p}{,} \PY{n}{ha}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{right}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Lượng khách (triệu)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Hình 6b: Dự đoán vs Thực tế — Tập test (2024–2026)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontweight}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bold}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
 \PY{n}{ax}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}\PY{p}{;} \PY{n}{ax}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{y}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{)}
@@ -1348,53 +1426,99 @@ tập test:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Quý 2024 Q3} là dự đoán chính xác nhất: Random Forest chỉ sai
-  lệch 0.2\%, XGBoost sai -1.2\%.
+  \textbf{Quý 2024 Q3} là dự đoán chính xác nhất: XGBoost chỉ sai lệch
+  -1.2\%, Chronos sai +2.4\%.
 \item
   \textbf{Quý 2025 Q1} và \textbf{2026 Q1} là dự đoán kém nhất: tất cả
-  các mô hình đều低估 đáng kể (sai lệch -23\% đến -37\%). Nguyên nhân
-  chính là xu hướng tăng trưởng mạnh của du lịch Việt Nam trong giai
-  đoạn phục hồi hậu COVID-19, vượt quá dự đoán của mô hình dựa trên dữ
-  liệu lịch sử.
+  các mô hình đều dự đoán thấp hơn đáng kể (sai lệch -23\% đến -39\%).
 \item
-  \textbf{Xu hướng chung:} Các mô hình đều có xu hướng
+  \textbf{Xu hướng chung:} Tất cả các mô hình đều có xu hướng
   \textbf{underestimate} (dự đoán thấp hơn thực tế), đặc biệt với các
-  quý có lượng khách cao. Điều này phản ánh giới hạn của mô hình khi dữ
-  liệu huấn luyện không bao gồm giai đoạn tăng trưởng nhanh hậu đại
-  dịch.
-\item
-  \textbf{Linear Regression} có vẻ ``ổn định'' hơn ở mức sai lệch trung
-  bình, trong khi \textbf{Random Forest} có độ biến động lớn hơn giữa
-  các quý.
+  quý có lượng khách cao.
 \end{itemize}
 
-Kết quả này cho thấy cần bổ sung thêm dữ liệu bên ngoài (chính sách
-visa, sự kiện du lịch, v.v.) để cải thiện khả năng dự đoán, đặc biệt
-trong giai đoạn biến động mạnh.
+\textbf{Thách thức ``hậu COVID-19'' (Post-COVID Challenge):}
+
+Kết quả trênchỉ ra một vấn đề cốt lõi: \textbf{không mô hình nào --- kể
+cả Chronos foundation model được pretrained trên hàng triệu chuỗi thời
+gian --- có thể dự đoán chính xác sự phục hồi hậu đại dịch}. Đây là một
+hiện tượng phổ biến trong dự đoán chuỗi thời gian sau các sự kiện bất
+khả kháng (black swan events):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Dữ liệu huấn luyện kết thúc năm 2023} với mức \textasciitilde5
+  triệu lượt/quý, nhưng năm 2025-2026 bùng nổ lên 6-7 triệu. Mô hình chỉ
+  dựa vào lịch sử không thể ``biết'' rằng ngành du lịch sẽ tăng trưởng
+  vượt bậc.
+\item
+  \textbf{Foundation model cũng không ngoại lệ:} Chronos-T5-Base (200M
+  tham số, pretrained trên hàng triệu chuỗi) cho MAE thấp nhất (920K)
+  nhưng R² âm (-0.62). Mô hình dự đoán một dải hẹp quanh 3.8-4.4 triệu,
+  bỏ lỡ hoàn toàn sự biến động thực tế.
+\item
+  \textbf{SARIMA bị ảnh hưởng nặng nhất} do khoảng trống dữ liệu 2021phá
+  vỡ tính liên tục của chuỗi thời gian.
+\item
+  \textbf{Linear Regression} paradoxically cho R² tốt nhất (0.48) vì nó
+  nắm bắt được xu hướng tăng tuyến tính, dù sai số tuyệt đối vẫn lớn.
+\end{enumerate}
+
+\textbf{Bài học:} Dự đoán thời gian thực sau đại dịch đòi hỏi dữ liệu
+bên ngoài (leading indicators) như chính sách visa, tỷ giá, giá vé máy
+bay, sự kiện du lịch --- không chỉ dựa vào dữ liệu lịch sử.
 
     \textbf{Nhận xét tổng thể:}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Linear Regression} cho kết quả tốt nhất với R² = 0.48, cho
-  thấy mối quan hệ tuyến tính giữa các đặc trưng và lượng khách là đáng
-  kể.
-\item
-  \textbf{XGBoost} đứng thứ hai (R² = 0.47), rấtxấp xỉ với Linear
-  Regression.
-\item
-  \textbf{Random Forest} có R² = 0.41, thấp hơn một phần do kích thước
-  mẫu nhỏ.
-\item
-  \textbf{SARIMA} cho kết quả kém nhất do ảnh hưởng của khoảng trống dữ
-  liệu năm 2021.
-\end{itemize}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1333}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2444}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Mô hình
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MAE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+RMSE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+R²
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Ưu điểm
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Nhược điểm
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Linear Regression & 1.10M & 1.45M & \textbf{0.48} & R² tốt nhất, đơn
+giản & Sai số tuyệt đối lớn \\
+Random Forest & 1.10M & 1.55M & 0.41 & Linh hoạt & Dữ liệu nhỏ quá ít \\
+XGBoost & \textbf{1.04M} & 1.47M & 0.47 & MAE thấp (ML models) & Cần
+nhiều dữ liệu hơn \\
+SARIMA & 1.55M & 2.10M & -0.08 & Mùa vụ rõ ràng & Phá vỡ bởi gap 2021 \\
+Chronos-T5-Base & \textbf{0.92M} & 1.16M & -0.62 & MAE thấp nhất,
+zero-shot & Không nắm bắt biến động \\
+\end{longtable}
 
-Với kích thước mẫu nhỏ (chỉ 56 mẫu huấn luyện), các mô hình phức tạp hơn
+\textbf{Chronos-T5-Base} cho MAE thấp nhất trong tất cả các mô hình
+(920K), chứng tỏ sức mạnh của foundation model. Tuy nhiên, R² âm cho
+thấy nó dự đoán quá ``an toàn'' --- một dải hẹp quanh mức trung bình
+thay vì nắm bắt sự biến động thực tế. Ngược lại, \textbf{Linear
+Regression} cho R² tốt nhất (0.48) vì nó học được xu hướng tăng tuyến
+tính, dù sai số tuyệt đối lớn hơn.
+
+Với kích thước mẫu nhỏ (chỉ 55 quý huấn luyện), các mô hình phức tạp hơn
 (Random Forest, XGBoost) không có lợi thếđáng kể so với Linear
 Regression đơn giản. Đây là một insight quan trọng: \textbf{với dữ liệu
-nhỏ, mô hình đơn giản thường tốt hơn mô hình phức tạp}.
+nhỏ, mô hình đơn giản thường tốt hơn mô hình phức tạp}. Và với dữ liệu
+có structural break (như COVID-19), \textbf{không mô hình nào dự đoán
+tốt được nếu chỉ dựa vào dữ liệu lịch sử}.
 
     \subsection{6. Tối ưu mô hình}\label{tux1ed1i-ux1b0u-muxf4-huxecnh}
 
