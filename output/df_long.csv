@@ -1,1830 +1,1623 @@
-country,year,quarter,arrivals
-Ba Lan,2024,Q1,20279.0
-Ba Lan,2025,Q1,31005.0
-Ba Lan,2026,Q1,47232.0
-Bỉ,2013,Q1,5075.0
-Bỉ,2014,Q1,6017.0
-Bỉ,2015,Q1,5455.0
-Bỉ,2016,Q1,6417.0
-Bỉ,2017,Q1,7113.0
-Bỉ,2018,Q1,7572.0
-Bỉ,2019,Q1,7650.0
-Bỉ,2020,Q1,7452.0
-Bỉ,2022,Q1,216.0
-Bỉ,2023,Q1,5917.0
-Bỉ,2024,Q1,8275.0
-Bỉ,2025,Q1,9569.0
-Bỉ,2026,Q1,11360.0
-Campuchia,2010,Q1,43115.0
-Campuchia,2011,Q1,76586.0
-Campuchia,2012,Q1,102627.0
-Campuchia,2013,Q1,74090.0
-Campuchia,2014,Q1,99140.0
-Campuchia,2015,Q1,77686.0
-Campuchia,2016,Q1,41638.0
-Campuchia,2017,Q1,56187.0
-Campuchia,2018,Q1,67729.0
-Campuchia,2019,Q1,33991.0
-Campuchia,2020,Q1,120430.0
-Campuchia,2022,Q1,1961.0
-Campuchia,2023,Q1,95516.0
-Campuchia,2024,Q1,113746.0
-Campuchia,2025,Q1,233911.0
-Campuchia,2026,Q1,330102.0
-Canada,2009,Q1,17064.0
-Canada,2010,Q1,10043.0
-Canada,2013,Q1,33122.0
-Canada,2014,Q1,37525.0
-Canada,2015,Q1,35986.0
-Canada,2016,Q1,40679.0
-Canada,2017,Q1,47116.0
-Canada,2018,Q1,50926.0
-Canada,2019,Q1,53765.0
-Canada,2020,Q1,41807.0
-Canada,2022,Q1,1481.0
-Canada,2023,Q1,43815.0
-Canada,2024,Q1,49943.0
-Canada,2025,Q1,60124.0
-Canada,2026,Q1,74670.0
-Các thị trường khác,2009,Q1,265257.0
-Các thị trường khác,2010,Q1,383842.0
-Các thị trường khác,2011,Q1,403739.0
-Các thị trường khác,2012,Q1,469626.0
-Các thị trường khác,2013,Q1,79019.0
-Các thị trường khác,2014,Q1,181673.0
-Các thị trường khác,2015,Q1,152958.0
-Các thị trường khác thuộc châu Mỹ,2016,Q1,18076.0
-Các thị trường khác thuộc châu Mỹ,2017,Q1,20885.0
-Các thị trường khác thuộc châu Mỹ,2018,Q1,21576.0
-Các thị trường khác thuộc châu Mỹ,2019,Q1,19994.0
-Các thị trường khác thuộc châu Mỹ,2020,Q1,19537.0
-Các thị trường khác thuộc châu Mỹ,2022,Q1,662.0
-Các thị trường khác thuộc châu Mỹ,2023,Q1,13279.0
-Các thị trường khác thuộc châu Mỹ,2024,Q1,19949.0
-Các thị trường khác thuộc châu Mỹ,2025,Q1,22807.0
-Các thị trường khác thuộc châu Mỹ,2026,Q1,26104.0
-Các thị trường khác thuộc châu Phi,2016,Q1,6437.0
-Các thị trường khác thuộc châu Phi,2017,Q1,8810.0
-Các thị trường khác thuộc châu Phi,2018,Q1,11075.0
-Các thị trường khác thuộc châu Phi,2019,Q1,11701.0
-Các thị trường khác thuộc châu Phi,2020,Q1,11930.0
-Các thị trường khác thuộc châu Phi,2022,Q1,449.0
-Các thị trường khác thuộc châu Phi,2023,Q1,6174.0
-Các thị trường khác thuộc châu Phi,2024,Q1,13097.0
-Các thị trường khác thuộc châu Phi,2025,Q1,12324.0
-Các thị trường khác thuộc châu Phi,2026,Q1,15826.0
-Các thị trường khác thuộc châu Á,2016,Q1,64699.0
-Các thị trường khác thuộc châu Á,2017,Q1,59369.0
-Các thị trường khác thuộc châu Á,2018,Q1,41524.0
-Các thị trường khác thuộc châu Á,2019,Q1,42795.0
-Các thị trường khác thuộc châu Á,2020,Q1,40374.0
-Các thị trường khác thuộc châu Á,2022,Q1,4397.0
-Các thị trường khác thuộc châu Á,2023,Q1,142346.0
-Các thị trường khác thuộc châu Á,2024,Q1,216669.0
-Các thị trường khác thuộc châu Á,2025,Q1,388604.0
-Các thị trường khác thuộc châu Á,2026,Q1,365379.0
-Các thị trường khác thuộc châu Âu,2016,Q1,53578.0
-Các thị trường khác thuộc châu Âu,2017,Q1,58563.0
-Các thị trường khác thuộc châu Âu,2018,Q1,73351.0
-Các thị trường khác thuộc châu Âu,2019,Q1,78675.0
-Các thị trường khác thuộc châu Âu,2020,Q1,80535.0
-Các thị trường khác thuộc châu Âu,2022,Q1,3212.0
-Các thị trường khác thuộc châu Âu,2023,Q1,88949.0
-Các thị trường khác thuộc châu Âu,2024,Q1,216081.0
-Các thị trường khác thuộc châu Âu,2025,Q1,185689.0
-Các thị trường khác thuộc châu Âu,2026,Q1,295725.0
-Các thị trường khác thuộc châu Úc,2016,Q1,1479.0
-Các thị trường khác thuộc châu Úc,2017,Q1,250.0
-Các thị trường khác thuộc châu Úc,2018,Q1,309.0
-Các thị trường khác thuộc châu Úc,2019,Q1,254.0
-Các thị trường khác thuộc châu Úc,2020,Q1,484.0
-Các thị trường khác thuộc châu Úc,2022,Q1,12.0
-Các thị trường khác thuộc châu Úc,2023,Q1,176.0
-Các thị trường khác thuộc châu Úc,2024,Q1,276.0
-Các thị trường khác thuộc châu Úc,2025,Q1,357.0
-Các thị trường khác thuộc châu Úc,2026,Q1,430.0
-Hoa Kỳ,2009,Q1,104520.0
-Hoa Kỳ,2010,Q1,125982.0
-Hoa Kỳ,2011,Q1,133694.0
-Hoa Kỳ,2012,Q1,144786.0
-Hoa Kỳ,2013,Q1,127656.0
-Hoa Kỳ,2014,Q1,140051.0
-Hoa Kỳ,2015,Q1,145731.0
-Hoa Kỳ,2016,Q1,164738.0
-Hoa Kỳ,2017,Q1,179661.0
-Hoa Kỳ,2018,Q1,203687.0
-Hoa Kỳ,2019,Q1,219700.0
-Hoa Kỳ,2020,Q1,172706.0
-Hoa Kỳ,2022,Q1,10151.0
-Hoa Kỳ,2023,Q1,206841.0
-Hoa Kỳ,2024,Q1,232358.0
-Hoa Kỳ,2025,Q1,258570.0
-Hoa Kỳ,2026,Q1,302401.0
-Hà Lan,2013,Q1,11404.0
-Hà Lan,2014,Q1,13035.0
-Hà Lan,2015,Q1,8585.0
-Hà Lan,2016,Q1,14927.0
-Hà Lan,2017,Q1,17970.0
-Hà Lan,2018,Q1,19636.0
-Hà Lan,2019,Q1,20695.0
-Hà Lan,2020,Q1,18265.0
-Hà Lan,2022,Q1,536.0
-Hà Lan,2023,Q1,15862.0
-Hà Lan,2024,Q1,21978.0
-Hà Lan,2025,Q1,24990.0
-Hà Lan,2026,Q1,29661.0
-Hàn Quốc,2009,Q1,104840.0
-Hàn Quốc,2010,Q1,132074.0
-Hàn Quốc,2011,Q1,143959.0
-Hàn Quốc,2012,Q1,206328.0
-Hàn Quốc,2013,Q1,224376.0
-Hàn Quốc,2014,Q1,238496.0
-Hàn Quốc,2015,Q1,352817.0
-Hàn Quốc,2016,Q1,408157.0
-Hàn Quốc,2017,Q1,527464.0
-Hàn Quốc,2018,Q1,892462.0
-Hàn Quốc,2019,Q1,1107794.0
-Hàn Quốc,2020,Q1,819089.0
-Hàn Quốc,2022,Q1,14617.0
-Hàn Quốc,2023,Q1,810938.0
-Hàn Quốc,2024,Q1,1232877.0
-Hàn Quốc,2025,Q1,1260131.0
-Hàn Quốc,2026,Q1,1326425.0
-Hồng Kông,2013,Q1,1785.0
-Hồng Kông,2014,Q1,5817.0
-Hồng Kông,2015,Q1,3114.0
-Hồng Kông,2016,Q1,7187.0
-Hồng Kông,2017,Q1,9774.0
-Hồng Kông,2018,Q1,14165.0
-Hồng Kông,2019,Q1,16451.0
-Hồng Kông,2020,Q1,3780.0
-Hồng Kông,2022,Q1,6.0
-Hồng Kông,2023,Q1,53.0
-Indonesia,2013,Q1,17177.0
-Indonesia,2014,Q1,17671.0
-Indonesia,2015,Q1,17858.0
-Indonesia,2016,Q1,16009.0
-Indonesia,2017,Q1,18174.0
-Indonesia,2018,Q1,20792.0
-Indonesia,2019,Q1,24366.0
-Indonesia,2020,Q1,21446.0
-Indonesia,2022,Q1,348.0
-Indonesia,2023,Q1,20911.0
-Indonesia,2024,Q1,45691.0
-Indonesia,2025,Q1,48826.0
-Indonesia,2026,Q1,70259.0
-Lào,2013,Q1,25400.0
-Lào,2014,Q1,31629.0
-Lào,2015,Q1,27390.0
-Lào,2016,Q1,26806.0
-Lào,2017,Q1,35641.0
-Lào,2018,Q1,34225.0
-Lào,2019,Q1,26570.0
-Lào,2020,Q1,36810.0
-Lào,2022,Q1,4756.0
-Lào,2023,Q1,28214.0
-Lào,2024,Q1,33292.0
-Lào,2025,Q1,50843.0
-Lào,2026,Q1,46199.0
-Malaysia,2009,Q1,46384.0
-Malaysia,2010,Q1,44025.0
-Malaysia,2011,Q1,53911.0
-Malaysia,2012,Q1,70196.0
-Malaysia,2013,Q1,70145.0
-Malaysia,2014,Q1,80823.0
-Malaysia,2015,Q1,74073.0
-Malaysia,2016,Q1,94365.0
-Malaysia,2017,Q1,113099.0
-Malaysia,2018,Q1,129278.0
-Malaysia,2019,Q1,143629.0
-Malaysia,2020,Q1,116221.0
-Malaysia,2022,Q1,1242.0
-Malaysia,2023,Q1,115303.0
-Malaysia,2024,Q1,143713.0
-Malaysia,2025,Q1,141100.0
-Malaysia,2026,Q1,171373.0
-Na Uy,2013,Q1,5737.0
-Na Uy,2014,Q1,7401.0
-Na Uy,2015,Q1,6230.0
-Na Uy,2016,Q1,7749.0
-Na Uy,2017,Q1,7322.0
-Na Uy,2018,Q1,8314.0
-Na Uy,2019,Q1,9388.0
-Na Uy,2020,Q1,8958.0
-Na Uy,2022,Q1,158.0
-Na Uy,2023,Q1,6353.0
-Na Uy,2024,Q1,9269.0
-Na Uy,2025,Q1,10754.0
-Na Uy,2026,Q1,13549.0
-New Zealand,2013,Q1,7136.0
-New Zealand,2014,Q1,8182.0
-New Zealand,2015,Q1,10580.0
-New Zealand,2016,Q1,7884.0
-New Zealand,2017,Q1,9521.0
-New Zealand,2018,Q1,10254.0
-New Zealand,2019,Q1,10551.0
-New Zealand,2020,Q1,9470.0
-New Zealand,2022,Q1,110.0
-New Zealand,2023,Q1,4335.0
-New Zealand,2024,Q1,10855.0
-New Zealand,2025,Q1,12613.0
-New Zealand,2026,Q1,15063.0
-Nga,2012,Q1,37444.0
-Nga,2013,Q1,84697.0
-Nga,2014,Q1,131469.0
-Nga,2015,Q1,96258.0
-Nga,2016,Q1,108750.0
-Nga,2017,Q1,175456.0
-Nga,2018,Q1,203121.0
-Nga,2019,Q1,215618.0
-Nga,2020,Q1,244966.0
-Nga,2022,Q1,5492.0
-Nga,2023,Q1,35121.0
-Nga,2024,Q1,59226.0
-Nga,2025,Q1,124654.0
-Nga,2026,Q1,367168.0
-Nhật Bản,2009,Q1,101065.0
-Nhật Bản,2010,Q1,110245.0
-Nhật Bản,2011,Q1,88585.0
-Nhật Bản,2012,Q1,159190.0
-Nhật Bản,2013,Q1,156376.0
-Nhật Bản,2014,Q1,170772.0
-Nhật Bản,2015,Q1,178171.0
-Nhật Bản,2016,Q1,192410.0
-Nhật Bản,2017,Q1,201590.0
-Nhật Bản,2018,Q1,215427.0
-Nhật Bản,2019,Q1,233355.0
-Nhật Bản,2020,Q1,200346.0
-Nhật Bản,2022,Q1,4511.0
-Nhật Bản,2023,Q1,117216.0
-Nhật Bản,2024,Q1,179035.0
-Nhật Bản,2025,Q1,226177.0
-Nhật Bản,2026,Q1,245039.0
-Philippines,2013,Q1,21414.0
-Philippines,2014,Q1,25343.0
-Philippines,2015,Q1,22798.0
-Philippines,2016,Q1,24817.0
-Philippines,2017,Q1,29390.0
-Philippines,2018,Q1,33768.0
-Philippines,2019,Q1,42128.0
-Philippines,2020,Q1,36969.0
-Philippines,2022,Q1,783.0
-Philippines,2023,Q1,32328.0
-Philippines,2024,Q1,49348.0
-Philippines,2025,Q1,96254.0
-Philippines,2026,Q1,162971.0
-Pháp,2009,Q1,53907.0
-Pháp,2010,Q1,56498.0
-Pháp,2011,Q1,62370.0
-Pháp,2012,Q1,72008.0
-Pháp,2013,Q1,57971.0
-Pháp,2014,Q1,65434.0
-Pháp,2015,Q1,61026.0
-Pháp,2016,Q1,67597.0
-Pháp,2017,Q1,74876.0
-Pháp,2018,Q1,83873.0
-Pháp,2019,Q1,87322.0
-Pháp,2020,Q1,74480.0
-Pháp,2022,Q1,1639.0
-Pháp,2023,Q1,56966.0
-Pháp,2024,Q1,79806.0
-Pháp,2025,Q1,102416.0
-Pháp,2026,Q1,115771.0
-Phần Lan,2013,Q1,5901.0
-Phần Lan,2014,Q1,5934.0
-Phần Lan,2015,Q1,8850.0
-Phần Lan,2016,Q1,8082.0
-Phần Lan,2017,Q1,8983.0
-Phần Lan,2018,Q1,12297.0
-Phần Lan,2019,Q1,11594.0
-Phần Lan,2020,Q1,9994.0
-Phần Lan,2022,Q1,69.0
-Phần Lan,2023,Q1,3352.0
-Singapore,2009,Q1,18295.0
-Singapore,2013,Q1,42669.0
-Singapore,2014,Q1,48474.0
-Singapore,2015,Q1,52846.0
-Singapore,2016,Q1,59388.0
-Singapore,2017,Q1,62945.0
-Singapore,2018,Q1,67795.0
-Singapore,2019,Q1,68259.0
-Singapore,2020,Q1,51726.0
-Singapore,2022,Q1,1012.0
-Singapore,2023,Q1,76478.0
-Singapore,2024,Q1,83085.0
-Singapore,2025,Q1,82481.0
-Singapore,2026,Q1,107415.0
-Thái Lan,2009,Q1,42274.0
-Thái Lan,2010,Q1,46901.0
-Thái Lan,2011,Q1,36463.0
-Thái Lan,2013,Q1,60181.0
-Thái Lan,2014,Q1,65648.0
-Thái Lan,2015,Q1,54067.0
-Thái Lan,2016,Q1,66790.0
-Thái Lan,2017,Q1,78591.0
-Thái Lan,2018,Q1,83437.0
-Thái Lan,2019,Q1,124588.0
-Thái Lan,2020,Q1,125725.0
-Thái Lan,2022,Q1,1498.0
-Thái Lan,2023,Q1,145131.0
-Thái Lan,2024,Q1,118542.0
-Thái Lan,2025,Q1,124129.0
-Thái Lan,2026,Q1,132215.0
-Thụy sĩ,2013,Q1,8418.0
-Thụy sĩ,2014,Q1,11974.0
-Thụy sĩ,2015,Q1,6032.0
-Thụy sĩ,2016,Q1,10005.0
-Thụy sĩ,2017,Q1,10328.0
-Thụy sĩ,2018,Q1,10596.0
-Thụy sĩ,2019,Q1,11807.0
-Thụy sĩ,2020,Q1,10845.0
-Thụy sĩ,2022,Q1,209.0
-Thụy sĩ,2023,Q1,7562.0
-Thụy sĩ,2024,Q1,10430.0
-Thụy sĩ,2025,Q1,11905.0
-Thụy sĩ,2026,Q1,15149.0
-Thụy Điển,2013,Q1,13033.0
-Thụy Điển,2014,Q1,11769.0
-Thụy Điển,2015,Q1,15311.0
-Thụy Điển,2016,Q1,16584.0
-Thụy Điển,2017,Q1,20995.0
-Thụy Điển,2018,Q1,25324.0
-Thụy Điển,2019,Q1,27969.0
-Thụy Điển,2020,Q1,21857.0
-Thụy Điển,2022,Q1,238.0
-Thụy Điển,2023,Q1,8889.0
-Thụy Điển,2024,Q1,12679.0
-Thụy Điển,2025,Q1,15046.0
-Thụy Điển,2026,Q1,19191.0
-Trung Quốc,2009,Q1,136204.0
-Trung Quốc,2010,Q1,219042.0
-Trung Quốc,2011,Q1,287573.0
-Trung Quốc,2012,Q1,391611.0
-Trung Quốc,2013,Q1,404430.0
-Trung Quốc,2014,Q1,587475.0
-Trung Quốc,2015,Q1,340753.0
-Trung Quốc,2016,Q1,580524.0
-Trung Quốc,2017,Q1,949199.0
-Trung Quốc,2018,Q1,1356434.0
-Trung Quốc,2019,Q1,1281073.0
-Trung Quốc,2020,Q1,871819.0
-Trung Quốc,2022,Q1,14951.0
-Trung Quốc,2023,Q1,140233.0
-Trung Quốc,2024,Q1,889834.0
-Trung Quốc,2025,Q1,1586593.0
-Trung Quốc,2026,Q1,1405169.0
-Tây Ban Nha,2013,Q1,5211.0
-Tây Ban Nha,2014,Q1,6556.0
-Tây Ban Nha,2015,Q1,7816.0
-Tây Ban Nha,2016,Q1,9187.0
-Tây Ban Nha,2017,Q1,11339.0
-Tây Ban Nha,2018,Q1,11797.0
-Tây Ban Nha,2019,Q1,12538.0
-Tây Ban Nha,2020,Q1,11783.0
-Tây Ban Nha,2022,Q1,298.0
-Tây Ban Nha,2023,Q1,10275.0
-Tây Ban Nha,2024,Q1,15378.0
-Tây Ban Nha,2025,Q1,18066.0
-Tây Ban Nha,2026,Q1,20077.0
-Vương quốc Anh,2011,Q1,13653.0
-Vương quốc Anh,2012,Q1,17863.0
-Vương quốc Anh,2013,Q1,47031.0
-Vương quốc Anh,2014,Q1,58271.0
-Vương quốc Anh,2015,Q1,57749.0
-Vương quốc Anh,2016,Q1,68672.0
-Vương quốc Anh,2017,Q1,75016.0
-Vương quốc Anh,2018,Q1,85808.0
-Vương quốc Anh,2019,Q1,89879.0
-Vương quốc Anh,2020,Q1,81433.0
-Vương quốc Anh,2022,Q1,1606.0
-Vương quốc Anh,2023,Q1,67202.0
-Vương quốc Anh,2024,Q1,91998.0
-Vương quốc Anh,2025,Q1,113609.0
-Vương quốc Anh,2026,Q1,127241.0
-Úc,2009,Q1,54333.0
-Úc,2010,Q1,78120.0
-Úc,2011,Q1,87616.0
-Úc,2012,Q1,83403.0
-Úc,2013,Q1,87342.0
-Úc,2014,Q1,95346.0
-Úc,2015,Q1,105767.0
-Úc,2016,Q1,91984.0
-Úc,2017,Q1,95156.0
-Úc,2018,Q1,108530.0
-Úc,2019,Q1,108522.0
-Úc,2020,Q1,92227.0
-Úc,2022,Q1,2989.0
-Úc,2023,Q1,96907.0
-Úc,2024,Q1,132542.0
-Úc,2025,Q1,147120.0
-Úc,2026,Q1,174177.0
-Ý,2013,Q1,9146.0
-Ý,2014,Q1,11041.0
-Ý,2015,Q1,14615.0
-Ý,2016,Q1,14968.0
-Ý,2017,Q1,16987.0
-Ý,2018,Q1,20793.0
-Ý,2019,Q1,22927.0
-Ý,2020,Q1,17774.0
-Ý,2022,Q1,436.0
-Ý,2023,Q1,13654.0
-Ý,2024,Q1,24603.0
-Ý,2025,Q1,31733.0
-Ý,2026,Q1,38107.0
-Đan mạch,2013,Q1,8524.0
-Đan mạch,2014,Q1,9906.0
-Đan mạch,2015,Q1,9494.0
-Đan mạch,2016,Q1,11596.0
-Đan mạch,2017,Q1,12645.0
-Đan mạch,2018,Q1,15303.0
-Đan mạch,2019,Q1,16962.0
-Đan mạch,2020,Q1,14444.0
-Đan mạch,2022,Q1,290.0
-Đan mạch,2023,Q1,9395.0
-Đan mạch,2024,Q1,13754.0
-Đan mạch,2025,Q1,16176.0
-Đan mạch,2026,Q1,19470.0
-Đài Loan,2009,Q1,72259.0
-Đài Loan,2010,Q1,86194.0
-Đài Loan,2011,Q1,88932.0
-Đài Loan,2012,Q1,118645.0
-Đài Loan,2013,Q1,96703.0
-Đài Loan,2014,Q1,109455.0
-Đài Loan,2015,Q1,92808.0
-Đài Loan,2016,Q1,122665.0
-Đài Loan,2017,Q1,150142.0
-Đài Loan,2018,Q1,164370.0
-Đài Loan,2019,Q1,207095.0
-Đài Loan,2020,Q1,192216.0
-Đài Loan,2022,Q1,8413.0
-Đài Loan,2023,Q1,131908.0
-Đài Loan,2024,Q1,299830.0
-Đài Loan,2025,Q1,330517.0
-Đài Loan,2026,Q1,316281.0
-Đức,2013,Q1,18485.0
-Đức,2014,Q1,45988.0
-Đức,2015,Q1,31763.0
-Đức,2016,Q1,54690.0
-Đức,2017,Q1,61923.0
-Đức,2018,Q1,68005.0
-Đức,2019,Q1,72211.0
-Đức,2020,Q1,61465.0
-Đức,2022,Q1,2236.0
-Đức,2023,Q1,55611.0
-Đức,2024,Q1,78087.0
-Đức,2025,Q1,96260.0
-Đức,2026,Q1,112320.0
-Ấn Độ,2018,Q1,31848.0
-Ấn Độ,2019,Q1,38298.0
-Ấn Độ,2020,Q1,37416.0
-Ấn Độ,2023,Q1,83057.0
-Ấn Độ,2024,Q1,116273.0
-Ấn Độ,2025,Q1,143355.0
-Ấn Độ,2026,Q1,242656.0
-Ba Lan,2024,Q2,6264.0
-Ba Lan,2025,Q2,7308.0
-Ba Lan,2026,Q2,8745.0
-Bỉ,2013,Q2,4555.0
-Bỉ,2014,Q2,5101.0
-Bỉ,2015,Q2,4855.0
-Bỉ,2016,Q2,4936.0
-Bỉ,2017,Q2,5806.0
-Bỉ,2018,Q2,6642.0
-Bỉ,2019,Q2,6817.0
-Bỉ,2022,Q2,1563.0
-Bỉ,2023,Q2,5391.0
-Bỉ,2024,Q2,6403.0
-Bỉ,2025,Q2,6728.0
-Bỉ,2026,Q2,6975.0
-Campuchia,2010,Q2,58480.0
-Campuchia,2011,Q2,105846.0
-Campuchia,2012,Q2,73779.0
-Campuchia,2013,Q2,81779.0
-Campuchia,2014,Q2,103630.0
-Campuchia,2015,Q2,34096.0
-Campuchia,2016,Q2,43332.0
-Campuchia,2017,Q2,58906.0
-Campuchia,2018,Q2,51661.0
-Campuchia,2019,Q2,24524.0
-Campuchia,2022,Q2,33909.0
-Campuchia,2023,Q2,102300.0
-Campuchia,2024,Q2,117745.0
-Campuchia,2025,Q2,126360.0
-Campuchia,2026,Q2,125022.0
-Canada,2009,Q2,17467.0
-Canada,2013,Q2,22852.0
-Canada,2014,Q2,23563.0
-Canada,2015,Q2,22015.0
-Canada,2016,Q2,25758.0
-Canada,2017,Q2,30821.0
-Canada,2018,Q2,34239.0
-Canada,2019,Q2,35700.0
-Canada,2022,Q2,7810.0
-Canada,2023,Q2,29558.0
-Canada,2024,Q2,34976.0
-Canada,2025,Q2,32876.0
-Canada,2026,Q2,34908.0
-Các thị trường khác,2009,Q2,216343.0
-Các thị trường khác,2010,Q2,271784.0
-Các thị trường khác,2011,Q2,331696.0
-Các thị trường khác,2012,Q2,363162.0
-Các thị trường khác,2013,Q2,121313.0
-Các thị trường khác,2014,Q2,116802.0
-Các thị trường khác,2015,Q2,83440.0
-Các thị trường khác thuộc châu Mỹ,2016,Q2,14634.0
-Các thị trường khác thuộc châu Mỹ,2017,Q2,15413.0
-Các thị trường khác thuộc châu Mỹ,2018,Q2,16610.0
-Các thị trường khác thuộc châu Mỹ,2019,Q2,16298.0
-Các thị trường khác thuộc châu Mỹ,2022,Q2,3003.0
-Các thị trường khác thuộc châu Mỹ,2023,Q2,12965.0
-Các thị trường khác thuộc châu Mỹ,2024,Q2,16867.0
-Các thị trường khác thuộc châu Mỹ,2025,Q2,17847.0
-Các thị trường khác thuộc châu Mỹ,2026,Q2,14487.0
-Các thị trường khác thuộc châu Phi,2016,Q2,6935.0
-Các thị trường khác thuộc châu Phi,2017,Q2,8177.0
-Các thị trường khác thuộc châu Phi,2018,Q2,9688.0
-Các thị trường khác thuộc châu Phi,2019,Q2,10912.0
-Các thị trường khác thuộc châu Phi,2022,Q2,1965.0
-Các thị trường khác thuộc châu Phi,2023,Q2,6185.0
-Các thị trường khác thuộc châu Phi,2024,Q2,12168.0
-Các thị trường khác thuộc châu Phi,2025,Q2,12866.0
-Các thị trường khác thuộc châu Phi,2026,Q2,10369.0
-Các thị trường khác thuộc châu Á,2016,Q2,75583.0
-Các thị trường khác thuộc châu Á,2017,Q2,59258.0
-Các thị trường khác thuộc châu Á,2018,Q2,36386.0
-Các thị trường khác thuộc châu Á,2019,Q2,39229.0
-Các thị trường khác thuộc châu Á,2022,Q2,37838.0
-Các thị trường khác thuộc châu Á,2023,Q2,128082.0
-Các thị trường khác thuộc châu Á,2024,Q2,199680.0
-Các thị trường khác thuộc châu Á,2025,Q2,272427.0
-Các thị trường khác thuộc châu Á,2026,Q2,238911.0
-Các thị trường khác thuộc châu Âu,2016,Q2,33916.0
-Các thị trường khác thuộc châu Âu,2017,Q2,38232.0
-Các thị trường khác thuộc châu Âu,2018,Q2,42094.0
-Các thị trường khác thuộc châu Âu,2019,Q2,48488.0
-Các thị trường khác thuộc châu Âu,2022,Q2,11755.0
-Các thị trường khác thuộc châu Âu,2023,Q2,61428.0
-Các thị trường khác thuộc châu Âu,2024,Q2,66914.0
-Các thị trường khác thuộc châu Âu,2025,Q2,105327.0
-Các thị trường khác thuộc châu Âu,2026,Q2,111980.0
-Các thị trường khác thuộc châu Úc,2016,Q2,1310.0
-Các thị trường khác thuộc châu Úc,2017,Q2,328.0
-Các thị trường khác thuộc châu Úc,2018,Q2,266.0
-Các thị trường khác thuộc châu Úc,2019,Q2,496.0
-Các thị trường khác thuộc châu Úc,2022,Q2,57.0
-Các thị trường khác thuộc châu Úc,2023,Q2,305.0
-Các thị trường khác thuộc châu Úc,2024,Q2,272.0
-Các thị trường khác thuộc châu Úc,2025,Q2,432.0
-Các thị trường khác thuộc châu Úc,2026,Q2,272.0
-Cộng hòa Séc,2026,Q2,1321.0
-Hoa Kỳ,2009,Q2,101417.0
-Hoa Kỳ,2010,Q2,103126.0
-Hoa Kỳ,2011,Q2,110168.0
-Hoa Kỳ,2012,Q2,110095.0
-Hoa Kỳ,2013,Q2,104978.0
-Hoa Kỳ,2014,Q2,106239.0
-Hoa Kỳ,2015,Q2,111735.0
-Hoa Kỳ,2016,Q2,128222.0
-Hoa Kỳ,2017,Q2,140543.0
-Hoa Kỳ,2018,Q2,165954.0
-Hoa Kỳ,2019,Q2,173384.0
-Hoa Kỳ,2022,Q2,57914.0
-Hoa Kỳ,2023,Q2,166944.0
-Hoa Kỳ,2024,Q2,182742.0
-Hoa Kỳ,2025,Q2,190562.0
-Hoa Kỳ,2026,Q2,143412.0
-Hà Lan,2013,Q2,9288.0
-Hà Lan,2014,Q2,10008.0
-Hà Lan,2015,Q2,9547.0
-Hà Lan,2016,Q2,12265.0
-Hà Lan,2017,Q2,13907.0
-Hà Lan,2018,Q2,15638.0
-Hà Lan,2019,Q2,16388.0
-Hà Lan,2022,Q2,4484.0
-Hà Lan,2023,Q2,13993.0
-Hà Lan,2024,Q2,16662.0
-Hà Lan,2025,Q2,17507.0
-Hà Lan,2026,Q2,15320.0
-Hàn Quốc,2009,Q2,100893.0
-Hàn Quốc,2010,Q2,119316.0
-Hàn Quốc,2011,Q2,121712.0
-Hàn Quốc,2012,Q2,163604.0
-Hàn Quốc,2013,Q2,161494.0
-Hàn Quốc,2014,Q2,167138.0
-Hàn Quốc,2015,Q2,239781.0
-Hàn Quốc,2016,Q2,332912.0
-Hàn Quốc,2017,Q2,538793.0
-Hàn Quốc,2018,Q2,821142.0
-Hàn Quốc,2019,Q2,970808.0
-Hàn Quốc,2022,Q2,93247.0
-Hàn Quốc,2023,Q2,791245.0
-Hàn Quốc,2024,Q2,1048802.0
-Hàn Quốc,2025,Q2,947842.0
-Hàn Quốc,2026,Q2,597981.0
-Hồng Kông,2013,Q2,2409.0
-Hồng Kông,2014,Q2,4274.0
-Hồng Kông,2015,Q2,4439.0
-Hồng Kông,2016,Q2,9247.0
-Hồng Kông,2017,Q2,11572.0
-Hồng Kông,2018,Q2,13404.0
-Hồng Kông,2019,Q2,8855.0
-Hồng Kông,2022,Q2,17.0
-Hồng Kông,2023,Q2,43.0
-Indonesia,2013,Q2,18000.0
-Indonesia,2014,Q2,19037.0
-Indonesia,2015,Q2,14467.0
-Indonesia,2016,Q2,15992.0
-Indonesia,2017,Q2,19078.0
-Indonesia,2018,Q2,23794.0
-Indonesia,2019,Q2,30004.0
-Indonesia,2022,Q2,5789.0
-Indonesia,2023,Q2,23570.0
-Indonesia,2024,Q2,50418.0
-Indonesia,2025,Q2,58038.0
-Indonesia,2026,Q2,45509.0
-Lào,2013,Q2,25012.0
-Lào,2014,Q2,38359.0
-Lào,2015,Q2,20934.0
-Lào,2016,Q2,28989.0
-Lào,2017,Q2,32646.0
-Lào,2018,Q2,26196.0
-Lào,2019,Q2,19971.0
-Lào,2022,Q2,13937.0
-Lào,2023,Q2,26233.0
-Lào,2024,Q2,31998.0
-Lào,2025,Q2,37840.0
-Lào,2026,Q2,27325.0
-Malaysia,2009,Q2,41914.0
-Malaysia,2010,Q2,54327.0
-Malaysia,2011,Q2,59175.0
-Malaysia,2012,Q2,75334.0
-Malaysia,2013,Q2,93192.0
-Malaysia,2014,Q2,101484.0
-Malaysia,2015,Q2,94439.0
-Malaysia,2016,Q2,105476.0
-Malaysia,2017,Q2,118486.0
-Malaysia,2018,Q2,135831.0
-Malaysia,2019,Q2,154856.0
-Malaysia,2022,Q2,21018.0
-Malaysia,2023,Q2,116613.0
-Malaysia,2024,Q2,109874.0
-Malaysia,2025,Q2,125769.0
-Malaysia,2026,Q2,95398.0
-Na Uy,2013,Q2,4376.0
-Na Uy,2014,Q2,4501.0
-Na Uy,2015,Q2,4015.0
-Na Uy,2016,Q2,3985.0
-Na Uy,2017,Q2,4835.0
-Na Uy,2018,Q2,5055.0
-Na Uy,2019,Q2,5121.0
-Na Uy,2022,Q2,1637.0
-Na Uy,2023,Q2,3996.0
-Na Uy,2024,Q2,4303.0
-Na Uy,2025,Q2,6093.0
-Na Uy,2026,Q2,3775.0
-New Zealand,2013,Q2,7510.0
-New Zealand,2014,Q2,8874.0
-New Zealand,2015,Q2,7819.0
-New Zealand,2016,Q2,9549.0
-New Zealand,2017,Q2,11230.0
-New Zealand,2018,Q2,11397.0
-New Zealand,2019,Q2,12621.0
-New Zealand,2022,Q2,1476.0
-New Zealand,2023,Q2,9360.0
-New Zealand,2024,Q2,11773.0
-New Zealand,2025,Q2,14877.0
-New Zealand,2026,Q2,13465.0
-Nga,2012,Q2,30526.0
-Nga,2013,Q2,69202.0
-Nga,2014,Q2,62360.0
-Nga,2015,Q2,72869.0
-Nga,2016,Q2,95614.0
-Nga,2017,Q2,138046.0
-Nga,2018,Q2,135272.0
-Nga,2019,Q2,143163.0
-Nga,2022,Q2,4260.0
-Nga,2023,Q2,26847.0
-Nga,2024,Q2,49365.0
-Nga,2025,Q2,135195.0
-Nga,2026,Q2,250683.0
-Nhật Bản,2009,Q2,79090.0
-Nhật Bản,2010,Q2,100015.0
-Nhật Bản,2011,Q2,107710.0
-Nhật Bản,2012,Q2,129778.0
-Nhật Bản,2013,Q2,138111.0
-Nhật Bản,2014,Q2,147077.0
-Nhật Bản,2015,Q2,144678.0
-Nhật Bản,2016,Q2,163476.0
-Nhật Bản,2017,Q2,177254.0
-Nhật Bản,2018,Q2,188585.0
-Nhật Bản,2019,Q2,222344.0
-Nhật Bản,2022,Q2,23730.0
-Nhật Bản,2023,Q2,123871.0
-Nhật Bản,2024,Q2,156603.0
-Nhật Bản,2025,Q2,167141.0
-Nhật Bản,2026,Q2,137430.0
-Philippines,2013,Q2,27384.0
-Philippines,2014,Q2,30434.0
-Philippines,2015,Q2,26650.0
-Philippines,2016,Q2,27657.0
-Philippines,2017,Q2,35849.0
-Philippines,2018,Q2,39244.0
-Philippines,2019,Q2,45783.0
-Philippines,2022,Q2,7814.0
-Philippines,2023,Q2,35116.0
-Philippines,2024,Q2,56739.0
-Philippines,2025,Q2,121379.0
-Philippines,2026,Q2,138702.0
-Pháp,2009,Q2,43390.0
-Pháp,2010,Q2,44122.0
-Pháp,2011,Q2,44653.0
-Pháp,2012,Q2,49918.0
-Pháp,2013,Q2,51141.0
-Pháp,2014,Q2,50844.0
-Pháp,2015,Q2,48089.0
-Pháp,2016,Q2,56424.0
-Pháp,2017,Q2,61270.0
-Pháp,2018,Q2,69425.0
-Pháp,2019,Q2,67797.0
-Pháp,2022,Q2,14420.0
-Pháp,2023,Q2,49446.0
-Pháp,2024,Q2,66036.0
-Pháp,2025,Q2,71338.0
-Pháp,2026,Q2,65891.0
-Phần Lan,2013,Q2,2245.0
-Phần Lan,2014,Q2,2136.0
-Phần Lan,2015,Q2,2237.0
-Phần Lan,2016,Q2,2174.0
-Phần Lan,2017,Q2,2752.0
-Phần Lan,2018,Q2,3871.0
-Phần Lan,2019,Q2,2941.0
-Phần Lan,2022,Q2,839.0
-Phần Lan,2023,Q2,2122.0
-Singapore,2011,Q2,18110.0
-Singapore,2013,Q2,48523.0
-Singapore,2014,Q2,49853.0
-Singapore,2015,Q2,58737.0
-Singapore,2016,Q2,65324.0
-Singapore,2017,Q2,69501.0
-Singapore,2018,Q2,72879.0
-Singapore,2019,Q2,76030.0
-Singapore,2022,Q2,32693.0
-Singapore,2023,Q2,78477.0
-Singapore,2024,Q2,87127.0
-Singapore,2025,Q2,96528.0
-Singapore,2026,Q2,70743.0
-Thái Lan,2009,Q2,45135.0
-Thái Lan,2010,Q2,56238.0
-Thái Lan,2011,Q2,14660.0
-Thái Lan,2012,Q2,37321.0
-Thái Lan,2013,Q2,69175.0
-Thái Lan,2014,Q2,77410.0
-Thái Lan,2015,Q2,49694.0
-Thái Lan,2016,Q2,68980.0
-Thái Lan,2017,Q2,73797.0
-Thái Lan,2018,Q2,85322.0
-Thái Lan,2019,Q2,120730.0
-Thái Lan,2022,Q2,20538.0
-Thái Lan,2023,Q2,120832.0
-Thái Lan,2024,Q2,108051.0
-Thái Lan,2025,Q2,111842.0
-Thái Lan,2026,Q2,91065.0
-Thụy sĩ,2013,Q2,5898.0
-Thụy sĩ,2014,Q2,6561.0
-Thụy sĩ,2015,Q2,5752.0
-Thụy sĩ,2016,Q2,6095.0
-Thụy sĩ,2017,Q2,7015.0
-Thụy sĩ,2018,Q2,7460.0
-Thụy sĩ,2019,Q2,7562.0
-Thụy sĩ,2022,Q2,1754.0
-Thụy sĩ,2023,Q2,6189.0
-Thụy sĩ,2024,Q2,7260.0
-Thụy sĩ,2025,Q2,7586.0
-Thụy sĩ,2026,Q2,7531.0
-Thụy Điển,2013,Q2,5320.0
-Thụy Điển,2014,Q2,5561.0
-Thụy Điển,2015,Q2,5272.0
-Thụy Điển,2016,Q2,6448.0
-Thụy Điển,2017,Q2,6979.0
-Thụy Điển,2018,Q2,7195.0
-Thụy Điển,2019,Q2,6914.0
-Thụy Điển,2022,Q2,1804.0
-Thụy Điển,2023,Q2,4930.0
-Thụy Điển,2024,Q2,5444.0
-Thụy Điển,2025,Q2,6368.0
-Thụy Điển,2026,Q2,4947.0
-Trung Quốc,2009,Q2,115004.0
-Trung Quốc,2010,Q2,209433.0
-Trung Quốc,2011,Q2,333983.0
-Trung Quốc,2012,Q2,290664.0
-Trung Quốc,2013,Q2,431234.0
-Trung Quốc,2014,Q2,547403.0
-Trung Quốc,2015,Q2,464181.0
-Trung Quốc,2016,Q2,624036.0
-Trung Quốc,2017,Q2,938296.0
-Trung Quốc,2018,Q2,1212408.0
-Trung Quốc,2019,Q2,1202258.0
-Trung Quốc,2022,Q2,27229.0
-Trung Quốc,2023,Q2,416918.0
-Trung Quốc,2024,Q2,1001262.0
-Trung Quốc,2025,Q2,1140447.0
-Trung Quốc,2026,Q2,893229.0
-Tây Ban Nha,2013,Q2,5649.0
-Tây Ban Nha,2014,Q2,7098.0
-Tây Ban Nha,2015,Q2,7437.0
-Tây Ban Nha,2016,Q2,8851.0
-Tây Ban Nha,2017,Q2,11866.0
-Tây Ban Nha,2018,Q2,13523.0
-Tây Ban Nha,2019,Q2,14297.0
-Tây Ban Nha,2022,Q2,2631.0
-Tây Ban Nha,2023,Q2,12407.0
-Tây Ban Nha,2024,Q2,16949.0
-Tây Ban Nha,2025,Q2,17970.0
-Tây Ban Nha,2026,Q2,10784.0
-Vương quốc Anh,2011,Q2,12594.0
-Vương quốc Anh,2013,Q2,44009.0
-Vương quốc Anh,2014,Q2,51086.0
-Vương quốc Anh,2015,Q2,47294.0
-Vương quốc Anh,2016,Q2,59636.0
-Vương quốc Anh,2017,Q2,70027.0
-Vương quốc Anh,2018,Q2,72240.0
-Vương quốc Anh,2019,Q2,75174.0
-Vương quốc Anh,2022,Q2,15855.0
-Vương quốc Anh,2023,Q2,62313.0
-Vương quốc Anh,2024,Q2,75295.0
-Vương quốc Anh,2025,Q2,85757.0
-Vương quốc Anh,2026,Q2,70409.0
-Úc,2009,Q2,49575.0
-Úc,2010,Q2,62720.0
-Úc,2011,Q2,63425.0
-Úc,2012,Q2,66125.0
-Úc,2013,Q2,73138.0
-Úc,2014,Q2,74690.0
-Úc,2015,Q2,68972.0
-Úc,2016,Q2,73076.0
-Úc,2017,Q2,86370.0
-Úc,2018,Q2,92295.0
-Úc,2019,Q2,91794.0
-Úc,2022,Q2,25390.0
-Úc,2023,Q2,87892.0
-Úc,2024,Q2,110875.0
-Úc,2025,Q2,128845.0
-Úc,2026,Q2,118097.0
-Ý,2013,Q2,6201.0
-Ý,2014,Q2,6979.0
-Ý,2015,Q2,7054.0
-Ý,2016,Q2,9431.0
-Ý,2017,Q2,11226.0
-Ý,2018,Q2,12390.0
-Ý,2019,Q2,13795.0
-Ý,2022,Q2,3266.0
-Ý,2023,Q2,11104.0
-Ý,2024,Q2,16787.0
-Ý,2025,Q2,19575.0
-Ý,2026,Q2,13940.0
-Đan mạch,2013,Q2,4793.0
-Đan mạch,2014,Q2,5291.0
-Đan mạch,2015,Q2,5235.0
-Đan mạch,2016,Q2,5409.0
-Đan mạch,2017,Q2,6620.0
-Đan mạch,2018,Q2,7338.0
-Đan mạch,2019,Q2,7839.0
-Đan mạch,2022,Q2,2128.0
-Đan mạch,2023,Q2,6479.0
-Đan mạch,2024,Q2,7294.0
-Đan mạch,2025,Q2,7008.0
-Đan mạch,2026,Q2,6464.0
-Đài Loan,2009,Q2,67194.0
-Đài Loan,2010,Q2,79736.0
-Đài Loan,2011,Q2,87051.0
-Đài Loan,2012,Q2,103872.0
-Đài Loan,2013,Q2,85441.0
-Đài Loan,2014,Q2,98275.0
-Đài Loan,2015,Q2,102876.0
-Đài Loan,2016,Q2,119706.0
-Đài Loan,2017,Q2,147710.0
-Đài Loan,2018,Q2,174586.0
-Đài Loan,2019,Q2,223219.0
-Đài Loan,2022,Q2,15870.0
-Đài Loan,2023,Q2,190581.0
-Đài Loan,2024,Q2,330598.0
-Đài Loan,2025,Q2,299469.0
-Đài Loan,2026,Q2,221695.0
-Đức,2013,Q2,15739.0
-Đức,2014,Q2,27892.0
-Đức,2015,Q2,28144.0
-Đức,2016,Q2,32181.0
-Đức,2017,Q2,41247.0
-Đức,2018,Q2,43556.0
-Đức,2019,Q2,46253.0
-Đức,2022,Q2,13358.0
-Đức,2023,Q2,43563.0
-Đức,2024,Q2,52798.0
-Đức,2025,Q2,54590.0
-Đức,2026,Q2,48802.0
-Ấn Độ,2018,Q2,32543.0
-Ấn Độ,2019,Q2,38514.0
-Ấn Độ,2023,Q2,98115.0
-Ấn Độ,2024,Q2,123129.0
-Ấn Độ,2025,Q2,194163.0
-Ấn Độ,2026,Q2,165807.0
-Ba Lan,2024,Q3,4937.0
-Ba Lan,2025,Q3,7650.0
-Bỉ,2008,Q3,3009.0
-Bỉ,2013,Q3,6375.0
-Bỉ,2014,Q3,6700.0
-Bỉ,2015,Q3,7113.0
-Bỉ,2016,Q3,8062.0
-Bỉ,2017,Q3,8825.0
-Bỉ,2018,Q3,9731.0
-Bỉ,2019,Q3,11275.0
-Bỉ,2022,Q3,4703.0
-Bỉ,2023,Q3,7858.0
-Bỉ,2024,Q3,7912.0
-Bỉ,2025,Q3,10333.0
-Campuchia,2008,Q3,23810.0
-Campuchia,2010,Q3,73048.0
-Campuchia,2011,Q3,104821.0
-Campuchia,2012,Q3,72562.0
-Campuchia,2013,Q3,91856.0
-Campuchia,2014,Q3,88442.0
-Campuchia,2015,Q3,49805.0
-Campuchia,2016,Q3,61366.0
-Campuchia,2017,Q3,54801.0
-Campuchia,2018,Q3,36736.0
-Campuchia,2019,Q3,49997.0
-Campuchia,2022,Q3,69091.0
-Campuchia,2023,Q3,92006.0
-Campuchia,2024,Q3,94236.0
-Campuchia,2025,Q3,129599.0
-Canada,2008,Q3,13822.0
-Canada,2009,Q3,17808.0
-Canada,2013,Q3,21553.0
-Canada,2014,Q3,20567.0
-Canada,2015,Q3,19664.0
-Canada,2016,Q3,23209.0
-Canada,2017,Q3,24750.0
-Canada,2018,Q3,26610.0
-Canada,2019,Q3,29159.0
-Canada,2022,Q3,14033.0
-Canada,2023,Q3,23104.0
-Canada,2024,Q3,23751.0
-Canada,2025,Q3,28506.0
-Châu Á,2008,Q3,395007.0
-Châu Âu,2008,Q3,90555.0
-Các thị trường khác,2008,Q3,33531.0
-Các thị trường khác,2009,Q3,250608.0
-Các thị trường khác,2010,Q3,299910.0
-Các thị trường khác,2011,Q3,285628.0
-Các thị trường khác,2012,Q3,355323.0
-Các thị trường khác,2013,Q3,156417.0
-Các thị trường khác,2014,Q3,65295.0
-Các thị trường khác,2015,Q3,78578.0
-Các thị trường khác thuộc châu Mỹ,2016,Q3,11168.0
-Các thị trường khác thuộc châu Mỹ,2017,Q3,11956.0
-Các thị trường khác thuộc châu Mỹ,2018,Q3,12306.0
-Các thị trường khác thuộc châu Mỹ,2019,Q3,13764.0
-Các thị trường khác thuộc châu Mỹ,2022,Q3,6045.0
-Các thị trường khác thuộc châu Mỹ,2023,Q3,11241.0
-Các thị trường khác thuộc châu Mỹ,2024,Q3,12524.0
-Các thị trường khác thuộc châu Mỹ,2025,Q3,14706.0
-Các thị trường khác thuộc châu Phi,2016,Q3,6778.0
-Các thị trường khác thuộc châu Phi,2017,Q3,9032.0
-Các thị trường khác thuộc châu Phi,2018,Q3,10320.0
-Các thị trường khác thuộc châu Phi,2019,Q3,11837.0
-Các thị trường khác thuộc châu Phi,2022,Q3,3986.0
-Các thị trường khác thuộc châu Phi,2023,Q3,8011.0
-Các thị trường khác thuộc châu Phi,2024,Q3,13581.0
-Các thị trường khác thuộc châu Phi,2025,Q3,15469.0
-Các thị trường khác thuộc châu Á,2016,Q3,68548.0
-Các thị trường khác thuộc châu Á,2017,Q3,55503.0
-Các thị trường khác thuộc châu Á,2018,Q3,35549.0
-Các thị trường khác thuộc châu Á,2019,Q3,37398.0
-Các thị trường khác thuộc châu Á,2022,Q3,85031.0
-Các thị trường khác thuộc châu Á,2023,Q3,128601.0
-Các thị trường khác thuộc châu Á,2024,Q3,152083.0
-Các thị trường khác thuộc châu Á,2025,Q3,271264.0
-Các thị trường khác thuộc châu Âu,2016,Q3,36254.0
-Các thị trường khác thuộc châu Âu,2017,Q3,38446.0
-Các thị trường khác thuộc châu Âu,2018,Q3,41809.0
-Các thị trường khác thuộc châu Âu,2019,Q3,46156.0
-Các thị trường khác thuộc châu Âu,2022,Q3,21128.0
-Các thị trường khác thuộc châu Âu,2023,Q3,43965.0
-Các thị trường khác thuộc châu Âu,2024,Q3,38204.0
-Các thị trường khác thuộc châu Âu,2025,Q3,61509.0
-Các thị trường khác thuộc châu Úc,2016,Q3,1341.0
-Các thị trường khác thuộc châu Úc,2017,Q3,365.0
-Các thị trường khác thuộc châu Úc,2018,Q3,212.0
-Các thị trường khác thuộc châu Úc,2019,Q3,261.0
-Các thị trường khác thuộc châu Úc,2022,Q3,130.0
-Các thị trường khác thuộc châu Úc,2023,Q3,220.0
-Các thị trường khác thuộc châu Úc,2024,Q3,413.0
-Các thị trường khác thuộc châu Úc,2025,Q3,429.0
-Hoa Kỳ,2008,Q3,67027.0
-Hoa Kỳ,2009,Q3,94431.0
-Hoa Kỳ,2010,Q3,94105.0
-Hoa Kỳ,2011,Q3,83685.0
-Hoa Kỳ,2012,Q3,93884.0
-Hoa Kỳ,2013,Q3,95581.0
-Hoa Kỳ,2014,Q3,100098.0
-Hoa Kỳ,2015,Q3,112322.0
-Hoa Kỳ,2016,Q3,128689.0
-Hoa Kỳ,2017,Q3,143201.0
-Hoa Kỳ,2018,Q3,158993.0
-Hoa Kỳ,2019,Q3,176029.0
-Hoa Kỳ,2022,Q3,108542.0
-Hoa Kỳ,2023,Q3,175081.0
-Hoa Kỳ,2024,Q3,163515.0
-Hoa Kỳ,2025,Q3,173444.0
-Hà Lan,2008,Q3,7011.0
-Hà Lan,2013,Q3,14919.0
-Hà Lan,2014,Q3,15379.0
-Hà Lan,2015,Q3,16681.0
-Hà Lan,2016,Q3,21223.0
-Hà Lan,2017,Q3,23058.0
-Hà Lan,2018,Q3,24282.0
-Hà Lan,2019,Q3,25422.0
-Hà Lan,2022,Q3,10576.0
-Hà Lan,2023,Q3,20441.0
-Hà Lan,2024,Q3,19037.0
-Hà Lan,2025,Q3,25712.0
-Hàn Quốc,2008,Q3,64248.0
-Hàn Quốc,2009,Q3,85681.0
-Hàn Quốc,2010,Q3,113016.0
-Hàn Quốc,2011,Q3,114469.0
-Hàn Quốc,2012,Q3,156538.0
-Hàn Quốc,2013,Q3,176206.0
-Hàn Quốc,2014,Q3,212890.0
-Hàn Quốc,2015,Q3,257453.0
-Hàn Quốc,2016,Q3,392899.0
-Hàn Quốc,2017,Q3,648092.0
-Hàn Quốc,2018,Q3,850359.0
-Hàn Quốc,2019,Q3,1062091.0
-Hàn Quốc,2022,Q3,381570.0
-Hàn Quốc,2023,Q3,982657.0
-Hàn Quốc,2024,Q3,1086021.0
-Hàn Quốc,2025,Q3,1029767.0
-Hồng Kông,2008,Q3,765.0
-Hồng Kông,2013,Q3,2370.0
-Hồng Kông,2014,Q3,2416.0
-Hồng Kông,2015,Q3,7157.0
-Hồng Kông,2016,Q3,9270.0
-Hồng Kông,2017,Q3,13592.0
-Hồng Kông,2018,Q3,17640.0
-Hồng Kông,2019,Q3,6498.0
-Hồng Kông,2022,Q3,30.0
-Hồng Kông,2023,Q3,12.0
-Indonesia,2008,Q3,3908.0
-Indonesia,2013,Q3,18598.0
-Indonesia,2014,Q3,16864.0
-Indonesia,2015,Q3,17302.0
-Indonesia,2016,Q3,19380.0
-Indonesia,2017,Q3,23620.0
-Indonesia,2018,Q3,22235.0
-Indonesia,2019,Q3,25049.0
-Indonesia,2022,Q3,13337.0
-Indonesia,2023,Q3,26195.0
-Indonesia,2024,Q3,39501.0
-Indonesia,2025,Q3,47992.0
-Lào,2008,Q3,6911.0
-Lào,2013,Q3,45860.0
-Lào,2014,Q3,42712.0
-Lào,2015,Q3,37560.0
-Lào,2016,Q3,44489.0
-Lào,2017,Q3,47269.0
-Lào,2018,Q3,35874.0
-Lào,2019,Q3,25312.0
-Lào,2022,Q3,37523.0
-Lào,2023,Q3,42695.0
-Lào,2024,Q3,45801.0
-Lào,2025,Q3,58900.0
-Malaysia,2008,Q3,27020.0
-Malaysia,2009,Q3,35355.0
-Malaysia,2010,Q3,50664.0
-Malaysia,2011,Q3,53298.0
-Malaysia,2012,Q3,65275.0
-Malaysia,2013,Q3,73744.0
-Malaysia,2014,Q3,61099.0
-Malaysia,2015,Q3,76523.0
-Malaysia,2016,Q3,87982.0
-Malaysia,2017,Q3,103233.0
-Malaysia,2018,Q3,116739.0
-Malaysia,2019,Q3,134802.0
-Malaysia,2022,Q3,54423.0
-Malaysia,2023,Q3,101480.0
-Malaysia,2024,Q3,102930.0
-Malaysia,2025,Q3,138393.0
-Na Uy,2008,Q3,3420.0
-Na Uy,2013,Q3,6237.0
-Na Uy,2014,Q3,6641.0
-Na Uy,2015,Q3,6038.0
-Na Uy,2016,Q3,6408.0
-Na Uy,2017,Q3,6993.0
-Na Uy,2018,Q3,7335.0
-Na Uy,2019,Q3,7690.0
-Na Uy,2022,Q3,3443.0
-Na Uy,2023,Q3,7444.0
-Na Uy,2024,Q3,7021.0
-Na Uy,2025,Q3,7816.0
-New Zealand,2008,Q3,3868.0
-New Zealand,2013,Q3,8414.0
-New Zealand,2014,Q3,8862.0
-New Zealand,2015,Q3,8462.0
-New Zealand,2016,Q3,14299.0
-New Zealand,2017,Q3,16706.0
-New Zealand,2018,Q3,16672.0
-New Zealand,2019,Q3,13185.0
-New Zealand,2022,Q3,4007.0
-New Zealand,2023,Q3,10264.0
-New Zealand,2024,Q3,12360.0
-New Zealand,2025,Q3,15080.0
-Nga,2008,Q3,5756.0
-Nga,2013,Q3,52146.0
-Nga,2014,Q3,70946.0
-Nga,2015,Q3,67635.0
-Nga,2016,Q3,94705.0
-Nga,2017,Q3,107133.0
-Nga,2018,Q3,116593.0
-Nga,2019,Q3,119387.0
-Nga,2022,Q3,8041.0
-Nga,2023,Q3,26325.0
-Nga,2024,Q3,50791.0
-Nga,2025,Q3,175312.0
-Nhật Bản,2008,Q3,67384.0
-Nhật Bản,2009,Q3,89891.0
-Nhật Bản,2010,Q3,106979.0
-Nhật Bản,2011,Q3,105572.0
-Nhật Bản,2012,Q3,139140.0
-Nhật Bản,2013,Q3,155517.0
-Nhật Bản,2014,Q3,168582.0
-Nhật Bản,2015,Q3,181707.0
-Nhật Bản,2016,Q3,199305.0
-Nhật Bản,2017,Q3,219488.0
-Nhật Bản,2018,Q3,219689.0
-Nhật Bản,2019,Q3,256833.0
-Nhật Bản,2022,Q3,68137.0
-Nhật Bản,2023,Q3,173357.0
-Nhật Bản,2024,Q3,193368.0
-Nhật Bản,2025,Q3,224454.0
-Philippines,2008,Q3,7598.0
-Philippines,2013,Q3,24788.0
-Philippines,2014,Q3,25734.0
-Philippines,2015,Q3,24887.0
-Philippines,2016,Q3,28509.0
-Philippines,2017,Q3,32160.0
-Philippines,2018,Q3,37108.0
-Philippines,2019,Q3,42870.0
-Philippines,2022,Q3,16101.0
-Philippines,2023,Q3,42436.0
-Philippines,2024,Q3,69138.0
-Philippines,2025,Q3,119118.0
-Pháp,2008,Q3,25443.0
-Pháp,2009,Q3,39723.0
-Pháp,2010,Q3,45928.0
-Pháp,2011,Q3,42915.0
-Pháp,2012,Q3,47047.0
-Pháp,2013,Q3,48525.0
-Pháp,2014,Q3,48512.0
-Pháp,2015,Q3,48843.0
-Pháp,2016,Q3,55592.0
-Pháp,2017,Q3,57066.0
-Pháp,2018,Q3,60193.0
-Pháp,2019,Q3,60772.0
-Pháp,2022,Q3,25761.0
-Pháp,2023,Q3,48725.0
-Pháp,2024,Q3,52874.0
-Pháp,2025,Q3,69893.0
-Phần Lan,2008,Q3,701.0
-Phần Lan,2013,Q3,2501.0
-Phần Lan,2014,Q3,2528.0
-Phần Lan,2015,Q3,1562.0
-Phần Lan,2016,Q3,1504.0
-Phần Lan,2017,Q3,1718.0
-Phần Lan,2018,Q3,1826.0
-Phần Lan,2019,Q3,1980.0
-Phần Lan,2022,Q3,985.0
-Phần Lan,2023,Q3,1530.0
-Singapore,2008,Q3,24951.0
-Singapore,2011,Q3,16053.0
-Singapore,2013,Q3,45077.0
-Singapore,2014,Q3,43700.0
-Singapore,2015,Q3,54846.0
-Singapore,2016,Q3,55894.0
-Singapore,2017,Q3,60707.0
-Singapore,2018,Q3,62107.0
-Singapore,2019,Q3,70839.0
-Singapore,2022,Q3,54348.0
-Singapore,2023,Q3,74052.0
-Singapore,2024,Q3,71088.0
-Singapore,2025,Q3,89178.0
-Thái Lan,2008,Q3,25312.0
-Thái Lan,2009,Q3,30144.0
-Thái Lan,2010,Q3,51843.0
-Thái Lan,2011,Q3,29842.0
-Thái Lan,2012,Q3,54391.0
-Thái Lan,2013,Q3,65675.0
-Thái Lan,2014,Q3,58754.0
-Thái Lan,2015,Q3,40904.0
-Thái Lan,2016,Q3,53666.0
-Thái Lan,2017,Q3,58855.0
-Thái Lan,2018,Q3,67828.0
-Thái Lan,2019,Q3,99987.0
-Thái Lan,2022,Q3,60914.0
-Thái Lan,2023,Q3,85263.0
-Thái Lan,2024,Q3,74375.0
-Thái Lan,2025,Q3,90546.0
-Thụy sĩ,2008,Q3,3220.0
-Thụy sĩ,2013,Q3,6192.0
-Thụy sĩ,2014,Q3,6477.0
-Thụy sĩ,2015,Q3,6046.0
-Thụy sĩ,2016,Q3,6691.0
-Thụy sĩ,2017,Q3,6654.0
-Thụy sĩ,2018,Q3,6902.0
-Thụy sĩ,2019,Q3,6936.0
-Thụy sĩ,2022,Q3,3790.0
-Thụy sĩ,2023,Q3,6012.0
-Thụy sĩ,2024,Q3,5774.0
-Thụy sĩ,2025,Q3,7674.0
-Thụy Điển,2008,Q3,2642.0
-Thụy Điển,2013,Q3,4855.0
-Thụy Điển,2014,Q3,5017.0
-Thụy Điển,2015,Q3,4509.0
-Thụy Điển,2016,Q3,5429.0
-Thụy Điển,2017,Q3,5625.0
-Thụy Điển,2018,Q3,5864.0
-Thụy Điển,2019,Q3,5802.0
-Thụy Điển,2022,Q3,2694.0
-Thụy Điển,2023,Q3,4901.0
-Thụy Điển,2024,Q3,4858.0
-Thụy Điển,2025,Q3,5475.0
-Trung Quốc,2008,Q3,89889.0
-Trung Quốc,2009,Q3,130153.0
-Trung Quốc,2010,Q3,238716.0
-Trung Quốc,2011,Q3,335864.0
-Trung Quốc,2012,Q3,309678.0
-Trung Quốc,2013,Q3,533297.0
-Trung Quốc,2014,Q3,407507.0
-Trung Quốc,2015,Q3,446352.0
-Trung Quốc,2016,Q3,783043.0
-Trung Quốc,2017,Q3,1048706.0
-Trung Quốc,2018,Q3,1240553.0
-Trung Quốc,2019,Q3,1493852.0
-Trung Quốc,2022,Q3,35964.0
-Trung Quốc,2023,Q3,565421.0
-Trung Quốc,2024,Q3,814306.0
-Trung Quốc,2025,Q3,1166925.0
-Tây Ban Nha,2008,Q3,4882.0
-Tây Ban Nha,2013,Q3,13681.0
-Tây Ban Nha,2014,Q3,16802.0
-Tây Ban Nha,2015,Q3,18272.0
-Tây Ban Nha,2016,Q3,24146.0
-Tây Ban Nha,2017,Q3,28132.0
-Tây Ban Nha,2018,Q3,32156.0
-Tây Ban Nha,2019,Q3,36110.0
-Tây Ban Nha,2022,Q3,11825.0
-Tây Ban Nha,2023,Q3,29182.0
-Tây Ban Nha,2024,Q3,32418.0
-Tây Ban Nha,2025,Q3,32502.0
-Vương quốc Anh,2008,Q3,15671.0
-Vương quốc Anh,2013,Q3,45091.0
-Vương quốc Anh,2014,Q3,48620.0
-Vương quốc Anh,2015,Q3,51311.0
-Vương quốc Anh,2016,Q3,61586.0
-Vương quốc Anh,2017,Q3,68031.0
-Vương quốc Anh,2018,Q3,67989.0
-Vương quốc Anh,2019,Q3,72302.0
-Vương quốc Anh,2022,Q3,31716.0
-Vương quốc Anh,2023,Q3,57701.0
-Vương quốc Anh,2024,Q3,57217.0
-Vương quốc Anh,2025,Q3,73900.0
-Úc,2008,Q3,41190.0
-Úc,2009,Q3,46533.0
-Úc,2010,Q3,62047.0
-Úc,2011,Q3,49736.0
-Úc,2012,Q3,62694.0
-Úc,2013,Q3,78167.0
-Úc,2014,Q3,77417.0
-Úc,2015,Q3,73825.0
-Úc,2016,Q3,78474.0
-Úc,2017,Q3,94199.0
-Úc,2018,Q3,94035.0
-Úc,2019,Q3,91564.0
-Úc,2022,Q3,50395.0
-Úc,2023,Q3,98337.0
-Úc,2024,Q3,111886.0
-Úc,2025,Q3,125269.0
-Ý,2008,Q3,2478.0
-Ý,2013,Q3,8862.0
-Ý,2014,Q3,9712.0
-Ý,2015,Q3,10469.0
-Ý,2016,Q3,13925.0
-Ý,2017,Q3,15159.0
-Ý,2018,Q3,16453.0
-Ý,2019,Q3,17312.0
-Ý,2022,Q3,7308.0
-Ý,2023,Q3,16665.0
-Ý,2024,Q3,22860.0
-Ý,2025,Q3,27277.0
-Đan mạch,2008,Q3,3352.0
-Đan mạch,2013,Q3,6412.0
-Đan mạch,2014,Q3,6597.0
-Đan mạch,2015,Q3,6435.0
-Đan mạch,2016,Q3,7234.0
-Đan mạch,2017,Q3,7923.0
-Đan mạch,2018,Q3,9018.0
-Đan mạch,2019,Q3,9019.0
-Đan mạch,2022,Q3,4309.0
-Đan mạch,2023,Q3,6673.0
-Đan mạch,2024,Q3,6472.0
-Đan mạch,2025,Q3,7917.0
-Đài Loan,2008,Q3,53211.0
-Đài Loan,2009,Q3,70429.0
-Đài Loan,2010,Q3,85142.0
-Đài Loan,2011,Q3,76969.0
-Đài Loan,2012,Q3,94998.0
-Đài Loan,2013,Q3,115440.0
-Đài Loan,2014,Q3,98927.0
-Đài Loan,2015,Q3,120868.0
-Đài Loan,2016,Q3,139622.0
-Đài Loan,2017,Q3,160474.0
-Đài Loan,2018,Q3,188743.0
-Đài Loan,2019,Q3,244157.0
-Đài Loan,2022,Q3,42084.0
-Đài Loan,2023,Q3,252612.0
-Đài Loan,2024,Q3,323377.0
-Đài Loan,2025,Q3,296414.0
-Đức,2008,Q3,12970.0
-Đức,2013,Q3,25515.0
-Đức,2014,Q3,30408.0
-Đức,2015,Q3,31746.0
-Đức,2016,Q3,38749.0
-Đức,2017,Q3,40523.0
-Đức,2018,Q3,43561.0
-Đức,2019,Q3,44903.0
-Đức,2022,Q3,28925.0
-Đức,2023,Q3,43190.0
-Đức,2024,Q3,44700.0
-Đức,2025,Q3,55400.0
-Ấn Độ,2018,Q3,30940.0
-Ấn Độ,2019,Q3,38963.0
-Ấn Độ,2023,Q3,96776.0
-Ấn Độ,2024,Q3,113716.0
-Ấn Độ,2025,Q3,167125.0
-Ba Lan,2024,Q4,19677.0
-Ba Lan,2025,Q4,26965.0
-Bỉ,2008,Q4,1331.0
-Bỉ,2012,Q4,1706.0
-Bỉ,2013,Q4,5567.0
-Bỉ,2014,Q4,5457.0
-Bỉ,2015,Q4,6266.0
-Bỉ,2016,Q4,6816.0
-Bỉ,2017,Q4,7400.0
-Bỉ,2018,Q4,7437.0
-Bỉ,2019,Q4,8445.0
-Bỉ,2022,Q4,4929.0
-Bỉ,2023,Q4,7187.0
-Bỉ,2024,Q4,9140.0
-Bỉ,2025,Q4,10936.0
-Campuchia,2008,Q4,6875.0
-Campuchia,2010,Q4,64638.0
-Campuchia,2011,Q4,121147.0
-Campuchia,2012,Q4,89716.0
-Campuchia,2013,Q4,67564.0
-Campuchia,2014,Q4,106187.0
-Campuchia,2015,Q4,58862.0
-Campuchia,2016,Q4,65613.0
-Campuchia,2017,Q4,52720.0
-Campuchia,2018,Q4,46828.0
-Campuchia,2019,Q4,119398.0
-Campuchia,2022,Q4,95946.0
-Campuchia,2023,Q4,112240.0
-Campuchia,2024,Q4,148853.0
-Campuchia,2025,Q4,197262.0
-Canada,2008,Q4,5363.0
-Canada,2009,Q4,11281.0
-Canada,2012,Q4,9043.0
-Canada,2013,Q4,27446.0
-Canada,2014,Q4,23624.0
-Canada,2015,Q4,27524.0
-Canada,2016,Q4,33283.0
-Canada,2017,Q4,35555.0
-Canada,2018,Q4,37760.0
-Canada,2019,Q4,40497.0
-Canada,2022,Q4,27745.0
-Canada,2023,Q4,37016.0
-Canada,2024,Q4,43857.0
-Canada,2025,Q4,51885.0
-Các thị trường khác,2008,Q4,181266.0
-Các thị trường khác,2009,Q4,307642.0
-Các thị trường khác,2010,Q4,333264.0
-Các thị trường khác,2011,Q4,413083.0
-Các thị trường khác,2012,Q4,348188.0
-Các thị trường khác,2013,Q4,242006.0
-Các thị trường khác,2014,Q4,61585.0
-Các thị trường khác,2015,Q4,113177.0
-Các thị trường khác thuộc châu Mỹ,2016,Q4,15622.0
-Các thị trường khác thuộc châu Mỹ,2017,Q4,16420.0
-Các thị trường khác thuộc châu Mỹ,2018,Q4,16577.0
-Các thị trường khác thuộc châu Mỹ,2019,Q4,18446.0
-Các thị trường khác thuộc châu Mỹ,2022,Q4,9923.0
-Các thị trường khác thuộc châu Mỹ,2023,Q4,15733.0
-Các thị trường khác thuộc châu Mỹ,2024,Q4,18415.0
-Các thị trường khác thuộc châu Mỹ,2025,Q4,27404.0
-Các thị trường khác thuộc châu Phi,2016,Q4,8414.0
-Các thị trường khác thuộc châu Phi,2017,Q4,9862.0
-Các thị trường khác thuộc châu Phi,2018,Q4,11678.0
-Các thị trường khác thuộc châu Phi,2019,Q4,13507.0
-Các thị trường khác thuộc châu Phi,2022,Q4,5056.0
-Các thị trường khác thuộc châu Phi,2023,Q4,9738.0
-Các thị trường khác thuộc châu Phi,2024,Q4,12060.0
-Các thị trường khác thuộc châu Phi,2025,Q4,15603.0
-Các thị trường khác thuộc châu Á,2016,Q4,70135.0
-Các thị trường khác thuộc châu Á,2017,Q4,64450.0
-Các thị trường khác thuộc châu Á,2018,Q4,36548.0
-Các thị trường khác thuộc châu Á,2019,Q4,33090.0
-Các thị trường khác thuộc châu Á,2022,Q4,161598.0
-Các thị trường khác thuộc châu Á,2023,Q4,142488.0
-Các thị trường khác thuộc châu Á,2024,Q4,285593.0
-Các thị trường khác thuộc châu Á,2025,Q4,302622.0
-Các thị trường khác thuộc châu Âu,2016,Q4,48655.0
-Các thị trường khác thuộc châu Âu,2017,Q4,54080.0
-Các thị trường khác thuộc châu Âu,2018,Q4,57841.0
-Các thị trường khác thuộc châu Âu,2019,Q4,70263.0
-Các thị trường khác thuộc châu Âu,2022,Q4,40669.0
-Các thị trường khác thuộc châu Âu,2023,Q4,127071.0
-Các thị trường khác thuộc châu Âu,2024,Q4,133597.0
-Các thị trường khác thuộc châu Âu,2025,Q4,170126.0
-Các thị trường khác thuộc châu Úc,2016,Q4,896.0
-Các thị trường khác thuộc châu Úc,2017,Q4,410.0
-Các thị trường khác thuộc châu Úc,2018,Q4,244.0
-Các thị trường khác thuộc châu Úc,2019,Q4,760.0
-Các thị trường khác thuộc châu Úc,2022,Q4,312.0
-Các thị trường khác thuộc châu Úc,2023,Q4,268.0
-Các thị trường khác thuộc châu Úc,2024,Q4,393.0
-Các thị trường khác thuộc châu Úc,2025,Q4,587.0
-Hoa Kỳ,2008,Q4,85668.0
-Hoa Kỳ,2009,Q4,86566.0
-Hoa Kỳ,2010,Q4,106105.0
-Hoa Kỳ,2011,Q4,110939.0
-Hoa Kỳ,2012,Q4,104448.0
-Hoa Kỳ,2013,Q4,104013.0
-Hoa Kỳ,2014,Q4,99557.0
-Hoa Kỳ,2015,Q4,123059.0
-Hoa Kỳ,2016,Q4,130995.0
-Hoa Kỳ,2017,Q4,150712.0
-Hoa Kỳ,2018,Q4,158592.0
-Hoa Kỳ,2019,Q4,177058.0
-Hoa Kỳ,2022,Q4,141564.0
-Hoa Kỳ,2023,Q4,168207.0
-Hoa Kỳ,2024,Q4,201180.0
-Hoa Kỳ,2025,Q4,226151.0
-Hà Lan,2008,Q4,2927.0
-Hà Lan,2012,Q4,3803.0
-Hà Lan,2013,Q4,11802.0
-Hà Lan,2014,Q4,11415.0
-Hà Lan,2015,Q4,14049.0
-Hà Lan,2016,Q4,16297.0
-Hà Lan,2017,Q4,17342.0
-Hà Lan,2018,Q4,17744.0
-Hà Lan,2019,Q4,18587.0
-Hà Lan,2022,Q4,11892.0
-Hà Lan,2023,Q4,17761.0
-Hà Lan,2024,Q4,20366.0
-Hà Lan,2025,Q4,23500.0
-Hàn Quốc,2008,Q4,90985.0
-Hàn Quốc,2009,Q4,79757.0
-Hàn Quốc,2010,Q4,130523.0
-Hàn Quốc,2011,Q4,155545.0
-Hàn Quốc,2012,Q4,176931.0
-Hàn Quốc,2013,Q4,186651.0
-Hàn Quốc,2014,Q4,230860.0
-Hàn Quốc,2015,Q4,302298.0
-Hàn Quốc,2016,Q4,409915.0
-Hàn Quốc,2017,Q4,700896.0
-Hàn Quốc,2018,Q4,921443.0
-Hàn Quốc,2019,Q4,1150109.0
-Hàn Quốc,2022,Q4,475932.0
-Hàn Quốc,2023,Q4,1010222.0
-Hàn Quốc,2024,Q4,1201241.0
-Hàn Quốc,2025,Q4,1093671.0
-Hồng Kông,2008,Q4,644.0
-Hồng Kông,2012,Q4,700.0
-Hồng Kông,2013,Q4,3668.0
-Hồng Kông,2014,Q4,2364.0
-Hồng Kông,2015,Q4,4025.0
-Hồng Kông,2016,Q4,8909.0
-Hồng Kông,2017,Q4,12783.0
-Hồng Kông,2018,Q4,16999.0
-Hồng Kông,2019,Q4,19814.0
-Hồng Kông,2022,Q4,21.0
-Hồng Kông,2023,Q4,4.0
-Indonesia,2008,Q4,2932.0
-Indonesia,2012,Q4,5443.0
-Indonesia,2013,Q4,16615.0
-Indonesia,2014,Q4,15402.0
-Indonesia,2015,Q4,16033.0
-Indonesia,2016,Q4,18272.0
-Indonesia,2017,Q4,20193.0
-Indonesia,2018,Q4,21120.0
-Indonesia,2019,Q4,27269.0
-Indonesia,2022,Q4,16610.0
-Indonesia,2023,Q4,34704.0
-Indonesia,2024,Q4,48483.0
-Indonesia,2025,Q4,52340.0
-Lào,2008,Q4,1602.0
-Lào,2012,Q4,13554.0
-Lào,2013,Q4,26551.0
-Lào,2014,Q4,23958.0
-Lào,2015,Q4,30465.0
-Lào,2016,Q4,36720.0
-Lào,2017,Q4,26032.0
-Lào,2018,Q4,23714.0
-Lào,2019,Q4,26639.0
-Lào,2022,Q4,21269.0
-Lào,2023,Q4,23380.0
-Lào,2024,Q4,37564.0
-Lào,2025,Q4,31757.0
-Malaysia,2008,Q4,46906.0
-Malaysia,2009,Q4,44510.0
-Malaysia,2010,Q4,61458.0
-Malaysia,2011,Q4,64968.0
-Malaysia,2012,Q4,87866.0
-Malaysia,2013,Q4,102429.0
-Malaysia,2014,Q4,90453.0
-Malaysia,2015,Q4,96090.0
-Malaysia,2016,Q4,119751.0
-Malaysia,2017,Q4,145638.0
-Malaysia,2018,Q4,158271.0
-Malaysia,2019,Q4,172919.0
-Malaysia,2022,Q4,94187.0
-Malaysia,2023,Q4,136709.0
-Malaysia,2024,Q4,138866.0
-Malaysia,2025,Q4,168454.0
-Na Uy,2008,Q4,918.0
-Na Uy,2012,Q4,1734.0
-Na Uy,2013,Q4,4807.0
-Na Uy,2014,Q4,4622.0
-Na Uy,2015,Q4,4847.0
-Na Uy,2016,Q4,4968.0
-Na Uy,2017,Q4,5143.0
-Na Uy,2018,Q4,5430.0
-Na Uy,2019,Q4,5838.0
-Na Uy,2022,Q4,3520.0
-Na Uy,2023,Q4,4924.0
-Na Uy,2024,Q4,7343.0
-Na Uy,2025,Q4,8601.0
-New Zealand,2008,Q4,2066.0
-New Zealand,2012,Q4,2337.0
-New Zealand,2013,Q4,7897.0
-New Zealand,2014,Q4,7467.0
-New Zealand,2015,Q4,7870.0
-New Zealand,2016,Q4,10856.0
-New Zealand,2017,Q4,11658.0
-New Zealand,2018,Q4,11531.0
-New Zealand,2019,Q4,10731.0
-New Zealand,2022,Q4,5805.0
-New Zealand,2023,Q4,9771.0
-New Zealand,2024,Q4,12975.0
-New Zealand,2025,Q4,14558.0
-Nga,2008,Q4,4045.0
-Nga,2012,Q4,13648.0
-Nga,2013,Q4,92081.0
-Nga,2014,Q4,100388.0
-Nga,2015,Q4,102508.0
-Nga,2016,Q4,134918.0
-Nga,2017,Q4,153529.0
-Nga,2018,Q4,151651.0
-Nga,2019,Q4,168356.0
-Nga,2022,Q4,22128.0
-Nga,2023,Q4,37317.0
-Nga,2024,Q4,72918.0
-Nga,2025,Q4,254553.0
-Nhật Bản,2008,Q4,94938.0
-Nhật Bản,2009,Q4,91483.0
-Nhật Bản,2010,Q4,124362.0
-Nhật Bản,2011,Q4,137764.0
-Nhật Bản,2012,Q4,151409.0
-Nhật Bản,2013,Q4,154046.0
-Nhật Bản,2014,Q4,162181.0
-Nhật Bản,2015,Q4,172921.0
-Nhật Bản,2016,Q4,185401.0
-Nhật Bản,2017,Q4,199787.0
-Nhật Bản,2018,Q4,202973.0
-Nhật Bản,2019,Q4,239430.0
-Nhật Bản,2022,Q4,78342.0
-Nhật Bản,2023,Q4,175078.0
-Nhật Bản,2024,Q4,182458.0
-Nhật Bản,2025,Q4,196397.0
-Philippines,2008,Q4,4045.0
-Philippines,2012,Q4,7790.0
-Philippines,2013,Q4,26915.0
-Philippines,2014,Q4,23477.0
-Philippines,2015,Q4,27116.0
-Philippines,2016,Q4,29984.0
-Philippines,2017,Q4,36144.0
-Philippines,2018,Q4,41521.0
-Philippines,2019,Q4,48409.0
-Philippines,2022,Q4,24568.0
-Philippines,2023,Q4,43288.0
-Philippines,2024,Q4,90722.0
-Philippines,2025,Q4,145422.0
-Pháp,2008,Q4,45719.0
-Pháp,2009,Q4,42897.0
-Pháp,2010,Q4,51930.0
-Pháp,2011,Q4,55200.0
-Pháp,2012,Q4,54282.0
-Pháp,2013,Q4,52309.0
-Pháp,2014,Q4,49779.0
-Pháp,2015,Q4,53822.0
-Pháp,2016,Q4,61195.0
-Pháp,2017,Q4,62157.0
-Pháp,2018,Q4,66168.0
-Pháp,2019,Q4,71764.0
-Pháp,2022,Q4,39755.0
-Pháp,2023,Q4,60371.0
-Pháp,2024,Q4,80227.0
-Pháp,2025,Q4,94082.0
-Phần Lan,2008,Q4,400.0
-Phần Lan,2012,Q4,1592.0
-Phần Lan,2013,Q4,4022.0
-Phần Lan,2014,Q4,3269.0
-Phần Lan,2015,Q4,3634.0
-Phần Lan,2016,Q4,4193.0
-Phần Lan,2017,Q4,4783.0
-Phần Lan,2018,Q4,4791.0
-Phần Lan,2019,Q4,4965.0
-Phần Lan,2022,Q4,2053.0
-Phần Lan,2023,Q4,1614.0
-Singapore,2008,Q4,42656.0
-Singapore,2012,Q4,22513.0
-Singapore,2013,Q4,43490.0
-Singapore,2014,Q4,60843.0
-Singapore,2015,Q4,71067.0
-Singapore,2016,Q4,76435.0
-Singapore,2017,Q4,84505.0
-Singapore,2018,Q4,83465.0
-Singapore,2019,Q4,93841.0
-Singapore,2022,Q4,90808.0
-Singapore,2023,Q4,99188.0
-Singapore,2024,Q4,106195.0
-Singapore,2025,Q4,133233.0
-Thái Lan,2008,Q4,44438.0
-Thái Lan,2009,Q4,36748.0
-Thái Lan,2010,Q4,61180.0
-Thái Lan,2011,Q4,53418.0
-Thái Lan,2012,Q4,65168.0
-Thái Lan,2013,Q4,73937.0
-Thái Lan,2014,Q4,51691.0
-Thái Lan,2015,Q4,73360.0
-Thái Lan,2016,Q4,77548.0
-Thái Lan,2017,Q4,90344.0
-Thái Lan,2018,Q4,112723.0
-Thái Lan,2019,Q4,164497.0
-Thái Lan,2022,Q4,119296.0
-Thái Lan,2023,Q4,137948.0
-Thái Lan,2024,Q4,117086.0
-Thái Lan,2025,Q4,131258.0
-Thụy sĩ,2008,Q4,1476.0
-Thụy sĩ,2012,Q4,2342.0
-Thụy sĩ,2013,Q4,7915.0
-Thụy sĩ,2014,Q4,7303.0
-Thụy sĩ,2015,Q4,7935.0
-Thụy sĩ,2016,Q4,8684.0
-Thụy sĩ,2017,Q4,9126.0
-Thụy sĩ,2018,Q4,9583.0
-Thụy sĩ,2019,Q4,10272.0
-Thụy sĩ,2022,Q4,5597.0
-Thụy sĩ,2023,Q4,8166.0
-Thụy sĩ,2024,Q4,10120.0
-Thụy sĩ,2025,Q4,12710.0
-Thụy Điển,2008,Q4,1308.0
-Thụy Điển,2012,Q4,3619.0
-Thụy Điển,2013,Q4,8285.0
-Thụy Điển,2014,Q4,7876.0
-Thụy Điển,2015,Q4,9039.0
-Thụy Điển,2016,Q4,9218.0
-Thụy Điển,2017,Q4,10446.0
-Thụy Điển,2018,Q4,11340.0
-Thụy Điển,2019,Q4,10019.0
-Thụy Điển,2022,Q4,4861.0
-Thụy Điển,2023,Q4,7035.0
-Thụy Điển,2024,Q4,11286.0
-Thụy Điển,2025,Q4,12610.0
-Trung Quốc,2008,Q4,150175.0
-Trung Quốc,2009,Q4,170382.0
-Trung Quốc,2010,Q4,229430.0
-Trung Quốc,2011,Q4,437392.0
-Trung Quốc,2012,Q4,404504.0
-Trung Quốc,2013,Q4,548833.0
-Trung Quốc,2014,Q4,407048.0
-Trung Quốc,2015,Q4,520368.0
-Trung Quốc,2016,Q4,709245.0
-Trung Quốc,2017,Q4,1072052.0
-Trung Quốc,2018,Q4,1157073.0
-Trung Quốc,2019,Q4,1829242.0
-Trung Quốc,2022,Q4,46752.0
-Trung Quốc,2023,Q4,620632.0
-Trung Quốc,2024,Q4,1032724.0
-Trung Quốc,2025,Q4,1388037.0
-Tây Ban Nha,2008,Q4,2279.0
-Tây Ban Nha,2012,Q4,2125.0
-Tây Ban Nha,2013,Q4,8642.0
-Tây Ban Nha,2014,Q4,10368.0
-Tây Ban Nha,2015,Q4,11958.0
-Tây Ban Nha,2016,Q4,15773.0
-Tây Ban Nha,2017,Q4,18191.0
-Tây Ban Nha,2018,Q4,19595.0
-Tây Ban Nha,2019,Q4,20652.0
-Tây Ban Nha,2022,Q4,12707.0
-Tây Ban Nha,2023,Q4,24223.0
-Tây Ban Nha,2024,Q4,26625.0
-Tây Ban Nha,2025,Q4,28904.0
-Vương quốc Anh,2008,Q4,8397.0
-Vương quốc Anh,2012,Q4,13685.0
-Vương quốc Anh,2013,Q4,48532.0
-Vương quốc Anh,2014,Q4,45742.0
-Vương quốc Anh,2015,Q4,58512.0
-Vương quốc Anh,2016,Q4,64947.0
-Vương quốc Anh,2017,Q4,70463.0
-Vương quốc Anh,2018,Q4,72077.0
-Vương quốc Anh,2019,Q4,77729.0
-Vương quốc Anh,2022,Q4,44617.0
-Vương quốc Anh,2023,Q4,66306.0
-Vương quốc Anh,2024,Q4,81684.0
-Vương quốc Anh,2025,Q4,95052.0
-Úc,2008,Q4,53933.0
-Úc,2009,Q4,57825.0
-Úc,2010,Q4,72731.0
-Úc,2011,Q4,79210.0
-Úc,2012,Q4,73338.0
-Úc,2013,Q4,52861.0
-Úc,2014,Q4,74971.0
-Úc,2015,Q4,75228.0
-Úc,2016,Q4,77144.0
-Úc,2017,Q4,94713.0
-Úc,2018,Q4,92074.0
-Úc,2019,Q4,91631.0
-Úc,2022,Q4,65962.0
-Úc,2023,Q4,106951.0
-Úc,2024,Q4,135577.0
-Úc,2025,Q4,147237.0
-Ý,2008,Q4,1330.0
-Ý,2012,Q4,2361.0
-Ý,2013,Q4,7934.0
-Ý,2014,Q4,8777.0
-Ý,2015,Q4,11064.0
-Ý,2016,Q4,12941.0
-Ý,2017,Q4,14669.0
-Ý,2018,Q4,15926.0
-Ý,2019,Q4,16764.0
-Ý,2022,Q4,9298.0
-Ý,2023,Q4,15631.0
-Ý,2024,Q4,24662.0
-Ý,2025,Q4,28773.0
-Đan mạch,2008,Q4,1883.0
-Đan mạch,2012,Q4,1826.0
-Đan mạch,2013,Q4,5920.0
-Đan mạch,2014,Q4,5321.0
-Đan mạch,2015,Q4,6121.0
-Đan mạch,2016,Q4,6757.0
-Đan mạch,2017,Q4,7532.0
-Đan mạch,2018,Q4,8267.0
-Đan mạch,2019,Q4,8223.0
-Đan mạch,2022,Q4,5700.0
-Đan mạch,2023,Q4,7684.0
-Đan mạch,2024,Q4,9400.0
-Đan mạch,2025,Q4,10309.0
-Đài Loan,2008,Q4,58186.0
-Đài Loan,2009,Q4,63039.0
-Đài Loan,2010,Q4,82315.0
-Đài Loan,2011,Q4,95083.0
-Đài Loan,2012,Q4,96069.0
-Đài Loan,2013,Q4,101406.0
-Đài Loan,2014,Q4,84383.0
-Đài Loan,2015,Q4,108508.0
-Đài Loan,2016,Q4,125308.0
-Đài Loan,2017,Q4,157906.0
-Đài Loan,2018,Q4,186413.0
-Đài Loan,2019,Q4,252273.0
-Đài Loan,2022,Q4,59844.0
-Đài Loan,2023,Q4,275923.0
-Đài Loan,2024,Q4,335056.0
-Đài Loan,2025,Q4,305110.0
-Đức,2008,Q4,7950.0
-Đức,2012,Q4,9155.0
-Đức,2013,Q4,37934.0
-Đức,2014,Q4,38555.0
-Đức,2015,Q4,43131.0
-Đức,2016,Q4,50395.0
-Đức,2017,Q4,56179.0
-Đức,2018,Q4,58864.0
-Đức,2019,Q4,63425.0
-Đức,2022,Q4,39079.0
-Đức,2023,Q4,58061.0
-Đức,2024,Q4,73932.0
-Đức,2025,Q4,84789.0
-Ấn Độ,2018,Q4,37040.0
-Ấn Độ,2019,Q4,53223.0
-Ấn Độ,2023,Q4,114193.0
-Ấn Độ,2024,Q4,148309.0
-Ấn Độ,2025,Q4,241837.0
+country,year,quarter,arrivals,country_en
+Ba Lan,2024,Q1,20279.0,Poland
+Ba Lan,2025,Q1,31005.0,Poland
+Ba Lan,2026,Q1,47232.0,Poland
+Bỉ,2013,Q1,5075.0,Belgium
+Bỉ,2014,Q1,6017.0,Belgium
+Bỉ,2015,Q1,5455.0,Belgium
+Bỉ,2016,Q1,6417.0,Belgium
+Bỉ,2017,Q1,7113.0,Belgium
+Bỉ,2018,Q1,7572.0,Belgium
+Bỉ,2019,Q1,7650.0,Belgium
+Bỉ,2020,Q1,7452.0,Belgium
+Bỉ,2022,Q1,216.0,Belgium
+Bỉ,2023,Q1,5917.0,Belgium
+Bỉ,2024,Q1,8275.0,Belgium
+Bỉ,2025,Q1,9569.0,Belgium
+Bỉ,2026,Q1,11360.0,Belgium
+Campuchia,2010,Q1,43115.0,Cambodia
+Campuchia,2011,Q1,76586.0,Cambodia
+Campuchia,2012,Q1,102627.0,Cambodia
+Campuchia,2013,Q1,74090.0,Cambodia
+Campuchia,2014,Q1,99140.0,Cambodia
+Campuchia,2015,Q1,77686.0,Cambodia
+Campuchia,2016,Q1,41638.0,Cambodia
+Campuchia,2017,Q1,56187.0,Cambodia
+Campuchia,2018,Q1,67729.0,Cambodia
+Campuchia,2019,Q1,33991.0,Cambodia
+Campuchia,2020,Q1,120430.0,Cambodia
+Campuchia,2022,Q1,1961.0,Cambodia
+Campuchia,2023,Q1,95516.0,Cambodia
+Campuchia,2024,Q1,113746.0,Cambodia
+Campuchia,2025,Q1,233911.0,Cambodia
+Campuchia,2026,Q1,330102.0,Cambodia
+Canada,2009,Q1,17064.0,Canada
+Canada,2010,Q1,10043.0,Canada
+Canada,2013,Q1,33122.0,Canada
+Canada,2014,Q1,37525.0,Canada
+Canada,2015,Q1,35986.0,Canada
+Canada,2016,Q1,40679.0,Canada
+Canada,2017,Q1,47116.0,Canada
+Canada,2018,Q1,50926.0,Canada
+Canada,2019,Q1,53765.0,Canada
+Canada,2020,Q1,41807.0,Canada
+Canada,2022,Q1,1481.0,Canada
+Canada,2023,Q1,43815.0,Canada
+Canada,2024,Q1,49943.0,Canada
+Canada,2025,Q1,60124.0,Canada
+Canada,2026,Q1,74670.0,Canada
+Hoa Kỳ,2009,Q1,104520.0,USA
+Hoa Kỳ,2010,Q1,125982.0,USA
+Hoa Kỳ,2011,Q1,133694.0,USA
+Hoa Kỳ,2012,Q1,144786.0,USA
+Hoa Kỳ,2013,Q1,127656.0,USA
+Hoa Kỳ,2014,Q1,140051.0,USA
+Hoa Kỳ,2015,Q1,145731.0,USA
+Hoa Kỳ,2016,Q1,164738.0,USA
+Hoa Kỳ,2017,Q1,179661.0,USA
+Hoa Kỳ,2018,Q1,203687.0,USA
+Hoa Kỳ,2019,Q1,219700.0,USA
+Hoa Kỳ,2020,Q1,172706.0,USA
+Hoa Kỳ,2022,Q1,10151.0,USA
+Hoa Kỳ,2023,Q1,206841.0,USA
+Hoa Kỳ,2024,Q1,232358.0,USA
+Hoa Kỳ,2025,Q1,258570.0,USA
+Hoa Kỳ,2026,Q1,302401.0,USA
+Hà Lan,2013,Q1,11404.0,Netherlands
+Hà Lan,2014,Q1,13035.0,Netherlands
+Hà Lan,2015,Q1,8585.0,Netherlands
+Hà Lan,2016,Q1,14927.0,Netherlands
+Hà Lan,2017,Q1,17970.0,Netherlands
+Hà Lan,2018,Q1,19636.0,Netherlands
+Hà Lan,2019,Q1,20695.0,Netherlands
+Hà Lan,2020,Q1,18265.0,Netherlands
+Hà Lan,2022,Q1,536.0,Netherlands
+Hà Lan,2023,Q1,15862.0,Netherlands
+Hà Lan,2024,Q1,21978.0,Netherlands
+Hà Lan,2025,Q1,24990.0,Netherlands
+Hà Lan,2026,Q1,29661.0,Netherlands
+Hàn Quốc,2009,Q1,104840.0,South Korea
+Hàn Quốc,2010,Q1,132074.0,South Korea
+Hàn Quốc,2011,Q1,143959.0,South Korea
+Hàn Quốc,2012,Q1,206328.0,South Korea
+Hàn Quốc,2013,Q1,224376.0,South Korea
+Hàn Quốc,2014,Q1,238496.0,South Korea
+Hàn Quốc,2015,Q1,352817.0,South Korea
+Hàn Quốc,2016,Q1,408157.0,South Korea
+Hàn Quốc,2017,Q1,527464.0,South Korea
+Hàn Quốc,2018,Q1,892462.0,South Korea
+Hàn Quốc,2019,Q1,1107794.0,South Korea
+Hàn Quốc,2020,Q1,819089.0,South Korea
+Hàn Quốc,2022,Q1,14617.0,South Korea
+Hàn Quốc,2023,Q1,810938.0,South Korea
+Hàn Quốc,2024,Q1,1232877.0,South Korea
+Hàn Quốc,2025,Q1,1260131.0,South Korea
+Hàn Quốc,2026,Q1,1326425.0,South Korea
+Hồng Kông,2013,Q1,1785.0,Hong Kong
+Hồng Kông,2014,Q1,5817.0,Hong Kong
+Hồng Kông,2015,Q1,3114.0,Hong Kong
+Hồng Kông,2016,Q1,7187.0,Hong Kong
+Hồng Kông,2017,Q1,9774.0,Hong Kong
+Hồng Kông,2018,Q1,14165.0,Hong Kong
+Hồng Kông,2019,Q1,16451.0,Hong Kong
+Hồng Kông,2020,Q1,3780.0,Hong Kong
+Hồng Kông,2022,Q1,6.0,Hong Kong
+Hồng Kông,2023,Q1,53.0,Hong Kong
+Indonesia,2013,Q1,17177.0,Indonesia
+Indonesia,2014,Q1,17671.0,Indonesia
+Indonesia,2015,Q1,17858.0,Indonesia
+Indonesia,2016,Q1,16009.0,Indonesia
+Indonesia,2017,Q1,18174.0,Indonesia
+Indonesia,2018,Q1,20792.0,Indonesia
+Indonesia,2019,Q1,24366.0,Indonesia
+Indonesia,2020,Q1,21446.0,Indonesia
+Indonesia,2022,Q1,348.0,Indonesia
+Indonesia,2023,Q1,20911.0,Indonesia
+Indonesia,2024,Q1,45691.0,Indonesia
+Indonesia,2025,Q1,48826.0,Indonesia
+Indonesia,2026,Q1,70259.0,Indonesia
+Lào,2013,Q1,25400.0,Laos
+Lào,2014,Q1,31629.0,Laos
+Lào,2015,Q1,27390.0,Laos
+Lào,2016,Q1,26806.0,Laos
+Lào,2017,Q1,35641.0,Laos
+Lào,2018,Q1,34225.0,Laos
+Lào,2019,Q1,26570.0,Laos
+Lào,2020,Q1,36810.0,Laos
+Lào,2022,Q1,4756.0,Laos
+Lào,2023,Q1,28214.0,Laos
+Lào,2024,Q1,33292.0,Laos
+Lào,2025,Q1,50843.0,Laos
+Lào,2026,Q1,46199.0,Laos
+Malaysia,2009,Q1,46384.0,Malaysia
+Malaysia,2010,Q1,44025.0,Malaysia
+Malaysia,2011,Q1,53911.0,Malaysia
+Malaysia,2012,Q1,70196.0,Malaysia
+Malaysia,2013,Q1,70145.0,Malaysia
+Malaysia,2014,Q1,80823.0,Malaysia
+Malaysia,2015,Q1,74073.0,Malaysia
+Malaysia,2016,Q1,94365.0,Malaysia
+Malaysia,2017,Q1,113099.0,Malaysia
+Malaysia,2018,Q1,129278.0,Malaysia
+Malaysia,2019,Q1,143629.0,Malaysia
+Malaysia,2020,Q1,116221.0,Malaysia
+Malaysia,2022,Q1,1242.0,Malaysia
+Malaysia,2023,Q1,115303.0,Malaysia
+Malaysia,2024,Q1,143713.0,Malaysia
+Malaysia,2025,Q1,141100.0,Malaysia
+Malaysia,2026,Q1,171373.0,Malaysia
+Na Uy,2013,Q1,5737.0,Norway
+Na Uy,2014,Q1,7401.0,Norway
+Na Uy,2015,Q1,6230.0,Norway
+Na Uy,2016,Q1,7749.0,Norway
+Na Uy,2017,Q1,7322.0,Norway
+Na Uy,2018,Q1,8314.0,Norway
+Na Uy,2019,Q1,9388.0,Norway
+Na Uy,2020,Q1,8958.0,Norway
+Na Uy,2022,Q1,158.0,Norway
+Na Uy,2023,Q1,6353.0,Norway
+Na Uy,2024,Q1,9269.0,Norway
+Na Uy,2025,Q1,10754.0,Norway
+Na Uy,2026,Q1,13549.0,Norway
+New Zealand,2013,Q1,7136.0,New Zealand
+New Zealand,2014,Q1,8182.0,New Zealand
+New Zealand,2015,Q1,10580.0,New Zealand
+New Zealand,2016,Q1,7884.0,New Zealand
+New Zealand,2017,Q1,9521.0,New Zealand
+New Zealand,2018,Q1,10254.0,New Zealand
+New Zealand,2019,Q1,10551.0,New Zealand
+New Zealand,2020,Q1,9470.0,New Zealand
+New Zealand,2022,Q1,110.0,New Zealand
+New Zealand,2023,Q1,4335.0,New Zealand
+New Zealand,2024,Q1,10855.0,New Zealand
+New Zealand,2025,Q1,12613.0,New Zealand
+New Zealand,2026,Q1,15063.0,New Zealand
+Nga,2012,Q1,37444.0,Russia
+Nga,2013,Q1,84697.0,Russia
+Nga,2014,Q1,131469.0,Russia
+Nga,2015,Q1,96258.0,Russia
+Nga,2016,Q1,108750.0,Russia
+Nga,2017,Q1,175456.0,Russia
+Nga,2018,Q1,203121.0,Russia
+Nga,2019,Q1,215618.0,Russia
+Nga,2020,Q1,244966.0,Russia
+Nga,2022,Q1,5492.0,Russia
+Nga,2023,Q1,35121.0,Russia
+Nga,2024,Q1,59226.0,Russia
+Nga,2025,Q1,124654.0,Russia
+Nga,2026,Q1,367168.0,Russia
+Nhật Bản,2009,Q1,101065.0,Japan
+Nhật Bản,2010,Q1,110245.0,Japan
+Nhật Bản,2011,Q1,88585.0,Japan
+Nhật Bản,2012,Q1,159190.0,Japan
+Nhật Bản,2013,Q1,156376.0,Japan
+Nhật Bản,2014,Q1,170772.0,Japan
+Nhật Bản,2015,Q1,178171.0,Japan
+Nhật Bản,2016,Q1,192410.0,Japan
+Nhật Bản,2017,Q1,201590.0,Japan
+Nhật Bản,2018,Q1,215427.0,Japan
+Nhật Bản,2019,Q1,233355.0,Japan
+Nhật Bản,2020,Q1,200346.0,Japan
+Nhật Bản,2022,Q1,4511.0,Japan
+Nhật Bản,2023,Q1,117216.0,Japan
+Nhật Bản,2024,Q1,179035.0,Japan
+Nhật Bản,2025,Q1,226177.0,Japan
+Nhật Bản,2026,Q1,245039.0,Japan
+Philippines,2013,Q1,21414.0,Philippines
+Philippines,2014,Q1,25343.0,Philippines
+Philippines,2015,Q1,22798.0,Philippines
+Philippines,2016,Q1,24817.0,Philippines
+Philippines,2017,Q1,29390.0,Philippines
+Philippines,2018,Q1,33768.0,Philippines
+Philippines,2019,Q1,42128.0,Philippines
+Philippines,2020,Q1,36969.0,Philippines
+Philippines,2022,Q1,783.0,Philippines
+Philippines,2023,Q1,32328.0,Philippines
+Philippines,2024,Q1,49348.0,Philippines
+Philippines,2025,Q1,96254.0,Philippines
+Philippines,2026,Q1,162971.0,Philippines
+Pháp,2009,Q1,53907.0,France
+Pháp,2010,Q1,56498.0,France
+Pháp,2011,Q1,62370.0,France
+Pháp,2012,Q1,72008.0,France
+Pháp,2013,Q1,57971.0,France
+Pháp,2014,Q1,65434.0,France
+Pháp,2015,Q1,61026.0,France
+Pháp,2016,Q1,67597.0,France
+Pháp,2017,Q1,74876.0,France
+Pháp,2018,Q1,83873.0,France
+Pháp,2019,Q1,87322.0,France
+Pháp,2020,Q1,74480.0,France
+Pháp,2022,Q1,1639.0,France
+Pháp,2023,Q1,56966.0,France
+Pháp,2024,Q1,79806.0,France
+Pháp,2025,Q1,102416.0,France
+Pháp,2026,Q1,115771.0,France
+Phần Lan,2013,Q1,5901.0,Finland
+Phần Lan,2014,Q1,5934.0,Finland
+Phần Lan,2015,Q1,8850.0,Finland
+Phần Lan,2016,Q1,8082.0,Finland
+Phần Lan,2017,Q1,8983.0,Finland
+Phần Lan,2018,Q1,12297.0,Finland
+Phần Lan,2019,Q1,11594.0,Finland
+Phần Lan,2020,Q1,9994.0,Finland
+Phần Lan,2022,Q1,69.0,Finland
+Phần Lan,2023,Q1,3352.0,Finland
+Singapore,2009,Q1,18295.0,Singapore
+Singapore,2013,Q1,42669.0,Singapore
+Singapore,2014,Q1,48474.0,Singapore
+Singapore,2015,Q1,52846.0,Singapore
+Singapore,2016,Q1,59388.0,Singapore
+Singapore,2017,Q1,62945.0,Singapore
+Singapore,2018,Q1,67795.0,Singapore
+Singapore,2019,Q1,68259.0,Singapore
+Singapore,2020,Q1,51726.0,Singapore
+Singapore,2022,Q1,1012.0,Singapore
+Singapore,2023,Q1,76478.0,Singapore
+Singapore,2024,Q1,83085.0,Singapore
+Singapore,2025,Q1,82481.0,Singapore
+Singapore,2026,Q1,107415.0,Singapore
+Thái Lan,2009,Q1,42274.0,Thailand
+Thái Lan,2010,Q1,46901.0,Thailand
+Thái Lan,2011,Q1,36463.0,Thailand
+Thái Lan,2013,Q1,60181.0,Thailand
+Thái Lan,2014,Q1,65648.0,Thailand
+Thái Lan,2015,Q1,54067.0,Thailand
+Thái Lan,2016,Q1,66790.0,Thailand
+Thái Lan,2017,Q1,78591.0,Thailand
+Thái Lan,2018,Q1,83437.0,Thailand
+Thái Lan,2019,Q1,124588.0,Thailand
+Thái Lan,2020,Q1,125725.0,Thailand
+Thái Lan,2022,Q1,1498.0,Thailand
+Thái Lan,2023,Q1,145131.0,Thailand
+Thái Lan,2024,Q1,118542.0,Thailand
+Thái Lan,2025,Q1,124129.0,Thailand
+Thái Lan,2026,Q1,132215.0,Thailand
+Thụy sĩ,2013,Q1,8418.0,Thụy sĩ
+Thụy sĩ,2014,Q1,11974.0,Thụy sĩ
+Thụy sĩ,2015,Q1,6032.0,Thụy sĩ
+Thụy sĩ,2016,Q1,10005.0,Thụy sĩ
+Thụy sĩ,2017,Q1,10328.0,Thụy sĩ
+Thụy sĩ,2018,Q1,10596.0,Thụy sĩ
+Thụy sĩ,2019,Q1,11807.0,Thụy sĩ
+Thụy sĩ,2020,Q1,10845.0,Thụy sĩ
+Thụy sĩ,2022,Q1,209.0,Thụy sĩ
+Thụy sĩ,2023,Q1,7562.0,Thụy sĩ
+Thụy sĩ,2024,Q1,10430.0,Thụy sĩ
+Thụy sĩ,2025,Q1,11905.0,Thụy sĩ
+Thụy sĩ,2026,Q1,15149.0,Thụy sĩ
+Thụy Điển,2013,Q1,13033.0,Sweden
+Thụy Điển,2014,Q1,11769.0,Sweden
+Thụy Điển,2015,Q1,15311.0,Sweden
+Thụy Điển,2016,Q1,16584.0,Sweden
+Thụy Điển,2017,Q1,20995.0,Sweden
+Thụy Điển,2018,Q1,25324.0,Sweden
+Thụy Điển,2019,Q1,27969.0,Sweden
+Thụy Điển,2020,Q1,21857.0,Sweden
+Thụy Điển,2022,Q1,238.0,Sweden
+Thụy Điển,2023,Q1,8889.0,Sweden
+Thụy Điển,2024,Q1,12679.0,Sweden
+Thụy Điển,2025,Q1,15046.0,Sweden
+Thụy Điển,2026,Q1,19191.0,Sweden
+Trung Quốc,2009,Q1,136204.0,China
+Trung Quốc,2010,Q1,219042.0,China
+Trung Quốc,2011,Q1,287573.0,China
+Trung Quốc,2012,Q1,391611.0,China
+Trung Quốc,2013,Q1,404430.0,China
+Trung Quốc,2014,Q1,587475.0,China
+Trung Quốc,2015,Q1,340753.0,China
+Trung Quốc,2016,Q1,580524.0,China
+Trung Quốc,2017,Q1,949199.0,China
+Trung Quốc,2018,Q1,1356434.0,China
+Trung Quốc,2019,Q1,1281073.0,China
+Trung Quốc,2020,Q1,871819.0,China
+Trung Quốc,2022,Q1,14951.0,China
+Trung Quốc,2023,Q1,140233.0,China
+Trung Quốc,2024,Q1,889834.0,China
+Trung Quốc,2025,Q1,1586593.0,China
+Trung Quốc,2026,Q1,1405169.0,China
+Tây Ban Nha,2013,Q1,5211.0,Spain
+Tây Ban Nha,2014,Q1,6556.0,Spain
+Tây Ban Nha,2015,Q1,7816.0,Spain
+Tây Ban Nha,2016,Q1,9187.0,Spain
+Tây Ban Nha,2017,Q1,11339.0,Spain
+Tây Ban Nha,2018,Q1,11797.0,Spain
+Tây Ban Nha,2019,Q1,12538.0,Spain
+Tây Ban Nha,2020,Q1,11783.0,Spain
+Tây Ban Nha,2022,Q1,298.0,Spain
+Tây Ban Nha,2023,Q1,10275.0,Spain
+Tây Ban Nha,2024,Q1,15378.0,Spain
+Tây Ban Nha,2025,Q1,18066.0,Spain
+Tây Ban Nha,2026,Q1,20077.0,Spain
+Vương quốc Anh,2011,Q1,13653.0,Vương quốc Anh
+Vương quốc Anh,2012,Q1,17863.0,Vương quốc Anh
+Vương quốc Anh,2013,Q1,47031.0,Vương quốc Anh
+Vương quốc Anh,2014,Q1,58271.0,Vương quốc Anh
+Vương quốc Anh,2015,Q1,57749.0,Vương quốc Anh
+Vương quốc Anh,2016,Q1,68672.0,Vương quốc Anh
+Vương quốc Anh,2017,Q1,75016.0,Vương quốc Anh
+Vương quốc Anh,2018,Q1,85808.0,Vương quốc Anh
+Vương quốc Anh,2019,Q1,89879.0,Vương quốc Anh
+Vương quốc Anh,2020,Q1,81433.0,Vương quốc Anh
+Vương quốc Anh,2022,Q1,1606.0,Vương quốc Anh
+Vương quốc Anh,2023,Q1,67202.0,Vương quốc Anh
+Vương quốc Anh,2024,Q1,91998.0,Vương quốc Anh
+Vương quốc Anh,2025,Q1,113609.0,Vương quốc Anh
+Vương quốc Anh,2026,Q1,127241.0,Vương quốc Anh
+Úc,2009,Q1,54333.0,Australia
+Úc,2010,Q1,78120.0,Australia
+Úc,2011,Q1,87616.0,Australia
+Úc,2012,Q1,83403.0,Australia
+Úc,2013,Q1,87342.0,Australia
+Úc,2014,Q1,95346.0,Australia
+Úc,2015,Q1,105767.0,Australia
+Úc,2016,Q1,91984.0,Australia
+Úc,2017,Q1,95156.0,Australia
+Úc,2018,Q1,108530.0,Australia
+Úc,2019,Q1,108522.0,Australia
+Úc,2020,Q1,92227.0,Australia
+Úc,2022,Q1,2989.0,Australia
+Úc,2023,Q1,96907.0,Australia
+Úc,2024,Q1,132542.0,Australia
+Úc,2025,Q1,147120.0,Australia
+Úc,2026,Q1,174177.0,Australia
+Ý,2013,Q1,9146.0,Italy
+Ý,2014,Q1,11041.0,Italy
+Ý,2015,Q1,14615.0,Italy
+Ý,2016,Q1,14968.0,Italy
+Ý,2017,Q1,16987.0,Italy
+Ý,2018,Q1,20793.0,Italy
+Ý,2019,Q1,22927.0,Italy
+Ý,2020,Q1,17774.0,Italy
+Ý,2022,Q1,436.0,Italy
+Ý,2023,Q1,13654.0,Italy
+Ý,2024,Q1,24603.0,Italy
+Ý,2025,Q1,31733.0,Italy
+Ý,2026,Q1,38107.0,Italy
+Đan mạch,2013,Q1,8524.0,Đan mạch
+Đan mạch,2014,Q1,9906.0,Đan mạch
+Đan mạch,2015,Q1,9494.0,Đan mạch
+Đan mạch,2016,Q1,11596.0,Đan mạch
+Đan mạch,2017,Q1,12645.0,Đan mạch
+Đan mạch,2018,Q1,15303.0,Đan mạch
+Đan mạch,2019,Q1,16962.0,Đan mạch
+Đan mạch,2020,Q1,14444.0,Đan mạch
+Đan mạch,2022,Q1,290.0,Đan mạch
+Đan mạch,2023,Q1,9395.0,Đan mạch
+Đan mạch,2024,Q1,13754.0,Đan mạch
+Đan mạch,2025,Q1,16176.0,Đan mạch
+Đan mạch,2026,Q1,19470.0,Đan mạch
+Đài Loan,2009,Q1,72259.0,Taiwan
+Đài Loan,2010,Q1,86194.0,Taiwan
+Đài Loan,2011,Q1,88932.0,Taiwan
+Đài Loan,2012,Q1,118645.0,Taiwan
+Đài Loan,2013,Q1,96703.0,Taiwan
+Đài Loan,2014,Q1,109455.0,Taiwan
+Đài Loan,2015,Q1,92808.0,Taiwan
+Đài Loan,2016,Q1,122665.0,Taiwan
+Đài Loan,2017,Q1,150142.0,Taiwan
+Đài Loan,2018,Q1,164370.0,Taiwan
+Đài Loan,2019,Q1,207095.0,Taiwan
+Đài Loan,2020,Q1,192216.0,Taiwan
+Đài Loan,2022,Q1,8413.0,Taiwan
+Đài Loan,2023,Q1,131908.0,Taiwan
+Đài Loan,2024,Q1,299830.0,Taiwan
+Đài Loan,2025,Q1,330517.0,Taiwan
+Đài Loan,2026,Q1,316281.0,Taiwan
+Đức,2013,Q1,18485.0,Germany
+Đức,2014,Q1,45988.0,Germany
+Đức,2015,Q1,31763.0,Germany
+Đức,2016,Q1,54690.0,Germany
+Đức,2017,Q1,61923.0,Germany
+Đức,2018,Q1,68005.0,Germany
+Đức,2019,Q1,72211.0,Germany
+Đức,2020,Q1,61465.0,Germany
+Đức,2022,Q1,2236.0,Germany
+Đức,2023,Q1,55611.0,Germany
+Đức,2024,Q1,78087.0,Germany
+Đức,2025,Q1,96260.0,Germany
+Đức,2026,Q1,112320.0,Germany
+Ấn Độ,2018,Q1,31848.0,India
+Ấn Độ,2019,Q1,38298.0,India
+Ấn Độ,2020,Q1,37416.0,India
+Ấn Độ,2023,Q1,83057.0,India
+Ấn Độ,2024,Q1,116273.0,India
+Ấn Độ,2025,Q1,143355.0,India
+Ấn Độ,2026,Q1,242656.0,India
+Ba Lan,2024,Q2,6264.0,Poland
+Ba Lan,2025,Q2,7308.0,Poland
+Ba Lan,2026,Q2,8745.0,Poland
+Bỉ,2013,Q2,4555.0,Belgium
+Bỉ,2014,Q2,5101.0,Belgium
+Bỉ,2015,Q2,4855.0,Belgium
+Bỉ,2016,Q2,4936.0,Belgium
+Bỉ,2017,Q2,5806.0,Belgium
+Bỉ,2018,Q2,6642.0,Belgium
+Bỉ,2019,Q2,6817.0,Belgium
+Bỉ,2022,Q2,1563.0,Belgium
+Bỉ,2023,Q2,5391.0,Belgium
+Bỉ,2024,Q2,6403.0,Belgium
+Bỉ,2025,Q2,6728.0,Belgium
+Bỉ,2026,Q2,6975.0,Belgium
+Campuchia,2010,Q2,58480.0,Cambodia
+Campuchia,2011,Q2,105846.0,Cambodia
+Campuchia,2012,Q2,73779.0,Cambodia
+Campuchia,2013,Q2,81779.0,Cambodia
+Campuchia,2014,Q2,103630.0,Cambodia
+Campuchia,2015,Q2,34096.0,Cambodia
+Campuchia,2016,Q2,43332.0,Cambodia
+Campuchia,2017,Q2,58906.0,Cambodia
+Campuchia,2018,Q2,51661.0,Cambodia
+Campuchia,2019,Q2,24524.0,Cambodia
+Campuchia,2022,Q2,33909.0,Cambodia
+Campuchia,2023,Q2,102300.0,Cambodia
+Campuchia,2024,Q2,117745.0,Cambodia
+Campuchia,2025,Q2,126360.0,Cambodia
+Campuchia,2026,Q2,125022.0,Cambodia
+Canada,2009,Q2,17467.0,Canada
+Canada,2013,Q2,22852.0,Canada
+Canada,2014,Q2,23563.0,Canada
+Canada,2015,Q2,22015.0,Canada
+Canada,2016,Q2,25758.0,Canada
+Canada,2017,Q2,30821.0,Canada
+Canada,2018,Q2,34239.0,Canada
+Canada,2019,Q2,35700.0,Canada
+Canada,2022,Q2,7810.0,Canada
+Canada,2023,Q2,29558.0,Canada
+Canada,2024,Q2,34976.0,Canada
+Canada,2025,Q2,32876.0,Canada
+Canada,2026,Q2,34908.0,Canada
+Cộng hòa Séc,2026,Q2,1321.0,Czech Republic
+Hoa Kỳ,2009,Q2,101417.0,USA
+Hoa Kỳ,2010,Q2,103126.0,USA
+Hoa Kỳ,2011,Q2,110168.0,USA
+Hoa Kỳ,2012,Q2,110095.0,USA
+Hoa Kỳ,2013,Q2,104978.0,USA
+Hoa Kỳ,2014,Q2,106239.0,USA
+Hoa Kỳ,2015,Q2,111735.0,USA
+Hoa Kỳ,2016,Q2,128222.0,USA
+Hoa Kỳ,2017,Q2,140543.0,USA
+Hoa Kỳ,2018,Q2,165954.0,USA
+Hoa Kỳ,2019,Q2,173384.0,USA
+Hoa Kỳ,2022,Q2,57914.0,USA
+Hoa Kỳ,2023,Q2,166944.0,USA
+Hoa Kỳ,2024,Q2,182742.0,USA
+Hoa Kỳ,2025,Q2,190562.0,USA
+Hoa Kỳ,2026,Q2,143412.0,USA
+Hà Lan,2013,Q2,9288.0,Netherlands
+Hà Lan,2014,Q2,10008.0,Netherlands
+Hà Lan,2015,Q2,9547.0,Netherlands
+Hà Lan,2016,Q2,12265.0,Netherlands
+Hà Lan,2017,Q2,13907.0,Netherlands
+Hà Lan,2018,Q2,15638.0,Netherlands
+Hà Lan,2019,Q2,16388.0,Netherlands
+Hà Lan,2022,Q2,4484.0,Netherlands
+Hà Lan,2023,Q2,13993.0,Netherlands
+Hà Lan,2024,Q2,16662.0,Netherlands
+Hà Lan,2025,Q2,17507.0,Netherlands
+Hà Lan,2026,Q2,15320.0,Netherlands
+Hàn Quốc,2009,Q2,100893.0,South Korea
+Hàn Quốc,2010,Q2,119316.0,South Korea
+Hàn Quốc,2011,Q2,121712.0,South Korea
+Hàn Quốc,2012,Q2,163604.0,South Korea
+Hàn Quốc,2013,Q2,161494.0,South Korea
+Hàn Quốc,2014,Q2,167138.0,South Korea
+Hàn Quốc,2015,Q2,239781.0,South Korea
+Hàn Quốc,2016,Q2,332912.0,South Korea
+Hàn Quốc,2017,Q2,538793.0,South Korea
+Hàn Quốc,2018,Q2,821142.0,South Korea
+Hàn Quốc,2019,Q2,970808.0,South Korea
+Hàn Quốc,2022,Q2,93247.0,South Korea
+Hàn Quốc,2023,Q2,791245.0,South Korea
+Hàn Quốc,2024,Q2,1048802.0,South Korea
+Hàn Quốc,2025,Q2,947842.0,South Korea
+Hàn Quốc,2026,Q2,597981.0,South Korea
+Hồng Kông,2013,Q2,2409.0,Hong Kong
+Hồng Kông,2014,Q2,4274.0,Hong Kong
+Hồng Kông,2015,Q2,4439.0,Hong Kong
+Hồng Kông,2016,Q2,9247.0,Hong Kong
+Hồng Kông,2017,Q2,11572.0,Hong Kong
+Hồng Kông,2018,Q2,13404.0,Hong Kong
+Hồng Kông,2019,Q2,8855.0,Hong Kong
+Hồng Kông,2022,Q2,17.0,Hong Kong
+Hồng Kông,2023,Q2,43.0,Hong Kong
+Indonesia,2013,Q2,18000.0,Indonesia
+Indonesia,2014,Q2,19037.0,Indonesia
+Indonesia,2015,Q2,14467.0,Indonesia
+Indonesia,2016,Q2,15992.0,Indonesia
+Indonesia,2017,Q2,19078.0,Indonesia
+Indonesia,2018,Q2,23794.0,Indonesia
+Indonesia,2019,Q2,30004.0,Indonesia
+Indonesia,2022,Q2,5789.0,Indonesia
+Indonesia,2023,Q2,23570.0,Indonesia
+Indonesia,2024,Q2,50418.0,Indonesia
+Indonesia,2025,Q2,58038.0,Indonesia
+Indonesia,2026,Q2,45509.0,Indonesia
+Lào,2013,Q2,25012.0,Laos
+Lào,2014,Q2,38359.0,Laos
+Lào,2015,Q2,20934.0,Laos
+Lào,2016,Q2,28989.0,Laos
+Lào,2017,Q2,32646.0,Laos
+Lào,2018,Q2,26196.0,Laos
+Lào,2019,Q2,19971.0,Laos
+Lào,2022,Q2,13937.0,Laos
+Lào,2023,Q2,26233.0,Laos
+Lào,2024,Q2,31998.0,Laos
+Lào,2025,Q2,37840.0,Laos
+Lào,2026,Q2,27325.0,Laos
+Malaysia,2009,Q2,41914.0,Malaysia
+Malaysia,2010,Q2,54327.0,Malaysia
+Malaysia,2011,Q2,59175.0,Malaysia
+Malaysia,2012,Q2,75334.0,Malaysia
+Malaysia,2013,Q2,93192.0,Malaysia
+Malaysia,2014,Q2,101484.0,Malaysia
+Malaysia,2015,Q2,94439.0,Malaysia
+Malaysia,2016,Q2,105476.0,Malaysia
+Malaysia,2017,Q2,118486.0,Malaysia
+Malaysia,2018,Q2,135831.0,Malaysia
+Malaysia,2019,Q2,154856.0,Malaysia
+Malaysia,2022,Q2,21018.0,Malaysia
+Malaysia,2023,Q2,116613.0,Malaysia
+Malaysia,2024,Q2,109874.0,Malaysia
+Malaysia,2025,Q2,125769.0,Malaysia
+Malaysia,2026,Q2,95398.0,Malaysia
+Na Uy,2013,Q2,4376.0,Norway
+Na Uy,2014,Q2,4501.0,Norway
+Na Uy,2015,Q2,4015.0,Norway
+Na Uy,2016,Q2,3985.0,Norway
+Na Uy,2017,Q2,4835.0,Norway
+Na Uy,2018,Q2,5055.0,Norway
+Na Uy,2019,Q2,5121.0,Norway
+Na Uy,2022,Q2,1637.0,Norway
+Na Uy,2023,Q2,3996.0,Norway
+Na Uy,2024,Q2,4303.0,Norway
+Na Uy,2025,Q2,6093.0,Norway
+Na Uy,2026,Q2,3775.0,Norway
+New Zealand,2013,Q2,7510.0,New Zealand
+New Zealand,2014,Q2,8874.0,New Zealand
+New Zealand,2015,Q2,7819.0,New Zealand
+New Zealand,2016,Q2,9549.0,New Zealand
+New Zealand,2017,Q2,11230.0,New Zealand
+New Zealand,2018,Q2,11397.0,New Zealand
+New Zealand,2019,Q2,12621.0,New Zealand
+New Zealand,2022,Q2,1476.0,New Zealand
+New Zealand,2023,Q2,9360.0,New Zealand
+New Zealand,2024,Q2,11773.0,New Zealand
+New Zealand,2025,Q2,14877.0,New Zealand
+New Zealand,2026,Q2,13465.0,New Zealand
+Nga,2012,Q2,30526.0,Russia
+Nga,2013,Q2,69202.0,Russia
+Nga,2014,Q2,62360.0,Russia
+Nga,2015,Q2,72869.0,Russia
+Nga,2016,Q2,95614.0,Russia
+Nga,2017,Q2,138046.0,Russia
+Nga,2018,Q2,135272.0,Russia
+Nga,2019,Q2,143163.0,Russia
+Nga,2022,Q2,4260.0,Russia
+Nga,2023,Q2,26847.0,Russia
+Nga,2024,Q2,49365.0,Russia
+Nga,2025,Q2,135195.0,Russia
+Nga,2026,Q2,250683.0,Russia
+Nhật Bản,2009,Q2,79090.0,Japan
+Nhật Bản,2010,Q2,100015.0,Japan
+Nhật Bản,2011,Q2,107710.0,Japan
+Nhật Bản,2012,Q2,129778.0,Japan
+Nhật Bản,2013,Q2,138111.0,Japan
+Nhật Bản,2014,Q2,147077.0,Japan
+Nhật Bản,2015,Q2,144678.0,Japan
+Nhật Bản,2016,Q2,163476.0,Japan
+Nhật Bản,2017,Q2,177254.0,Japan
+Nhật Bản,2018,Q2,188585.0,Japan
+Nhật Bản,2019,Q2,222344.0,Japan
+Nhật Bản,2022,Q2,23730.0,Japan
+Nhật Bản,2023,Q2,123871.0,Japan
+Nhật Bản,2024,Q2,156603.0,Japan
+Nhật Bản,2025,Q2,167141.0,Japan
+Nhật Bản,2026,Q2,137430.0,Japan
+Philippines,2013,Q2,27384.0,Philippines
+Philippines,2014,Q2,30434.0,Philippines
+Philippines,2015,Q2,26650.0,Philippines
+Philippines,2016,Q2,27657.0,Philippines
+Philippines,2017,Q2,35849.0,Philippines
+Philippines,2018,Q2,39244.0,Philippines
+Philippines,2019,Q2,45783.0,Philippines
+Philippines,2022,Q2,7814.0,Philippines
+Philippines,2023,Q2,35116.0,Philippines
+Philippines,2024,Q2,56739.0,Philippines
+Philippines,2025,Q2,121379.0,Philippines
+Philippines,2026,Q2,138702.0,Philippines
+Pháp,2009,Q2,43390.0,France
+Pháp,2010,Q2,44122.0,France
+Pháp,2011,Q2,44653.0,France
+Pháp,2012,Q2,49918.0,France
+Pháp,2013,Q2,51141.0,France
+Pháp,2014,Q2,50844.0,France
+Pháp,2015,Q2,48089.0,France
+Pháp,2016,Q2,56424.0,France
+Pháp,2017,Q2,61270.0,France
+Pháp,2018,Q2,69425.0,France
+Pháp,2019,Q2,67797.0,France
+Pháp,2022,Q2,14420.0,France
+Pháp,2023,Q2,49446.0,France
+Pháp,2024,Q2,66036.0,France
+Pháp,2025,Q2,71338.0,France
+Pháp,2026,Q2,65891.0,France
+Phần Lan,2013,Q2,2245.0,Finland
+Phần Lan,2014,Q2,2136.0,Finland
+Phần Lan,2015,Q2,2237.0,Finland
+Phần Lan,2016,Q2,2174.0,Finland
+Phần Lan,2017,Q2,2752.0,Finland
+Phần Lan,2018,Q2,3871.0,Finland
+Phần Lan,2019,Q2,2941.0,Finland
+Phần Lan,2022,Q2,839.0,Finland
+Phần Lan,2023,Q2,2122.0,Finland
+Singapore,2011,Q2,18110.0,Singapore
+Singapore,2013,Q2,48523.0,Singapore
+Singapore,2014,Q2,49853.0,Singapore
+Singapore,2015,Q2,58737.0,Singapore
+Singapore,2016,Q2,65324.0,Singapore
+Singapore,2017,Q2,69501.0,Singapore
+Singapore,2018,Q2,72879.0,Singapore
+Singapore,2019,Q2,76030.0,Singapore
+Singapore,2022,Q2,32693.0,Singapore
+Singapore,2023,Q2,78477.0,Singapore
+Singapore,2024,Q2,87127.0,Singapore
+Singapore,2025,Q2,96528.0,Singapore
+Singapore,2026,Q2,70743.0,Singapore
+Thái Lan,2009,Q2,45135.0,Thailand
+Thái Lan,2010,Q2,56238.0,Thailand
+Thái Lan,2011,Q2,14660.0,Thailand
+Thái Lan,2012,Q2,37321.0,Thailand
+Thái Lan,2013,Q2,69175.0,Thailand
+Thái Lan,2014,Q2,77410.0,Thailand
+Thái Lan,2015,Q2,49694.0,Thailand
+Thái Lan,2016,Q2,68980.0,Thailand
+Thái Lan,2017,Q2,73797.0,Thailand
+Thái Lan,2018,Q2,85322.0,Thailand
+Thái Lan,2019,Q2,120730.0,Thailand
+Thái Lan,2022,Q2,20538.0,Thailand
+Thái Lan,2023,Q2,120832.0,Thailand
+Thái Lan,2024,Q2,108051.0,Thailand
+Thái Lan,2025,Q2,111842.0,Thailand
+Thái Lan,2026,Q2,91065.0,Thailand
+Thụy sĩ,2013,Q2,5898.0,Thụy sĩ
+Thụy sĩ,2014,Q2,6561.0,Thụy sĩ
+Thụy sĩ,2015,Q2,5752.0,Thụy sĩ
+Thụy sĩ,2016,Q2,6095.0,Thụy sĩ
+Thụy sĩ,2017,Q2,7015.0,Thụy sĩ
+Thụy sĩ,2018,Q2,7460.0,Thụy sĩ
+Thụy sĩ,2019,Q2,7562.0,Thụy sĩ
+Thụy sĩ,2022,Q2,1754.0,Thụy sĩ
+Thụy sĩ,2023,Q2,6189.0,Thụy sĩ
+Thụy sĩ,2024,Q2,7260.0,Thụy sĩ
+Thụy sĩ,2025,Q2,7586.0,Thụy sĩ
+Thụy sĩ,2026,Q2,7531.0,Thụy sĩ
+Thụy Điển,2013,Q2,5320.0,Sweden
+Thụy Điển,2014,Q2,5561.0,Sweden
+Thụy Điển,2015,Q2,5272.0,Sweden
+Thụy Điển,2016,Q2,6448.0,Sweden
+Thụy Điển,2017,Q2,6979.0,Sweden
+Thụy Điển,2018,Q2,7195.0,Sweden
+Thụy Điển,2019,Q2,6914.0,Sweden
+Thụy Điển,2022,Q2,1804.0,Sweden
+Thụy Điển,2023,Q2,4930.0,Sweden
+Thụy Điển,2024,Q2,5444.0,Sweden
+Thụy Điển,2025,Q2,6368.0,Sweden
+Thụy Điển,2026,Q2,4947.0,Sweden
+Trung Quốc,2009,Q2,115004.0,China
+Trung Quốc,2010,Q2,209433.0,China
+Trung Quốc,2011,Q2,333983.0,China
+Trung Quốc,2012,Q2,290664.0,China
+Trung Quốc,2013,Q2,431234.0,China
+Trung Quốc,2014,Q2,547403.0,China
+Trung Quốc,2015,Q2,464181.0,China
+Trung Quốc,2016,Q2,624036.0,China
+Trung Quốc,2017,Q2,938296.0,China
+Trung Quốc,2018,Q2,1212408.0,China
+Trung Quốc,2019,Q2,1202258.0,China
+Trung Quốc,2022,Q2,27229.0,China
+Trung Quốc,2023,Q2,416918.0,China
+Trung Quốc,2024,Q2,1001262.0,China
+Trung Quốc,2025,Q2,1140447.0,China
+Trung Quốc,2026,Q2,893229.0,China
+Tây Ban Nha,2013,Q2,5649.0,Spain
+Tây Ban Nha,2014,Q2,7098.0,Spain
+Tây Ban Nha,2015,Q2,7437.0,Spain
+Tây Ban Nha,2016,Q2,8851.0,Spain
+Tây Ban Nha,2017,Q2,11866.0,Spain
+Tây Ban Nha,2018,Q2,13523.0,Spain
+Tây Ban Nha,2019,Q2,14297.0,Spain
+Tây Ban Nha,2022,Q2,2631.0,Spain
+Tây Ban Nha,2023,Q2,12407.0,Spain
+Tây Ban Nha,2024,Q2,16949.0,Spain
+Tây Ban Nha,2025,Q2,17970.0,Spain
+Tây Ban Nha,2026,Q2,10784.0,Spain
+Vương quốc Anh,2011,Q2,12594.0,Vương quốc Anh
+Vương quốc Anh,2013,Q2,44009.0,Vương quốc Anh
+Vương quốc Anh,2014,Q2,51086.0,Vương quốc Anh
+Vương quốc Anh,2015,Q2,47294.0,Vương quốc Anh
+Vương quốc Anh,2016,Q2,59636.0,Vương quốc Anh
+Vương quốc Anh,2017,Q2,70027.0,Vương quốc Anh
+Vương quốc Anh,2018,Q2,72240.0,Vương quốc Anh
+Vương quốc Anh,2019,Q2,75174.0,Vương quốc Anh
+Vương quốc Anh,2022,Q2,15855.0,Vương quốc Anh
+Vương quốc Anh,2023,Q2,62313.0,Vương quốc Anh
+Vương quốc Anh,2024,Q2,75295.0,Vương quốc Anh
+Vương quốc Anh,2025,Q2,85757.0,Vương quốc Anh
+Vương quốc Anh,2026,Q2,70409.0,Vương quốc Anh
+Úc,2009,Q2,49575.0,Australia
+Úc,2010,Q2,62720.0,Australia
+Úc,2011,Q2,63425.0,Australia
+Úc,2012,Q2,66125.0,Australia
+Úc,2013,Q2,73138.0,Australia
+Úc,2014,Q2,74690.0,Australia
+Úc,2015,Q2,68972.0,Australia
+Úc,2016,Q2,73076.0,Australia
+Úc,2017,Q2,86370.0,Australia
+Úc,2018,Q2,92295.0,Australia
+Úc,2019,Q2,91794.0,Australia
+Úc,2022,Q2,25390.0,Australia
+Úc,2023,Q2,87892.0,Australia
+Úc,2024,Q2,110875.0,Australia
+Úc,2025,Q2,128845.0,Australia
+Úc,2026,Q2,118097.0,Australia
+Ý,2013,Q2,6201.0,Italy
+Ý,2014,Q2,6979.0,Italy
+Ý,2015,Q2,7054.0,Italy
+Ý,2016,Q2,9431.0,Italy
+Ý,2017,Q2,11226.0,Italy
+Ý,2018,Q2,12390.0,Italy
+Ý,2019,Q2,13795.0,Italy
+Ý,2022,Q2,3266.0,Italy
+Ý,2023,Q2,11104.0,Italy
+Ý,2024,Q2,16787.0,Italy
+Ý,2025,Q2,19575.0,Italy
+Ý,2026,Q2,13940.0,Italy
+Đan mạch,2013,Q2,4793.0,Đan mạch
+Đan mạch,2014,Q2,5291.0,Đan mạch
+Đan mạch,2015,Q2,5235.0,Đan mạch
+Đan mạch,2016,Q2,5409.0,Đan mạch
+Đan mạch,2017,Q2,6620.0,Đan mạch
+Đan mạch,2018,Q2,7338.0,Đan mạch
+Đan mạch,2019,Q2,7839.0,Đan mạch
+Đan mạch,2022,Q2,2128.0,Đan mạch
+Đan mạch,2023,Q2,6479.0,Đan mạch
+Đan mạch,2024,Q2,7294.0,Đan mạch
+Đan mạch,2025,Q2,7008.0,Đan mạch
+Đan mạch,2026,Q2,6464.0,Đan mạch
+Đài Loan,2009,Q2,67194.0,Taiwan
+Đài Loan,2010,Q2,79736.0,Taiwan
+Đài Loan,2011,Q2,87051.0,Taiwan
+Đài Loan,2012,Q2,103872.0,Taiwan
+Đài Loan,2013,Q2,85441.0,Taiwan
+Đài Loan,2014,Q2,98275.0,Taiwan
+Đài Loan,2015,Q2,102876.0,Taiwan
+Đài Loan,2016,Q2,119706.0,Taiwan
+Đài Loan,2017,Q2,147710.0,Taiwan
+Đài Loan,2018,Q2,174586.0,Taiwan
+Đài Loan,2019,Q2,223219.0,Taiwan
+Đài Loan,2022,Q2,15870.0,Taiwan
+Đài Loan,2023,Q2,190581.0,Taiwan
+Đài Loan,2024,Q2,330598.0,Taiwan
+Đài Loan,2025,Q2,299469.0,Taiwan
+Đài Loan,2026,Q2,221695.0,Taiwan
+Đức,2013,Q2,15739.0,Germany
+Đức,2014,Q2,27892.0,Germany
+Đức,2015,Q2,28144.0,Germany
+Đức,2016,Q2,32181.0,Germany
+Đức,2017,Q2,41247.0,Germany
+Đức,2018,Q2,43556.0,Germany
+Đức,2019,Q2,46253.0,Germany
+Đức,2022,Q2,13358.0,Germany
+Đức,2023,Q2,43563.0,Germany
+Đức,2024,Q2,52798.0,Germany
+Đức,2025,Q2,54590.0,Germany
+Đức,2026,Q2,48802.0,Germany
+Ấn Độ,2018,Q2,32543.0,India
+Ấn Độ,2019,Q2,38514.0,India
+Ấn Độ,2023,Q2,98115.0,India
+Ấn Độ,2024,Q2,123129.0,India
+Ấn Độ,2025,Q2,194163.0,India
+Ấn Độ,2026,Q2,165807.0,India
+Ba Lan,2024,Q3,4937.0,Poland
+Ba Lan,2025,Q3,7650.0,Poland
+Bỉ,2008,Q3,3009.0,Belgium
+Bỉ,2013,Q3,6375.0,Belgium
+Bỉ,2014,Q3,6700.0,Belgium
+Bỉ,2015,Q3,7113.0,Belgium
+Bỉ,2016,Q3,8062.0,Belgium
+Bỉ,2017,Q3,8825.0,Belgium
+Bỉ,2018,Q3,9731.0,Belgium
+Bỉ,2019,Q3,11275.0,Belgium
+Bỉ,2022,Q3,4703.0,Belgium
+Bỉ,2023,Q3,7858.0,Belgium
+Bỉ,2024,Q3,7912.0,Belgium
+Bỉ,2025,Q3,10333.0,Belgium
+Campuchia,2008,Q3,23810.0,Cambodia
+Campuchia,2010,Q3,73048.0,Cambodia
+Campuchia,2011,Q3,104821.0,Cambodia
+Campuchia,2012,Q3,72562.0,Cambodia
+Campuchia,2013,Q3,91856.0,Cambodia
+Campuchia,2014,Q3,88442.0,Cambodia
+Campuchia,2015,Q3,49805.0,Cambodia
+Campuchia,2016,Q3,61366.0,Cambodia
+Campuchia,2017,Q3,54801.0,Cambodia
+Campuchia,2018,Q3,36736.0,Cambodia
+Campuchia,2019,Q3,49997.0,Cambodia
+Campuchia,2022,Q3,69091.0,Cambodia
+Campuchia,2023,Q3,92006.0,Cambodia
+Campuchia,2024,Q3,94236.0,Cambodia
+Campuchia,2025,Q3,129599.0,Cambodia
+Canada,2008,Q3,13822.0,Canada
+Canada,2009,Q3,17808.0,Canada
+Canada,2013,Q3,21553.0,Canada
+Canada,2014,Q3,20567.0,Canada
+Canada,2015,Q3,19664.0,Canada
+Canada,2016,Q3,23209.0,Canada
+Canada,2017,Q3,24750.0,Canada
+Canada,2018,Q3,26610.0,Canada
+Canada,2019,Q3,29159.0,Canada
+Canada,2022,Q3,14033.0,Canada
+Canada,2023,Q3,23104.0,Canada
+Canada,2024,Q3,23751.0,Canada
+Canada,2025,Q3,28506.0,Canada
+Hoa Kỳ,2008,Q3,67027.0,USA
+Hoa Kỳ,2009,Q3,94431.0,USA
+Hoa Kỳ,2010,Q3,94105.0,USA
+Hoa Kỳ,2011,Q3,83685.0,USA
+Hoa Kỳ,2012,Q3,93884.0,USA
+Hoa Kỳ,2013,Q3,95581.0,USA
+Hoa Kỳ,2014,Q3,100098.0,USA
+Hoa Kỳ,2015,Q3,112322.0,USA
+Hoa Kỳ,2016,Q3,128689.0,USA
+Hoa Kỳ,2017,Q3,143201.0,USA
+Hoa Kỳ,2018,Q3,158993.0,USA
+Hoa Kỳ,2019,Q3,176029.0,USA
+Hoa Kỳ,2022,Q3,108542.0,USA
+Hoa Kỳ,2023,Q3,175081.0,USA
+Hoa Kỳ,2024,Q3,163515.0,USA
+Hoa Kỳ,2025,Q3,173444.0,USA
+Hà Lan,2008,Q3,7011.0,Netherlands
+Hà Lan,2013,Q3,14919.0,Netherlands
+Hà Lan,2014,Q3,15379.0,Netherlands
+Hà Lan,2015,Q3,16681.0,Netherlands
+Hà Lan,2016,Q3,21223.0,Netherlands
+Hà Lan,2017,Q3,23058.0,Netherlands
+Hà Lan,2018,Q3,24282.0,Netherlands
+Hà Lan,2019,Q3,25422.0,Netherlands
+Hà Lan,2022,Q3,10576.0,Netherlands
+Hà Lan,2023,Q3,20441.0,Netherlands
+Hà Lan,2024,Q3,19037.0,Netherlands
+Hà Lan,2025,Q3,25712.0,Netherlands
+Hàn Quốc,2008,Q3,64248.0,South Korea
+Hàn Quốc,2009,Q3,85681.0,South Korea
+Hàn Quốc,2010,Q3,113016.0,South Korea
+Hàn Quốc,2011,Q3,114469.0,South Korea
+Hàn Quốc,2012,Q3,156538.0,South Korea
+Hàn Quốc,2013,Q3,176206.0,South Korea
+Hàn Quốc,2014,Q3,212890.0,South Korea
+Hàn Quốc,2015,Q3,257453.0,South Korea
+Hàn Quốc,2016,Q3,392899.0,South Korea
+Hàn Quốc,2017,Q3,648092.0,South Korea
+Hàn Quốc,2018,Q3,850359.0,South Korea
+Hàn Quốc,2019,Q3,1062091.0,South Korea
+Hàn Quốc,2022,Q3,381570.0,South Korea
+Hàn Quốc,2023,Q3,982657.0,South Korea
+Hàn Quốc,2024,Q3,1086021.0,South Korea
+Hàn Quốc,2025,Q3,1029767.0,South Korea
+Hồng Kông,2008,Q3,765.0,Hong Kong
+Hồng Kông,2013,Q3,2370.0,Hong Kong
+Hồng Kông,2014,Q3,2416.0,Hong Kong
+Hồng Kông,2015,Q3,7157.0,Hong Kong
+Hồng Kông,2016,Q3,9270.0,Hong Kong
+Hồng Kông,2017,Q3,13592.0,Hong Kong
+Hồng Kông,2018,Q3,17640.0,Hong Kong
+Hồng Kông,2019,Q3,6498.0,Hong Kong
+Hồng Kông,2022,Q3,30.0,Hong Kong
+Hồng Kông,2023,Q3,12.0,Hong Kong
+Indonesia,2008,Q3,3908.0,Indonesia
+Indonesia,2013,Q3,18598.0,Indonesia
+Indonesia,2014,Q3,16864.0,Indonesia
+Indonesia,2015,Q3,17302.0,Indonesia
+Indonesia,2016,Q3,19380.0,Indonesia
+Indonesia,2017,Q3,23620.0,Indonesia
+Indonesia,2018,Q3,22235.0,Indonesia
+Indonesia,2019,Q3,25049.0,Indonesia
+Indonesia,2022,Q3,13337.0,Indonesia
+Indonesia,2023,Q3,26195.0,Indonesia
+Indonesia,2024,Q3,39501.0,Indonesia
+Indonesia,2025,Q3,47992.0,Indonesia
+Lào,2008,Q3,6911.0,Laos
+Lào,2013,Q3,45860.0,Laos
+Lào,2014,Q3,42712.0,Laos
+Lào,2015,Q3,37560.0,Laos
+Lào,2016,Q3,44489.0,Laos
+Lào,2017,Q3,47269.0,Laos
+Lào,2018,Q3,35874.0,Laos
+Lào,2019,Q3,25312.0,Laos
+Lào,2022,Q3,37523.0,Laos
+Lào,2023,Q3,42695.0,Laos
+Lào,2024,Q3,45801.0,Laos
+Lào,2025,Q3,58900.0,Laos
+Malaysia,2008,Q3,27020.0,Malaysia
+Malaysia,2009,Q3,35355.0,Malaysia
+Malaysia,2010,Q3,50664.0,Malaysia
+Malaysia,2011,Q3,53298.0,Malaysia
+Malaysia,2012,Q3,65275.0,Malaysia
+Malaysia,2013,Q3,73744.0,Malaysia
+Malaysia,2014,Q3,61099.0,Malaysia
+Malaysia,2015,Q3,76523.0,Malaysia
+Malaysia,2016,Q3,87982.0,Malaysia
+Malaysia,2017,Q3,103233.0,Malaysia
+Malaysia,2018,Q3,116739.0,Malaysia
+Malaysia,2019,Q3,134802.0,Malaysia
+Malaysia,2022,Q3,54423.0,Malaysia
+Malaysia,2023,Q3,101480.0,Malaysia
+Malaysia,2024,Q3,102930.0,Malaysia
+Malaysia,2025,Q3,138393.0,Malaysia
+Na Uy,2008,Q3,3420.0,Norway
+Na Uy,2013,Q3,6237.0,Norway
+Na Uy,2014,Q3,6641.0,Norway
+Na Uy,2015,Q3,6038.0,Norway
+Na Uy,2016,Q3,6408.0,Norway
+Na Uy,2017,Q3,6993.0,Norway
+Na Uy,2018,Q3,7335.0,Norway
+Na Uy,2019,Q3,7690.0,Norway
+Na Uy,2022,Q3,3443.0,Norway
+Na Uy,2023,Q3,7444.0,Norway
+Na Uy,2024,Q3,7021.0,Norway
+Na Uy,2025,Q3,7816.0,Norway
+New Zealand,2008,Q3,3868.0,New Zealand
+New Zealand,2013,Q3,8414.0,New Zealand
+New Zealand,2014,Q3,8862.0,New Zealand
+New Zealand,2015,Q3,8462.0,New Zealand
+New Zealand,2016,Q3,14299.0,New Zealand
+New Zealand,2017,Q3,16706.0,New Zealand
+New Zealand,2018,Q3,16672.0,New Zealand
+New Zealand,2019,Q3,13185.0,New Zealand
+New Zealand,2022,Q3,4007.0,New Zealand
+New Zealand,2023,Q3,10264.0,New Zealand
+New Zealand,2024,Q3,12360.0,New Zealand
+New Zealand,2025,Q3,15080.0,New Zealand
+Nga,2008,Q3,5756.0,Russia
+Nga,2013,Q3,52146.0,Russia
+Nga,2014,Q3,70946.0,Russia
+Nga,2015,Q3,67635.0,Russia
+Nga,2016,Q3,94705.0,Russia
+Nga,2017,Q3,107133.0,Russia
+Nga,2018,Q3,116593.0,Russia
+Nga,2019,Q3,119387.0,Russia
+Nga,2022,Q3,8041.0,Russia
+Nga,2023,Q3,26325.0,Russia
+Nga,2024,Q3,50791.0,Russia
+Nga,2025,Q3,175312.0,Russia
+Nhật Bản,2008,Q3,67384.0,Japan
+Nhật Bản,2009,Q3,89891.0,Japan
+Nhật Bản,2010,Q3,106979.0,Japan
+Nhật Bản,2011,Q3,105572.0,Japan
+Nhật Bản,2012,Q3,139140.0,Japan
+Nhật Bản,2013,Q3,155517.0,Japan
+Nhật Bản,2014,Q3,168582.0,Japan
+Nhật Bản,2015,Q3,181707.0,Japan
+Nhật Bản,2016,Q3,199305.0,Japan
+Nhật Bản,2017,Q3,219488.0,Japan
+Nhật Bản,2018,Q3,219689.0,Japan
+Nhật Bản,2019,Q3,256833.0,Japan
+Nhật Bản,2022,Q3,68137.0,Japan
+Nhật Bản,2023,Q3,173357.0,Japan
+Nhật Bản,2024,Q3,193368.0,Japan
+Nhật Bản,2025,Q3,224454.0,Japan
+Philippines,2008,Q3,7598.0,Philippines
+Philippines,2013,Q3,24788.0,Philippines
+Philippines,2014,Q3,25734.0,Philippines
+Philippines,2015,Q3,24887.0,Philippines
+Philippines,2016,Q3,28509.0,Philippines
+Philippines,2017,Q3,32160.0,Philippines
+Philippines,2018,Q3,37108.0,Philippines
+Philippines,2019,Q3,42870.0,Philippines
+Philippines,2022,Q3,16101.0,Philippines
+Philippines,2023,Q3,42436.0,Philippines
+Philippines,2024,Q3,69138.0,Philippines
+Philippines,2025,Q3,119118.0,Philippines
+Pháp,2008,Q3,25443.0,France
+Pháp,2009,Q3,39723.0,France
+Pháp,2010,Q3,45928.0,France
+Pháp,2011,Q3,42915.0,France
+Pháp,2012,Q3,47047.0,France
+Pháp,2013,Q3,48525.0,France
+Pháp,2014,Q3,48512.0,France
+Pháp,2015,Q3,48843.0,France
+Pháp,2016,Q3,55592.0,France
+Pháp,2017,Q3,57066.0,France
+Pháp,2018,Q3,60193.0,France
+Pháp,2019,Q3,60772.0,France
+Pháp,2022,Q3,25761.0,France
+Pháp,2023,Q3,48725.0,France
+Pháp,2024,Q3,52874.0,France
+Pháp,2025,Q3,69893.0,France
+Phần Lan,2008,Q3,701.0,Finland
+Phần Lan,2013,Q3,2501.0,Finland
+Phần Lan,2014,Q3,2528.0,Finland
+Phần Lan,2015,Q3,1562.0,Finland
+Phần Lan,2016,Q3,1504.0,Finland
+Phần Lan,2017,Q3,1718.0,Finland
+Phần Lan,2018,Q3,1826.0,Finland
+Phần Lan,2019,Q3,1980.0,Finland
+Phần Lan,2022,Q3,985.0,Finland
+Phần Lan,2023,Q3,1530.0,Finland
+Singapore,2008,Q3,24951.0,Singapore
+Singapore,2011,Q3,16053.0,Singapore
+Singapore,2013,Q3,45077.0,Singapore
+Singapore,2014,Q3,43700.0,Singapore
+Singapore,2015,Q3,54846.0,Singapore
+Singapore,2016,Q3,55894.0,Singapore
+Singapore,2017,Q3,60707.0,Singapore
+Singapore,2018,Q3,62107.0,Singapore
+Singapore,2019,Q3,70839.0,Singapore
+Singapore,2022,Q3,54348.0,Singapore
+Singapore,2023,Q3,74052.0,Singapore
+Singapore,2024,Q3,71088.0,Singapore
+Singapore,2025,Q3,89178.0,Singapore
+Thái Lan,2008,Q3,25312.0,Thailand
+Thái Lan,2009,Q3,30144.0,Thailand
+Thái Lan,2010,Q3,51843.0,Thailand
+Thái Lan,2011,Q3,29842.0,Thailand
+Thái Lan,2012,Q3,54391.0,Thailand
+Thái Lan,2013,Q3,65675.0,Thailand
+Thái Lan,2014,Q3,58754.0,Thailand
+Thái Lan,2015,Q3,40904.0,Thailand
+Thái Lan,2016,Q3,53666.0,Thailand
+Thái Lan,2017,Q3,58855.0,Thailand
+Thái Lan,2018,Q3,67828.0,Thailand
+Thái Lan,2019,Q3,99987.0,Thailand
+Thái Lan,2022,Q3,60914.0,Thailand
+Thái Lan,2023,Q3,85263.0,Thailand
+Thái Lan,2024,Q3,74375.0,Thailand
+Thái Lan,2025,Q3,90546.0,Thailand
+Thụy sĩ,2008,Q3,3220.0,Thụy sĩ
+Thụy sĩ,2013,Q3,6192.0,Thụy sĩ
+Thụy sĩ,2014,Q3,6477.0,Thụy sĩ
+Thụy sĩ,2015,Q3,6046.0,Thụy sĩ
+Thụy sĩ,2016,Q3,6691.0,Thụy sĩ
+Thụy sĩ,2017,Q3,6654.0,Thụy sĩ
+Thụy sĩ,2018,Q3,6902.0,Thụy sĩ
+Thụy sĩ,2019,Q3,6936.0,Thụy sĩ
+Thụy sĩ,2022,Q3,3790.0,Thụy sĩ
+Thụy sĩ,2023,Q3,6012.0,Thụy sĩ
+Thụy sĩ,2024,Q3,5774.0,Thụy sĩ
+Thụy sĩ,2025,Q3,7674.0,Thụy sĩ
+Thụy Điển,2008,Q3,2642.0,Sweden
+Thụy Điển,2013,Q3,4855.0,Sweden
+Thụy Điển,2014,Q3,5017.0,Sweden
+Thụy Điển,2015,Q3,4509.0,Sweden
+Thụy Điển,2016,Q3,5429.0,Sweden
+Thụy Điển,2017,Q3,5625.0,Sweden
+Thụy Điển,2018,Q3,5864.0,Sweden
+Thụy Điển,2019,Q3,5802.0,Sweden
+Thụy Điển,2022,Q3,2694.0,Sweden
+Thụy Điển,2023,Q3,4901.0,Sweden
+Thụy Điển,2024,Q3,4858.0,Sweden
+Thụy Điển,2025,Q3,5475.0,Sweden
+Trung Quốc,2008,Q3,89889.0,China
+Trung Quốc,2009,Q3,130153.0,China
+Trung Quốc,2010,Q3,238716.0,China
+Trung Quốc,2011,Q3,335864.0,China
+Trung Quốc,2012,Q3,309678.0,China
+Trung Quốc,2013,Q3,533297.0,China
+Trung Quốc,2014,Q3,407507.0,China
+Trung Quốc,2015,Q3,446352.0,China
+Trung Quốc,2016,Q3,783043.0,China
+Trung Quốc,2017,Q3,1048706.0,China
+Trung Quốc,2018,Q3,1240553.0,China
+Trung Quốc,2019,Q3,1493852.0,China
+Trung Quốc,2022,Q3,35964.0,China
+Trung Quốc,2023,Q3,565421.0,China
+Trung Quốc,2024,Q3,814306.0,China
+Trung Quốc,2025,Q3,1166925.0,China
+Tây Ban Nha,2008,Q3,4882.0,Spain
+Tây Ban Nha,2013,Q3,13681.0,Spain
+Tây Ban Nha,2014,Q3,16802.0,Spain
+Tây Ban Nha,2015,Q3,18272.0,Spain
+Tây Ban Nha,2016,Q3,24146.0,Spain
+Tây Ban Nha,2017,Q3,28132.0,Spain
+Tây Ban Nha,2018,Q3,32156.0,Spain
+Tây Ban Nha,2019,Q3,36110.0,Spain
+Tây Ban Nha,2022,Q3,11825.0,Spain
+Tây Ban Nha,2023,Q3,29182.0,Spain
+Tây Ban Nha,2024,Q3,32418.0,Spain
+Tây Ban Nha,2025,Q3,32502.0,Spain
+Vương quốc Anh,2008,Q3,15671.0,Vương quốc Anh
+Vương quốc Anh,2013,Q3,45091.0,Vương quốc Anh
+Vương quốc Anh,2014,Q3,48620.0,Vương quốc Anh
+Vương quốc Anh,2015,Q3,51311.0,Vương quốc Anh
+Vương quốc Anh,2016,Q3,61586.0,Vương quốc Anh
+Vương quốc Anh,2017,Q3,68031.0,Vương quốc Anh
+Vương quốc Anh,2018,Q3,67989.0,Vương quốc Anh
+Vương quốc Anh,2019,Q3,72302.0,Vương quốc Anh
+Vương quốc Anh,2022,Q3,31716.0,Vương quốc Anh
+Vương quốc Anh,2023,Q3,57701.0,Vương quốc Anh
+Vương quốc Anh,2024,Q3,57217.0,Vương quốc Anh
+Vương quốc Anh,2025,Q3,73900.0,Vương quốc Anh
+Úc,2008,Q3,41190.0,Australia
+Úc,2009,Q3,46533.0,Australia
+Úc,2010,Q3,62047.0,Australia
+Úc,2011,Q3,49736.0,Australia
+Úc,2012,Q3,62694.0,Australia
+Úc,2013,Q3,78167.0,Australia
+Úc,2014,Q3,77417.0,Australia
+Úc,2015,Q3,73825.0,Australia
+Úc,2016,Q3,78474.0,Australia
+Úc,2017,Q3,94199.0,Australia
+Úc,2018,Q3,94035.0,Australia
+Úc,2019,Q3,91564.0,Australia
+Úc,2022,Q3,50395.0,Australia
+Úc,2023,Q3,98337.0,Australia
+Úc,2024,Q3,111886.0,Australia
+Úc,2025,Q3,125269.0,Australia
+Ý,2008,Q3,2478.0,Italy
+Ý,2013,Q3,8862.0,Italy
+Ý,2014,Q3,9712.0,Italy
+Ý,2015,Q3,10469.0,Italy
+Ý,2016,Q3,13925.0,Italy
+Ý,2017,Q3,15159.0,Italy
+Ý,2018,Q3,16453.0,Italy
+Ý,2019,Q3,17312.0,Italy
+Ý,2022,Q3,7308.0,Italy
+Ý,2023,Q3,16665.0,Italy
+Ý,2024,Q3,22860.0,Italy
+Ý,2025,Q3,27277.0,Italy
+Đan mạch,2008,Q3,3352.0,Đan mạch
+Đan mạch,2013,Q3,6412.0,Đan mạch
+Đan mạch,2014,Q3,6597.0,Đan mạch
+Đan mạch,2015,Q3,6435.0,Đan mạch
+Đan mạch,2016,Q3,7234.0,Đan mạch
+Đan mạch,2017,Q3,7923.0,Đan mạch
+Đan mạch,2018,Q3,9018.0,Đan mạch
+Đan mạch,2019,Q3,9019.0,Đan mạch
+Đan mạch,2022,Q3,4309.0,Đan mạch
+Đan mạch,2023,Q3,6673.0,Đan mạch
+Đan mạch,2024,Q3,6472.0,Đan mạch
+Đan mạch,2025,Q3,7917.0,Đan mạch
+Đài Loan,2008,Q3,53211.0,Taiwan
+Đài Loan,2009,Q3,70429.0,Taiwan
+Đài Loan,2010,Q3,85142.0,Taiwan
+Đài Loan,2011,Q3,76969.0,Taiwan
+Đài Loan,2012,Q3,94998.0,Taiwan
+Đài Loan,2013,Q3,115440.0,Taiwan
+Đài Loan,2014,Q3,98927.0,Taiwan
+Đài Loan,2015,Q3,120868.0,Taiwan
+Đài Loan,2016,Q3,139622.0,Taiwan
+Đài Loan,2017,Q3,160474.0,Taiwan
+Đài Loan,2018,Q3,188743.0,Taiwan
+Đài Loan,2019,Q3,244157.0,Taiwan
+Đài Loan,2022,Q3,42084.0,Taiwan
+Đài Loan,2023,Q3,252612.0,Taiwan
+Đài Loan,2024,Q3,323377.0,Taiwan
+Đài Loan,2025,Q3,296414.0,Taiwan
+Đức,2008,Q3,12970.0,Germany
+Đức,2013,Q3,25515.0,Germany
+Đức,2014,Q3,30408.0,Germany
+Đức,2015,Q3,31746.0,Germany
+Đức,2016,Q3,38749.0,Germany
+Đức,2017,Q3,40523.0,Germany
+Đức,2018,Q3,43561.0,Germany
+Đức,2019,Q3,44903.0,Germany
+Đức,2022,Q3,28925.0,Germany
+Đức,2023,Q3,43190.0,Germany
+Đức,2024,Q3,44700.0,Germany
+Đức,2025,Q3,55400.0,Germany
+Ấn Độ,2018,Q3,30940.0,India
+Ấn Độ,2019,Q3,38963.0,India
+Ấn Độ,2023,Q3,96776.0,India
+Ấn Độ,2024,Q3,113716.0,India
+Ấn Độ,2025,Q3,167125.0,India
+Ba Lan,2024,Q4,19677.0,Poland
+Ba Lan,2025,Q4,26965.0,Poland
+Bỉ,2008,Q4,1331.0,Belgium
+Bỉ,2012,Q4,1706.0,Belgium
+Bỉ,2013,Q4,5567.0,Belgium
+Bỉ,2014,Q4,5457.0,Belgium
+Bỉ,2015,Q4,6266.0,Belgium
+Bỉ,2016,Q4,6816.0,Belgium
+Bỉ,2017,Q4,7400.0,Belgium
+Bỉ,2018,Q4,7437.0,Belgium
+Bỉ,2019,Q4,8445.0,Belgium
+Bỉ,2022,Q4,4929.0,Belgium
+Bỉ,2023,Q4,7187.0,Belgium
+Bỉ,2024,Q4,9140.0,Belgium
+Bỉ,2025,Q4,10936.0,Belgium
+Campuchia,2008,Q4,6875.0,Cambodia
+Campuchia,2010,Q4,64638.0,Cambodia
+Campuchia,2011,Q4,121147.0,Cambodia
+Campuchia,2012,Q4,89716.0,Cambodia
+Campuchia,2013,Q4,67564.0,Cambodia
+Campuchia,2014,Q4,106187.0,Cambodia
+Campuchia,2015,Q4,58862.0,Cambodia
+Campuchia,2016,Q4,65613.0,Cambodia
+Campuchia,2017,Q4,52720.0,Cambodia
+Campuchia,2018,Q4,46828.0,Cambodia
+Campuchia,2019,Q4,119398.0,Cambodia
+Campuchia,2022,Q4,95946.0,Cambodia
+Campuchia,2023,Q4,112240.0,Cambodia
+Campuchia,2024,Q4,148853.0,Cambodia
+Campuchia,2025,Q4,197262.0,Cambodia
+Canada,2008,Q4,5363.0,Canada
+Canada,2009,Q4,11281.0,Canada
+Canada,2012,Q4,9043.0,Canada
+Canada,2013,Q4,27446.0,Canada
+Canada,2014,Q4,23624.0,Canada
+Canada,2015,Q4,27524.0,Canada
+Canada,2016,Q4,33283.0,Canada
+Canada,2017,Q4,35555.0,Canada
+Canada,2018,Q4,37760.0,Canada
+Canada,2019,Q4,40497.0,Canada
+Canada,2022,Q4,27745.0,Canada
+Canada,2023,Q4,37016.0,Canada
+Canada,2024,Q4,43857.0,Canada
+Canada,2025,Q4,51885.0,Canada
+Hoa Kỳ,2008,Q4,85668.0,USA
+Hoa Kỳ,2009,Q4,86566.0,USA
+Hoa Kỳ,2010,Q4,106105.0,USA
+Hoa Kỳ,2011,Q4,110939.0,USA
+Hoa Kỳ,2012,Q4,104448.0,USA
+Hoa Kỳ,2013,Q4,104013.0,USA
+Hoa Kỳ,2014,Q4,99557.0,USA
+Hoa Kỳ,2015,Q4,123059.0,USA
+Hoa Kỳ,2016,Q4,130995.0,USA
+Hoa Kỳ,2017,Q4,150712.0,USA
+Hoa Kỳ,2018,Q4,158592.0,USA
+Hoa Kỳ,2019,Q4,177058.0,USA
+Hoa Kỳ,2022,Q4,141564.0,USA
+Hoa Kỳ,2023,Q4,168207.0,USA
+Hoa Kỳ,2024,Q4,201180.0,USA
+Hoa Kỳ,2025,Q4,226151.0,USA
+Hà Lan,2008,Q4,2927.0,Netherlands
+Hà Lan,2012,Q4,3803.0,Netherlands
+Hà Lan,2013,Q4,11802.0,Netherlands
+Hà Lan,2014,Q4,11415.0,Netherlands
+Hà Lan,2015,Q4,14049.0,Netherlands
+Hà Lan,2016,Q4,16297.0,Netherlands
+Hà Lan,2017,Q4,17342.0,Netherlands
+Hà Lan,2018,Q4,17744.0,Netherlands
+Hà Lan,2019,Q4,18587.0,Netherlands
+Hà Lan,2022,Q4,11892.0,Netherlands
+Hà Lan,2023,Q4,17761.0,Netherlands
+Hà Lan,2024,Q4,20366.0,Netherlands
+Hà Lan,2025,Q4,23500.0,Netherlands
+Hàn Quốc,2008,Q4,90985.0,South Korea
+Hàn Quốc,2009,Q4,79757.0,South Korea
+Hàn Quốc,2010,Q4,130523.0,South Korea
+Hàn Quốc,2011,Q4,155545.0,South Korea
+Hàn Quốc,2012,Q4,176931.0,South Korea
+Hàn Quốc,2013,Q4,186651.0,South Korea
+Hàn Quốc,2014,Q4,230860.0,South Korea
+Hàn Quốc,2015,Q4,302298.0,South Korea
+Hàn Quốc,2016,Q4,409915.0,South Korea
+Hàn Quốc,2017,Q4,700896.0,South Korea
+Hàn Quốc,2018,Q4,921443.0,South Korea
+Hàn Quốc,2019,Q4,1150109.0,South Korea
+Hàn Quốc,2022,Q4,475932.0,South Korea
+Hàn Quốc,2023,Q4,1010222.0,South Korea
+Hàn Quốc,2024,Q4,1201241.0,South Korea
+Hàn Quốc,2025,Q4,1093671.0,South Korea
+Hồng Kông,2008,Q4,644.0,Hong Kong
+Hồng Kông,2012,Q4,700.0,Hong Kong
+Hồng Kông,2013,Q4,3668.0,Hong Kong
+Hồng Kông,2014,Q4,2364.0,Hong Kong
+Hồng Kông,2015,Q4,4025.0,Hong Kong
+Hồng Kông,2016,Q4,8909.0,Hong Kong
+Hồng Kông,2017,Q4,12783.0,Hong Kong
+Hồng Kông,2018,Q4,16999.0,Hong Kong
+Hồng Kông,2019,Q4,19814.0,Hong Kong
+Hồng Kông,2022,Q4,21.0,Hong Kong
+Hồng Kông,2023,Q4,4.0,Hong Kong
+Indonesia,2008,Q4,2932.0,Indonesia
+Indonesia,2012,Q4,5443.0,Indonesia
+Indonesia,2013,Q4,16615.0,Indonesia
+Indonesia,2014,Q4,15402.0,Indonesia
+Indonesia,2015,Q4,16033.0,Indonesia
+Indonesia,2016,Q4,18272.0,Indonesia
+Indonesia,2017,Q4,20193.0,Indonesia
+Indonesia,2018,Q4,21120.0,Indonesia
+Indonesia,2019,Q4,27269.0,Indonesia
+Indonesia,2022,Q4,16610.0,Indonesia
+Indonesia,2023,Q4,34704.0,Indonesia
+Indonesia,2024,Q4,48483.0,Indonesia
+Indonesia,2025,Q4,52340.0,Indonesia
+Lào,2008,Q4,1602.0,Laos
+Lào,2012,Q4,13554.0,Laos
+Lào,2013,Q4,26551.0,Laos
+Lào,2014,Q4,23958.0,Laos
+Lào,2015,Q4,30465.0,Laos
+Lào,2016,Q4,36720.0,Laos
+Lào,2017,Q4,26032.0,Laos
+Lào,2018,Q4,23714.0,Laos
+Lào,2019,Q4,26639.0,Laos
+Lào,2022,Q4,21269.0,Laos
+Lào,2023,Q4,23380.0,Laos
+Lào,2024,Q4,37564.0,Laos
+Lào,2025,Q4,31757.0,Laos
+Malaysia,2008,Q4,46906.0,Malaysia
+Malaysia,2009,Q4,44510.0,Malaysia
+Malaysia,2010,Q4,61458.0,Malaysia
+Malaysia,2011,Q4,64968.0,Malaysia
+Malaysia,2012,Q4,87866.0,Malaysia
+Malaysia,2013,Q4,102429.0,Malaysia
+Malaysia,2014,Q4,90453.0,Malaysia
+Malaysia,2015,Q4,96090.0,Malaysia
+Malaysia,2016,Q4,119751.0,Malaysia
+Malaysia,2017,Q4,145638.0,Malaysia
+Malaysia,2018,Q4,158271.0,Malaysia
+Malaysia,2019,Q4,172919.0,Malaysia
+Malaysia,2022,Q4,94187.0,Malaysia
+Malaysia,2023,Q4,136709.0,Malaysia
+Malaysia,2024,Q4,138866.0,Malaysia
+Malaysia,2025,Q4,168454.0,Malaysia
+Na Uy,2008,Q4,918.0,Norway
+Na Uy,2012,Q4,1734.0,Norway
+Na Uy,2013,Q4,4807.0,Norway
+Na Uy,2014,Q4,4622.0,Norway
+Na Uy,2015,Q4,4847.0,Norway
+Na Uy,2016,Q4,4968.0,Norway
+Na Uy,2017,Q4,5143.0,Norway
+Na Uy,2018,Q4,5430.0,Norway
+Na Uy,2019,Q4,5838.0,Norway
+Na Uy,2022,Q4,3520.0,Norway
+Na Uy,2023,Q4,4924.0,Norway
+Na Uy,2024,Q4,7343.0,Norway
+Na Uy,2025,Q4,8601.0,Norway
+New Zealand,2008,Q4,2066.0,New Zealand
+New Zealand,2012,Q4,2337.0,New Zealand
+New Zealand,2013,Q4,7897.0,New Zealand
+New Zealand,2014,Q4,7467.0,New Zealand
+New Zealand,2015,Q4,7870.0,New Zealand
+New Zealand,2016,Q4,10856.0,New Zealand
+New Zealand,2017,Q4,11658.0,New Zealand
+New Zealand,2018,Q4,11531.0,New Zealand
+New Zealand,2019,Q4,10731.0,New Zealand
+New Zealand,2022,Q4,5805.0,New Zealand
+New Zealand,2023,Q4,9771.0,New Zealand
+New Zealand,2024,Q4,12975.0,New Zealand
+New Zealand,2025,Q4,14558.0,New Zealand
+Nga,2008,Q4,4045.0,Russia
+Nga,2012,Q4,13648.0,Russia
+Nga,2013,Q4,92081.0,Russia
+Nga,2014,Q4,100388.0,Russia
+Nga,2015,Q4,102508.0,Russia
+Nga,2016,Q4,134918.0,Russia
+Nga,2017,Q4,153529.0,Russia
+Nga,2018,Q4,151651.0,Russia
+Nga,2019,Q4,168356.0,Russia
+Nga,2022,Q4,22128.0,Russia
+Nga,2023,Q4,37317.0,Russia
+Nga,2024,Q4,72918.0,Russia
+Nga,2025,Q4,254553.0,Russia
+Nhật Bản,2008,Q4,94938.0,Japan
+Nhật Bản,2009,Q4,91483.0,Japan
+Nhật Bản,2010,Q4,124362.0,Japan
+Nhật Bản,2011,Q4,137764.0,Japan
+Nhật Bản,2012,Q4,151409.0,Japan
+Nhật Bản,2013,Q4,154046.0,Japan
+Nhật Bản,2014,Q4,162181.0,Japan
+Nhật Bản,2015,Q4,172921.0,Japan
+Nhật Bản,2016,Q4,185401.0,Japan
+Nhật Bản,2017,Q4,199787.0,Japan
+Nhật Bản,2018,Q4,202973.0,Japan
+Nhật Bản,2019,Q4,239430.0,Japan
+Nhật Bản,2022,Q4,78342.0,Japan
+Nhật Bản,2023,Q4,175078.0,Japan
+Nhật Bản,2024,Q4,182458.0,Japan
+Nhật Bản,2025,Q4,196397.0,Japan
+Philippines,2008,Q4,4045.0,Philippines
+Philippines,2012,Q4,7790.0,Philippines
+Philippines,2013,Q4,26915.0,Philippines
+Philippines,2014,Q4,23477.0,Philippines
+Philippines,2015,Q4,27116.0,Philippines
+Philippines,2016,Q4,29984.0,Philippines
+Philippines,2017,Q4,36144.0,Philippines
+Philippines,2018,Q4,41521.0,Philippines
+Philippines,2019,Q4,48409.0,Philippines
+Philippines,2022,Q4,24568.0,Philippines
+Philippines,2023,Q4,43288.0,Philippines
+Philippines,2024,Q4,90722.0,Philippines
+Philippines,2025,Q4,145422.0,Philippines
+Pháp,2008,Q4,45719.0,France
+Pháp,2009,Q4,42897.0,France
+Pháp,2010,Q4,51930.0,France
+Pháp,2011,Q4,55200.0,France
+Pháp,2012,Q4,54282.0,France
+Pháp,2013,Q4,52309.0,France
+Pháp,2014,Q4,49779.0,France
+Pháp,2015,Q4,53822.0,France
+Pháp,2016,Q4,61195.0,France
+Pháp,2017,Q4,62157.0,France
+Pháp,2018,Q4,66168.0,France
+Pháp,2019,Q4,71764.0,France
+Pháp,2022,Q4,39755.0,France
+Pháp,2023,Q4,60371.0,France
+Pháp,2024,Q4,80227.0,France
+Pháp,2025,Q4,94082.0,France
+Phần Lan,2008,Q4,400.0,Finland
+Phần Lan,2012,Q4,1592.0,Finland
+Phần Lan,2013,Q4,4022.0,Finland
+Phần Lan,2014,Q4,3269.0,Finland
+Phần Lan,2015,Q4,3634.0,Finland
+Phần Lan,2016,Q4,4193.0,Finland
+Phần Lan,2017,Q4,4783.0,Finland
+Phần Lan,2018,Q4,4791.0,Finland
+Phần Lan,2019,Q4,4965.0,Finland
+Phần Lan,2022,Q4,2053.0,Finland
+Phần Lan,2023,Q4,1614.0,Finland
+Singapore,2008,Q4,42656.0,Singapore
+Singapore,2012,Q4,22513.0,Singapore
+Singapore,2013,Q4,43490.0,Singapore
+Singapore,2014,Q4,60843.0,Singapore
+Singapore,2015,Q4,71067.0,Singapore
+Singapore,2016,Q4,76435.0,Singapore
+Singapore,2017,Q4,84505.0,Singapore
+Singapore,2018,Q4,83465.0,Singapore
+Singapore,2019,Q4,93841.0,Singapore
+Singapore,2022,Q4,90808.0,Singapore
+Singapore,2023,Q4,99188.0,Singapore
+Singapore,2024,Q4,106195.0,Singapore
+Singapore,2025,Q4,133233.0,Singapore
+Thái Lan,2008,Q4,44438.0,Thailand
+Thái Lan,2009,Q4,36748.0,Thailand
+Thái Lan,2010,Q4,61180.0,Thailand
+Thái Lan,2011,Q4,53418.0,Thailand
+Thái Lan,2012,Q4,65168.0,Thailand
+Thái Lan,2013,Q4,73937.0,Thailand
+Thái Lan,2014,Q4,51691.0,Thailand
+Thái Lan,2015,Q4,73360.0,Thailand
+Thái Lan,2016,Q4,77548.0,Thailand
+Thái Lan,2017,Q4,90344.0,Thailand
+Thái Lan,2018,Q4,112723.0,Thailand
+Thái Lan,2019,Q4,164497.0,Thailand
+Thái Lan,2022,Q4,119296.0,Thailand
+Thái Lan,2023,Q4,137948.0,Thailand
+Thái Lan,2024,Q4,117086.0,Thailand
+Thái Lan,2025,Q4,131258.0,Thailand
+Thụy sĩ,2008,Q4,1476.0,Thụy sĩ
+Thụy sĩ,2012,Q4,2342.0,Thụy sĩ
+Thụy sĩ,2013,Q4,7915.0,Thụy sĩ
+Thụy sĩ,2014,Q4,7303.0,Thụy sĩ
+Thụy sĩ,2015,Q4,7935.0,Thụy sĩ
+Thụy sĩ,2016,Q4,8684.0,Thụy sĩ
+Thụy sĩ,2017,Q4,9126.0,Thụy sĩ
+Thụy sĩ,2018,Q4,9583.0,Thụy sĩ
+Thụy sĩ,2019,Q4,10272.0,Thụy sĩ
+Thụy sĩ,2022,Q4,5597.0,Thụy sĩ
+Thụy sĩ,2023,Q4,8166.0,Thụy sĩ
+Thụy sĩ,2024,Q4,10120.0,Thụy sĩ
+Thụy sĩ,2025,Q4,12710.0,Thụy sĩ
+Thụy Điển,2008,Q4,1308.0,Sweden
+Thụy Điển,2012,Q4,3619.0,Sweden
+Thụy Điển,2013,Q4,8285.0,Sweden
+Thụy Điển,2014,Q4,7876.0,Sweden
+Thụy Điển,2015,Q4,9039.0,Sweden
+Thụy Điển,2016,Q4,9218.0,Sweden
+Thụy Điển,2017,Q4,10446.0,Sweden
+Thụy Điển,2018,Q4,11340.0,Sweden
+Thụy Điển,2019,Q4,10019.0,Sweden
+Thụy Điển,2022,Q4,4861.0,Sweden
+Thụy Điển,2023,Q4,7035.0,Sweden
+Thụy Điển,2024,Q4,11286.0,Sweden
+Thụy Điển,2025,Q4,12610.0,Sweden
+Trung Quốc,2008,Q4,150175.0,China
+Trung Quốc,2009,Q4,170382.0,China
+Trung Quốc,2010,Q4,229430.0,China
+Trung Quốc,2011,Q4,437392.0,China
+Trung Quốc,2012,Q4,404504.0,China
+Trung Quốc,2013,Q4,548833.0,China
+Trung Quốc,2014,Q4,407048.0,China
+Trung Quốc,2015,Q4,520368.0,China
+Trung Quốc,2016,Q4,709245.0,China
+Trung Quốc,2017,Q4,1072052.0,China
+Trung Quốc,2018,Q4,1157073.0,China
+Trung Quốc,2019,Q4,1829242.0,China
+Trung Quốc,2022,Q4,46752.0,China
+Trung Quốc,2023,Q4,620632.0,China
+Trung Quốc,2024,Q4,1032724.0,China
+Trung Quốc,2025,Q4,1388037.0,China
+Tây Ban Nha,2008,Q4,2279.0,Spain
+Tây Ban Nha,2012,Q4,2125.0,Spain
+Tây Ban Nha,2013,Q4,8642.0,Spain
+Tây Ban Nha,2014,Q4,10368.0,Spain
+Tây Ban Nha,2015,Q4,11958.0,Spain
+Tây Ban Nha,2016,Q4,15773.0,Spain
+Tây Ban Nha,2017,Q4,18191.0,Spain
+Tây Ban Nha,2018,Q4,19595.0,Spain
+Tây Ban Nha,2019,Q4,20652.0,Spain
+Tây Ban Nha,2022,Q4,12707.0,Spain
+Tây Ban Nha,2023,Q4,24223.0,Spain
+Tây Ban Nha,2024,Q4,26625.0,Spain
+Tây Ban Nha,2025,Q4,28904.0,Spain
+Vương quốc Anh,2008,Q4,8397.0,Vương quốc Anh
+Vương quốc Anh,2012,Q4,13685.0,Vương quốc Anh
+Vương quốc Anh,2013,Q4,48532.0,Vương quốc Anh
+Vương quốc Anh,2014,Q4,45742.0,Vương quốc Anh
+Vương quốc Anh,2015,Q4,58512.0,Vương quốc Anh
+Vương quốc Anh,2016,Q4,64947.0,Vương quốc Anh
+Vương quốc Anh,2017,Q4,70463.0,Vương quốc Anh
+Vương quốc Anh,2018,Q4,72077.0,Vương quốc Anh
+Vương quốc Anh,2019,Q4,77729.0,Vương quốc Anh
+Vương quốc Anh,2022,Q4,44617.0,Vương quốc Anh
+Vương quốc Anh,2023,Q4,66306.0,Vương quốc Anh
+Vương quốc Anh,2024,Q4,81684.0,Vương quốc Anh
+Vương quốc Anh,2025,Q4,95052.0,Vương quốc Anh
+Úc,2008,Q4,53933.0,Australia
+Úc,2009,Q4,57825.0,Australia
+Úc,2010,Q4,72731.0,Australia
+Úc,2011,Q4,79210.0,Australia
+Úc,2012,Q4,73338.0,Australia
+Úc,2013,Q4,52861.0,Australia
+Úc,2014,Q4,74971.0,Australia
+Úc,2015,Q4,75228.0,Australia
+Úc,2016,Q4,77144.0,Australia
+Úc,2017,Q4,94713.0,Australia
+Úc,2018,Q4,92074.0,Australia
+Úc,2019,Q4,91631.0,Australia
+Úc,2022,Q4,65962.0,Australia
+Úc,2023,Q4,106951.0,Australia
+Úc,2024,Q4,135577.0,Australia
+Úc,2025,Q4,147237.0,Australia
+Ý,2008,Q4,1330.0,Italy
+Ý,2012,Q4,2361.0,Italy
+Ý,2013,Q4,7934.0,Italy
+Ý,2014,Q4,8777.0,Italy
+Ý,2015,Q4,11064.0,Italy
+Ý,2016,Q4,12941.0,Italy
+Ý,2017,Q4,14669.0,Italy
+Ý,2018,Q4,15926.0,Italy
+Ý,2019,Q4,16764.0,Italy
+Ý,2022,Q4,9298.0,Italy
+Ý,2023,Q4,15631.0,Italy
+Ý,2024,Q4,24662.0,Italy
+Ý,2025,Q4,28773.0,Italy
+Đan mạch,2008,Q4,1883.0,Đan mạch
+Đan mạch,2012,Q4,1826.0,Đan mạch
+Đan mạch,2013,Q4,5920.0,Đan mạch
+Đan mạch,2014,Q4,5321.0,Đan mạch
+Đan mạch,2015,Q4,6121.0,Đan mạch
+Đan mạch,2016,Q4,6757.0,Đan mạch
+Đan mạch,2017,Q4,7532.0,Đan mạch
+Đan mạch,2018,Q4,8267.0,Đan mạch
+Đan mạch,2019,Q4,8223.0,Đan mạch
+Đan mạch,2022,Q4,5700.0,Đan mạch
+Đan mạch,2023,Q4,7684.0,Đan mạch
+Đan mạch,2024,Q4,9400.0,Đan mạch
+Đan mạch,2025,Q4,10309.0,Đan mạch
+Đài Loan,2008,Q4,58186.0,Taiwan
+Đài Loan,2009,Q4,63039.0,Taiwan
+Đài Loan,2010,Q4,82315.0,Taiwan
+Đài Loan,2011,Q4,95083.0,Taiwan
+Đài Loan,2012,Q4,96069.0,Taiwan
+Đài Loan,2013,Q4,101406.0,Taiwan
+Đài Loan,2014,Q4,84383.0,Taiwan
+Đài Loan,2015,Q4,108508.0,Taiwan
+Đài Loan,2016,Q4,125308.0,Taiwan
+Đài Loan,2017,Q4,157906.0,Taiwan
+Đài Loan,2018,Q4,186413.0,Taiwan
+Đài Loan,2019,Q4,252273.0,Taiwan
+Đài Loan,2022,Q4,59844.0,Taiwan
+Đài Loan,2023,Q4,275923.0,Taiwan
+Đài Loan,2024,Q4,335056.0,Taiwan
+Đài Loan,2025,Q4,305110.0,Taiwan
+Đức,2008,Q4,7950.0,Germany
+Đức,2012,Q4,9155.0,Germany
+Đức,2013,Q4,37934.0,Germany
+Đức,2014,Q4,38555.0,Germany
+Đức,2015,Q4,43131.0,Germany
+Đức,2016,Q4,50395.0,Germany
+Đức,2017,Q4,56179.0,Germany
+Đức,2018,Q4,58864.0,Germany
+Đức,2019,Q4,63425.0,Germany
+Đức,2022,Q4,39079.0,Germany
+Đức,2023,Q4,58061.0,Germany
+Đức,2024,Q4,73932.0,Germany
+Đức,2025,Q4,84789.0,Germany
+Ấn Độ,2018,Q4,37040.0,India
+Ấn Độ,2019,Q4,53223.0,India
+Ấn Độ,2023,Q4,114193.0,India
+Ấn Độ,2024,Q4,148309.0,India
+Ấn Độ,2025,Q4,241837.0,India

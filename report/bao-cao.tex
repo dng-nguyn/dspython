@@ -18,7 +18,6 @@
 \usepackage{lmodern}
 \ifPDFTeX\else
   % xetex/luatex font selection
-  \setmainfont[]{DejaVu Sans}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -72,651 +71,724 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Phân tích và Dự đoán Lượng Khách Du Lịch Quốc tế Đến Việt Nam},
+  pdftitle={Analysis and Forecasting of Vietnam's International Tourist Arrivals},
   pdfauthor={dng-nguyn},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
-\title{Phân tích và Dự đoán Lượng Khách Du Lịch Quốc tế Đến Việt Nam}
+\title{Analysis and Forecasting of Vietnam's International Tourist
+Arrivals}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{Báo cáo Cuối Kỳ --- Lập trình Phân tích Dữ liệu với Python}
+\subtitle{Final Report --- Data Analysis with Python}
 \author{dng-nguyn}
-\date{Tháng 7, 2025}
+\date{July 2025}
 
 \begin{document}
 \maketitle
 
 \newpage
 
-\section{Mục lục}\label{mux1ee5c-lux1ee5c}
+\section{Table of Contents}\label{table-of-contents}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Giới thiệu đề tài
+  Introduction
 \item
-  Thu thập dữ liệu
+  Data Collection
 \item
-  Tiền xử lý dữ liệu
+  Data Preprocessing
 \item
-  Phân tích và khám phá dữ liệu (EDA)
+  Exploratory Data Analysis (EDA)
 \item
-  Xây dựng mô hình dự đoán
+  Model Building
 \item
-  Tối ưu mô hình
+  Model Optimization
 \item
-  Dự đoán tương lai
+  Future Forecasting
 \item
-  Tổng kết
+  Conclusion
 \end{enumerate}
 
 \newpage
 
-\section{1. Giới thiệu đề
-tài}\label{giux1edbi-thiux1ec7u-ux111ux1ec1-tuxe0i}
+\section{1. Introduction}\label{introduction}
 
-\subsection{1.1 Đặt vấn đề bài
-toán}\label{ux111ux1eb7t-vux1ea5n-ux111ux1ec1-buxe0i-touxe1n}
+\subsection{1.1 Problem Statement}\label{problem-statement}
 
-Ngành du lịch là một trong những ngành kinh tế quan trọng của Việt Nam,
-đóng góp đáng kể vào GDP và tạo ra hàng triệu việc làm. Trong những năm
-gần đây, Việt Nam đã nổi lên như một điểm đến hấp dẫn trong khu vực Đông
-Nam Á, thu hút lượng lớn khách quốc tế từ nhiều quốc gia khác nhau.
+Tourism is one of Vietnam's most important economic sectors,
+contributing significantly to GDP and creating millions of jobs. In
+recent years, Vietnam has emerged as an attractive destination in
+Southeast Asia, drawing large numbers of international tourists from
+diverse countries.
 
-Tuy nhiên, lượng khách du lịch quốc tế chịu ảnh hưởng của nhiều yếu tố
-phức tạp: tình hình kinh tế toàn cầu, chính sách visa, tỷ giá hối đoái,
-sự cạnh tranh từ các quốc gia láng giềng, và đặc biệt là đại dịch
-COVID-19 năm 2020--2021. Việc hiểu rõ các xu hướng, mô hình mùa vụ, và
-mối quan hệ giữa các thị trường nguồn là điều cần thiết để hoạch định
-chiến lược phát triển du lịch hiệu quả.
+However, international tourist arrivals are influenced by complex
+factors: global economic conditions, visa policies, exchange rates,
+regional competition, and exogenous shocks such as the COVID-19 pandemic
+(2020-2021). Understanding trends, seasonal patterns, and relationships
+between source markets is essential for effective tourism strategy
+planning.
 
-Đại dịch COVID-19 đã tạo ra một khoảng trống dữ liệu lớn (năm 2021 hoàn
-toàn không có dữ liệu trong các file báo cáo), gây thách thức đáng kể
-cho việc phân tích liên tục và xây dựng mô hình dự đoán.
+A critical challenge in this dataset is \textbf{uneven country coverage
+across years}: only 12 countries reported data during 2009-2011,
+compared to 30+ from 2012 onward. This means raw aggregate totals are
+partially inflated by reporting coverage changes rather than actual
+growth. This report addresses this issue explicitly.
 
-\subsection{1.2 Mục tiêu đề
-tài}\label{mux1ee5c-tiuxeau-ux111ux1ec1-tuxe0i}
+\subsection{1.2 Objectives}\label{objectives}
 
-\textbf{Mục tiêu phân tích (Analytical):}
+\textbf{Analytical objectives:} - Analyze overall trends in
+international arrivals to Vietnam (2008-2026) - Identify top source
+countries and their changing rankings - Detect seasonal patterns in
+quarterly arrivals - Analyze correlations between source markets -
+Assess the impact of COVID-19 on Vietnam's tourism sector - Evaluate
+average annual growth rates, accounting for coverage gaps
+
+\textbf{Predictive objectives:} - Build machine learning models to
+predict quarterly arrivals - Compare Linear Regression, Random Forest,
+XGBoost, SARIMA, and Chronos-T5 - Tune hyperparameters to improve model
+accuracy - Forecast arrivals for the next 4 quarters with confidence
+intervals - Evaluate the CIR\# stochastic model (from academic
+literature) and explain why it does not fit this dataset
+
+\subsection{1.3 Scope and Data Sources}\label{scope-and-data-sources}
 
 \begin{itemize}
 \tightlist
 \item
-  Phân tích xu hướng tổng thể lượng khách quốc tế đến Việt Nam trong
-  giai đoạn 2008--2026.
+  \textbf{Subject:} International tourist arrivals to Vietnam, by source
+  country and quarter (Q1-Q4)
 \item
-  Xác định các quốc gia nguồn khách hàng đầu và sự thay đổi thứ hạng qua
-  các năm.
+  \textbf{Time period:} 2008-2026, noting that 2021 has no data
+  (COVID-19 impact)
 \item
-  Phát hiện các mô hình mùa vụ (seasonality) trong lượng khách theo quý.
+  \textbf{Countries:} 32 individual countries (excluding regional
+  aggregates like ``Other Asian markets'')
 \item
-  Phân tích mối tương quan giữa các thị trường nguồn khách.
-\item
-  Đánh giá tác động của đại dịch COVID-19 đến ngành du lịch Việt Nam.
+  \textbf{Data source:} Four HTML-Excel reports (\texttt{.xls}) from
+  Vietnam's General Statistics Office (GSO)
 \end{itemize}
 
-\textbf{Mục tiêu dự đoán (Predictive):}
+\subsection{1.4 Tools and Libraries}\label{tools-and-libraries}
 
 \begin{itemize}
 \tightlist
 \item
-  Xây dựng các mô hình học máy để dự đoán lượng khách quốc tế theo quý.
+  \textbf{Language:} Python 3
 \item
-  So sánh hiệu quả giữa các phương pháp: Linear Regression, Random
-  Forest, XGBoost, SARIMA và Chronos-T5.
+  \textbf{Data processing:} pandas, numpy, lxml (HTML parsing)
 \item
-  Tối ưu hóa siêu tham số để cải thiện độ chính xác của mô hình.
+  \textbf{Visualization:} matplotlib, seaborn
 \item
-  Dự đoán lượng khách cho 4 quý tiếp theo kèm theo khoảng tin cậy.
-\end{itemize}
-
-\subsection{1.3 Phạm vi và nguồn dữ
-liệu}\label{phux1ea1m-vi-vuxe0-nguux1ed3n-dux1eef-liux1ec7u}
-
-\begin{itemize}
-\tightlist
+  \textbf{Modeling:} scikit-learn, xgboost, statsmodels (SARIMA),
+  chronos-forecasting (Chronos-T5)
 \item
-  \textbf{Đối tượng phân tích:} Lượng khách quốc tế đến Việt Nam, phân
-  theo quốc gia nguồn và theo quý (Q1--Q4).
+  \textbf{Environment:} Jupyter Notebook
 \item
-  \textbf{Thời gian:} Giai đoạn 2008--2026, với lưu ý năm 2021 không có
-  dữ liệu (ảnh hưởng của đại dịch COVID-19).
-\item
-  \textbf{Quốc gia nguồn:} 40 quốc gia/vùng lãnh thổ.
-\item
-  \textbf{Nguồn dữ liệu:} Bốn file báo cáo dạng HTML-Excel
-  (\texttt{.xls}) từ Tổng cục Thống kê.
-\end{itemize}
-
-\subsection{1.4 Công cụ và thư viện sử
-dụng}\label{cuxf4ng-cux1ee5-vuxe0-thux1b0-viux1ec7n-sux1eed-dux1ee5ng}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Ngôn ngữ lập trình:} Python 3
-\item
-  \textbf{Xử lý dữ liệu:} pandas, numpy, lxml (phân tích HTML)
-\item
-  \textbf{Trực quan hóa:} matplotlib, seaborn
-\item
-  \textbf{Xây dựng mô hình:} scikit-learn, xgboost, statsmodels
-  (SARIMA), chronos-forecasting (Chronos-T5)
-\item
-  \textbf{Môi trường:} Jupyter Notebook
-\item
-  \textbf{Quản lý phiên bản:} Git, GitHub
+  \textbf{Version control:} Git, GitHub
 \end{itemize}
 
 \newpage
 
-\section{2. Thu thập dữ liệu}\label{thu-thux1eadp-dux1eef-liux1ec7u}
+\section{2. Data Collection}\label{data-collection}
 
-\subsection{2.1 Nguồn dữ liệu}\label{nguux1ed3n-dux1eef-liux1ec7u}
+\subsection{2.1 Data Sources}\label{data-sources}
 
-Dữ liệu được cung cấp dưới dạng 4 file báo cáo HTML-Excel, mỗi file chứa
-thông tin lượng khách quốc tế đến Việt Nam cho một quý cụ thể:
+The data consists of 4 HTML-Excel report files, each containing
+international tourist arrivals for one quarter:
 
-\begin{longtable}[]{@{}llll@{}}
+\begin{longtable}[]{@{}lll@{}}
 \toprule\noalign{}
-File & Quý & Số quốc gia & Ghi chú \\
+File & Quarter & Notes \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-quy1-cacnuoc.xls & Q1 & 38 & Bắt đầu từ năm 2009 \\
-quy2-cacnuoc.xls & Q2 & 39 & Bắt đầu từ năm 2009 \\
-quy3-cacnuoc.xls & Q3 & 40 & Bắt đầu từ năm 2008 \\
-quy4-cacnuoc.xls & Q4 & 38 & Bắt đầu từ năm 2008 \\
+quy1-cacnuoc.xls & Q1 & Starts from 2009 \\
+quy2-cacnuoc.xls & Q2 & Starts from 2009 \\
+quy3-cacnuoc.xls & Q3 & Starts from 2008 \\
+quy4-cacnuoc.xls & Q4 & Starts from 2008 \\
 \end{longtable}
 
-\subsection{2.2 Cấu trúc dữ liệu và thách
-thức}\label{cux1ea5u-truxfac-dux1eef-liux1ec7u-vuxe0-thuxe1ch-thux1ee9c}
+\subsection{2.2 Data Structure and
+Challenges}\label{data-structure-and-challenges}
 
-Các file \texttt{.xls} này không phải là file Excel nhị phân thực sự, mà
-là file HTML có phần mở rộng \texttt{.xls} --- một kỹ thuật phổ biến để
-tạo file ``Excel'' từ web. Cấu trúc HTML có một số đặc điểm gây thách
-thức:
+The \texttt{.xls} files are not real Excel binaries --- they are HTML
+files with an \texttt{.xls} extension, a common technique for generating
+``Excel'' files from web applications. The HTML structure presents
+several challenges:
 
-\textbf{Thứ nhất}, dữ liệu không nằm trong các thẻ
-\texttt{\textless{}td\textgreater{}} theo cách thông thường. Các giá trị
-số liệu nằm dưới dạng text nodes giữa các thẻ
-\texttt{\textless{}td\textgreater{}} rỗng. Điều này khiến
-\texttt{pd.read\_html()} không thể trích xuất chính xác --- cần xây dựng
-bộ phân tích tùy chỉnh bằng \texttt{lxml}.
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Text nodes outside \texttt{\textless{}td\textgreater{}} tags:}
+  Numeric values appear as text between empty
+  \texttt{\textless{}td\textgreater{}} elements rather than inside them.
+  Standard parsers like \texttt{pd.read\_html()} return all NaN values.
+  A custom \texttt{lxml}-based parser was built to extract data from
+  text nodes.
+\item
+  \textbf{Inconsistent year coverage:} Q3/Q4 files include 2008 data;
+  Q1/Q2 start from 2009. The year 2021 is absent from all files
+  (COVID-19 lockdown).
+\item
+  \textbf{Vietnamese number formatting:} Dots serve as thousands
+  separators (e.g., \texttt{104.520} = 104,520), not decimal points.
+\item
+  \textbf{Regional aggregates mixed with countries:} The 2008 file
+  includes entries like ``Chau A'' (Asia), ``Chau Au'' (Europe), and
+  ``Other markets'' alongside individual countries. These were excluded
+  from analysis.
+\end{enumerate}
 
-\textbf{Thứ hai}, các file không đồng nhất: Q3 và Q4 có dữ liệu từ 2008,
-Q1/Q2 chỉ từ 2009. Cột năm 2021 hoàn toàn vắng mặt.
+\subsection{2.3 Data Parsing and
+Merging}\label{data-parsing-and-merging}
 
-\textbf{Thứ ba}, định dạng số sử dụng dấu chấm làm phân cách hàng nghìn
-(ví dụ: \texttt{104.520} = 104,520).
+A custom HTML parser using \texttt{lxml} was built: - Parse the DOM tree
+and extract year labels from the header row (columns 2+) - For each data
+row, extract country name from \texttt{td{[}0{]}.tail} and values from
+\texttt{td{[}1:{]}.tail} - Convert Vietnamese-formatted numbers by
+removing dot separators - Merge all 4 files into a single DataFrame with
+columns: \texttt{country}, \texttt{year}, \texttt{quarter},
+\texttt{arrivals}
 
-\subsection{2.3 Cách xử lý}\label{cuxe1ch-xux1eed-luxfd}
+\textbf{Verification:} ``USA'' for 2009 Q1 = 104,520 --- confirmed
+against the provided sample.
 
-Nhóm xây dựng bộ phân tích HTML tùy chỉnh bằng \texttt{lxml}: phân tích
-cây DOM, trích xuất text nodes từ thẻ
-\texttt{\textless{}td\textgreater{}}, chuyển đổi định dạng số, và hợp
-nhất thành DataFrame duy nhất.
+After parsing: \textbf{1,622 records}, \textbf{32 individual countries},
+years 2008-2026.
 
-\textbf{Xác minh:} Quốc gia ``Hoa Kỳ'' năm 2009, quý 1 = 104,520 lượt
-khách --- khớp với dữ liệu mẫu.
+\subsection{2.4 Country Coverage Issue}\label{country-coverage-issue}
 
-Sau hợp nhất: \textbf{1,894 bản ghi}, \textbf{40 quốc gia}, \textbf{18
-năm} (2008--2026, không bao gồm 2021).
+A critical finding is the uneven number of reporting countries per year:
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Year & Countries Reporting & Note \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2008 & 29 & Q3/Q4 only (different file structure) \\
+2009-2011 & 11-12 & \textbf{Only Q1/Q2 files, severely limited} \\
+2012-2015 & 29-30 & Stable coverage \\
+2016-2026 & 29-35 & Near-complete coverage \\
+\end{longtable}
+
+This means \textbf{aggregate totals for 2009-2011 are artificially low}
+because only 11-12 countries are reporting. The apparent ``growth'' from
+2.65M (2009) to 18M (2019) is partially driven by more countries being
+added to the dataset, not just organic growth.
+
+To address this, this report uses \textbf{average annual growth rates}
+(which are per-country and less affected by coverage) alongside raw
+totals.
 
 \newpage
 
-\section{3. Tiền xử lý dữ
-liệu}\label{tiux1ec1n-xux1eed-luxfd-dux1eef-liux1ec7u}
+\section{3. Data Preprocessing}\label{data-preprocessing}
 
-\subsection{3.1 Làm sạch dữ
-liệu}\label{luxe0m-sux1ea1ch-dux1eef-liux1ec7u}
+\subsection{3.1 Cleaning}\label{cleaning}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Loại bỏ hàng ``Totals''} --- hàng tổng cộng không phải quốc
-  gia riêng lẻ.
+  \textbf{Removed regional aggregates:} ``Chau A'', ``Chau Au'', ``Other
+  markets by continent'' entries were excluded. These are summary rows,
+  not individual countries.
 \item
-  \textbf{Kiểm tra trùng lặp} --- không có bản ghi trùng lặp.
+  \textbf{Removed ``Totals'' row:} Summary total per year-quarter.
 \item
-  \textbf{Chuẩn hóa tên quốc gia} --- giữ nguyên tiếng Việt, đã nhất
-  quán.
+  \textbf{No duplicate records found.}
+\item
+  \textbf{Country names kept in Vietnamese} for the notebook; mapped to
+  English for this report.
 \end{itemize}
 
-\subsection{3.2 Xử lý giá trị
-thiếu}\label{xux1eed-luxfd-giuxe1-trux1ecb-thiux1ebfu}
+\subsection{3.2 Handling Missing Values}\label{handling-missing-values}
 
-Các ô không có dữ liệu được điền bằng 0. Điều này hợp lý vì không có dữ
-liệu có nghĩa là không có khách từ quốc gia đó.
+The 2021 gap (no data at all) was handled by simply excluding 2021 from
+the time series. For the feature grid, missing country-year-quarter
+combinations were filled with 0.
 
-Sau xử lý: \texttt{df\_complete} có \textbf{2,880 bản ghi} (40 quốc gia
-× 18 năm × 4 quý).
-
-\subsection{3.3 Trích xuất đặc trưng (Feature
-Engineering)}\label{truxedch-xuux1ea5t-ux111ux1eb7c-trux1b0ng-feature-engineering}
+\subsection{3.3 Feature Engineering}\label{feature-engineering}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Biến thời gian:} \texttt{quarter\_num} (1--4),
-  \texttt{time\_idx} (năm + quý/4)
+  \textbf{Time features:} \texttt{quarter\_num} (1-4),
+  \texttt{time\_idx} (year + quarter/4)
 \item
-  \textbf{Đặc trưng trễ:} \texttt{lag\_1}, \texttt{lag\_2},
-  \texttt{lag\_4} --- giá trị quý trước
+  \textbf{Lag features:} \texttt{lag\_1} (previous quarter),
+  \texttt{lag\_2}, \texttt{lag\_4} (same quarter last year)
 \item
-  \textbf{Trung bình trượt:} \texttt{rolling\_mean\_4} --- TB 4 quý gần
-  nhất
+  \textbf{Rolling mean:} 4-quarter rolling average to smooth short-term
+  fluctuations
 \item
-  \textbf{Chia train/test:} Train ≤ 2023, Test ≥ 2024
+  \textbf{External features:} Exchange rates (Yahoo Finance), visa
+  policy indicators (manually encoded from government sources)
+\end{itemize}
+
+\subsection{3.4 Train-Test Split}\label{train-test-split}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Training set:} Data up to and including 2023
+\item
+  \textbf{Test set:} 2024 onward (2024 Q1 through 2026 Q2 = 10 quarters)
 \end{itemize}
 
 \newpage
 
-\section{4. Phân tích và khám phá dữ liệu
-(EDA)}\label{phuxe2n-tuxedch-vuxe0-khuxe1m-phuxe1-dux1eef-liux1ec7u-eda}
+\section{4. Exploratory Data Analysis
+(EDA)}\label{exploratory-data-analysis-eda}
 
-\subsection{4.1 Xu hướng tổng
-thể}\label{xu-hux1b0ux1edbng-tux1ed5ng-thux1ec3}
+\subsection{4.1 Overall Trend with Coverage
+Context}\label{overall-trend-with-coverage-context}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_total_trend.png}
-\caption{Hình 1: Lượng khách quốc tế đến Việt Nam theo năm (2008--2026)}
+\caption{Figure 1: Total arrivals by year with country count overlay}
 \end{figure}
 
-Lượng khách tăng trưởng mạnh từ 3.8 triệu (2009) lên 18.0 triệu (2019)
---- tăng gần 5 lần. Năm 2020 giảm mạnh xuống 3.7 triệu do COVID-19. Phục
-hồi từ 2022, đạt 21.2 triệu năm 2025 --- vượt mức trước đại dịch.
+The bar chart (gray, secondary axis) shows the number of reporting
+countries per year. Key observations:
 
-\subsection{4.2 Top 10 quốc gia nguồn
-khách}\label{top-10-quux1ed1c-gia-nguux1ed3n-khuxe1ch}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{2009-2011:} Only 11-12 countries report, making totals appear
+  artificially low (\textasciitilde2.6-4.0M)
+\item
+  \textbf{2012+:} Coverage stabilizes at 29-30 countries, enabling fair
+  comparison
+\item
+  \textbf{2020:} Sharp COVID-19 drop to \textasciitilde3.7M despite full
+  coverage (30 countries)
+\item
+  \textbf{2025:} Recovery to \textasciitilde17.6M with 29 countries ---
+  genuine growth
+\end{itemize}
+
+\textbf{Important:} The ``growth'' from 2009 to 2012 should not be
+interpreted at face value --- it's largely a coverage artifact.
+
+\subsection{4.2 Average Annual Growth
+Rate}\label{average-annual-growth-rate}
+
+To compare countries fairly regardless of absolute volume, average
+annual growth rates were computed for 2012-2019 (pre-COVID, stable
+coverage):
+
+\begin{figure}
+\centering
+\includegraphics{output/eda_growth_rate.png}
+\caption{Figure 2: Top countries by average annual growth rate}
+\end{figure}
+
+Growth rates reflect \textbf{emerging markets} (Hong Kong, Spain, Italy,
+Germany, Philippines) rather than established markets. China and South
+Korea --- the two largest markets --- grew at more moderate rates from a
+high base.
+
+\subsection{4.3 Top Source Countries by
+Volume}\label{top-source-countries-by-volume}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_top10_countries.png}
-\caption{Hình 2: Top 10 quốc gia nguồn khách hàng đầu}
+\caption{Figure 3: Top 10 source countries (all years combined)}
 \end{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Trung Quốc} (41.7 triệu) --- thị trường lớn nhất
-\item
-  \textbf{Hàn Quốc} (33.0 triệu) --- tăng trưởng mạnh nhất
-\item
-  \textbf{Nhật Bản} (10.1 triệu), \textbf{Đài Loan} (9.7 triệu),
-  \textbf{Hoa Kỳ} (9.1 triệu)
-\end{itemize}
+China (41.7M cumulative) and South Korea (33.0M) dominate. However,
+these totals span all years including the coverage-limited 2009-2011
+period, so they slightly undercount for countries missing early data.
 
-\subsection{4.3 Tính mùa vụ}\label{tuxednh-muxf9a-vux1ee5}
+\subsection{4.4 Seasonality}\label{seasonality}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_seasonality.png}
-\caption{Hình 3: Phân tích mùa vụ --- Lượng khách trung bình theo quý}
+\caption{Figure 4: Average arrivals by quarter}
 \end{figure}
 
-Quý 1 có lượng khách cao nhất (Tết Nguyên Đán, năm mới). Quý 4 có độ
-biến động lớn nhất.
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Q1} has the highest average arrivals (Tet holiday, New Year
+  tourism)
+\item
+  \textbf{Q4} has the highest variance, suggesting year-end tourism
+  depends heavily on specific conditions
+\end{itemize}
 
-\subsection{4.4 Tương quan giữa các quốc gia
-nguồn}\label{tux1b0ux1a1ng-quan-giux1eefa-cuxe1c-quux1ed1c-gia-nguux1ed3n}
+\subsection{4.5 Correlation Between Source
+Markets}\label{correlation-between-source-markets}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_correlation.png}
-\caption{Hình 4: Ma trận tương quan giữa 5 quốc gia nguồn lớn nhất}
+\caption{Figure 5: Correlation between top 5 source countries}
 \end{figure}
 
-Trung Quốc--Đài Loan tương quan mạnh (0.89). Hoa Kỳ tương quan thấp với
-các thị trường châu Á.
+\begin{itemize}
+\tightlist
+\item
+  \textbf{China-Taiwan} correlation: 0.89 (shared geography, similar
+  travel patterns)
+\item
+  \textbf{USA} has low correlation with Asian markets (independent
+  dynamics, affected by USD/VND exchange rate)
+\end{itemize}
 
-\subsection{4.5 Xu hướng theo từng quốc
-gia}\label{xu-hux1b0ux1edbng-theo-tux1eebng-quux1ed1c-gia}
+\subsection{4.6 Country-Specific Trends}\label{country-specific-trends}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_country_trends.png}
-\caption{Hình 5: Xu hướng lượng khách theo từng quốc gia (Top 5)}
+\caption{Figure 6: Trends for top 5 source countries}
 \end{figure}
 
-Hàn Quốc phục hồi nhanh nhất sau COVID-19. Trung Quốc chịu tác động nặng
-nề nhất.
+\begin{itemize}
+\tightlist
+\item
+  \textbf{South Korea} recovered fastest post-COVID
+\item
+  \textbf{China} suffered the steepest drop and slowest recovery
+\item
+  \textbf{Japan} shows steady but slower growth
+\end{itemize}
 
 \newpage
 
-\section{5. Xây dựng mô hình dự
-đoán}\label{xuxe2y-dux1ef1ng-muxf4-huxecnh-dux1ef1-ux111ouxe1n}
+\section{5. Model Building}\label{model-building}
 
-\subsection{5.1 Linear Regression (Hồi quy tuyến
-tính)}\label{linear-regression-hux1ed3i-quy-tuyux1ebfn-tuxednh}
+Five models were tested on aggregate quarterly arrivals (all countries
+summed). All use features: year, quarter number, time index, lag\_1,
+lag\_4, rolling\_mean\_4.
 
-Linear Regression giả định mối quan hệ tuyến tính giữa biến đầu vào và
-biến mục tiêu. Mô hình tìm đường thẳng phù hợp nhất bằng cách tối thiểu
-hóa tổng bình phương sai số.
+\subsection{5.1 Linear Regression}\label{linear-regression}
 
-Đặc trưng đầu vào: năm, số thứ tự quý, chỉ số thời gian, lag\_1, lag\_4,
-rolling\_mean\_4.
+Linear Regression assumes a linear relationship between features and
+target. It finds the best-fitting line by minimizing sum of squared
+errors.
+
+Despite its simplicity, LR captures the overall upward trend
+effectively.
 
 \subsection{5.2 Random Forest
 Regression}\label{random-forest-regression}
 
-Random Forest kết hợp nhiều cây quyết định, mỗi cây huấn luyện trên mẫu
-bootstrap ngẫu nhiên. Kết quả là trung bình dự đoán của tất cả cây. Giảm
-overfitting so với cây đơn lẻ.
+Random Forest combines many decision trees, each trained on a bootstrap
+sample. Predictions are averaged across trees, reducing overfitting
+compared to a single tree.
 
 \subsection{5.3 XGBoost Regressor}\label{xgboost-regressor}
 
-XGBoost xây dựng cây quyết định tuần tự, mỗi cây mới sửa lỗi cây trước.
-Nổi tiếng với tốc độ nhanh và kết quả xuất sắc trong các cuộc thi khoa
-học dữ liệu.
+XGBoost builds trees sequentially, each correcting the errors of the
+previous one. Known for strong performance in competitions.
 
-\subsection{5.4 SARIMA (Mô hình chuỗi thời
-gian)}\label{sarima-muxf4-huxecnh-chuux1ed7i-thux1eddi-gian}
+\subsection{5.4 SARIMA (Seasonal ARIMA)}\label{sarima-seasonal-arima}
 
-SARIMA kết hợp tự hồi quy (AR), lấy sai phân (I), trung bình trượt (MA)
-và mùa vụ (S). Phù hợp với dữ liệu có tính mùa vụ quarterly. Năm 2021
-được loại bỏ khỏi chuỗi.
+SARIMA combines autoregressive (AR), differencing (I), moving average
+(MA), and seasonal components. The year 2021 gap was removed from the
+training series.
 
-\subsection{5.5 CIR\# --- Mô hình Ngẫu nhiên Vi phân (Stochastic
-Differential
-Equation)}\label{cir-muxf4-huxecnh-ngux1eabu-nhiuxean-vi-phuxe2n-stochastic-differential-equation}
-
-\textbf{Giới thiệu thuật toán:}
-
-CIR\# (Cox-Ingersoll-Ross Sharp) là mô hình dự báo chuỗi thời gian dự
-trên phương trình vi phân ngẫu nhiên (SDE), được giới thiệu trong nghiên
-cứu của Clements et al.~(2023, 2024). Mô hình mở rộng CIR kinh điển (ban
-đầu dùng cho lãi suất) bằng cách:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Phân vùng dữ liệu} (data partitioning): chia chuỗi thành các
-  subsample để nắm bắt thay đổi phương sai và các bước nhảy (jumps).
-\item
-  \textbf{Lọc ARIMA}: thay vì dùng nhiễu Brownian Motion (dW), mô hình
-  sử dụng phần dư chuẩn hóa từ mô hình ARIMA tối ưu --- giúp nhiễu thích
-  ứng với mẫu cục bộ.
-\item
-  \textbf{Biến đổi Johnson}: phần dư được biến đổi để đảm bảo nhiễu
-  trắng Gauss.
-\item
-  \textbf{Suy luận Milstein}: sử dụng dạng Milstein để giải tích SDE:
-\end{enumerate}
-
-\[dr(t) = \kappa(   heta - r(t))dt + \sigma\sqrt{r(t)}dW(t)\]
-
-Trong đó κ là tốc độ hồi quy trung bình, θ là giá trị dài hạn, σ là biến
-động.
-
-Nghiên cứu gốc báo cáo kết quả xuất sắc trên dữ liệu du lịch Ý bị gián
-đoạn bởi COVID-19: MAPE 1.18\% (giảm \textasciitilde70\% so với SARIMA
-và Holt-Winters). Đặc biệt, mô hình hoạt động tốt trong giai đoạn COVID
-(MAPE 1.69\%).
-
-\textbf{Ứng dụng trong bài toán:}
-
-Áp dụng CIR\# với các tham số: - Cửa sổ trượt M = 8 quý (tương đương M =
-12 tháng trong nghiên cứu gốc) - ARIMA(p,q) tối ưu theo AIC trên mỗi cửa
-sổ (p,q ∈ {[}0,2{]}) - Phù hợp tham số CIR bằng bình phương tối thiểu
-trên mỗi cửa sổ - Dự báo một bước bằng suy luận Milstein với nhiễu từ
-phần dư ARIMA
-
-\textbf{Kết quả:}
-
-CIR\# cho kết quả \textbf{rất kém} trên dữ liệu du lịch Việt Nam:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{MAPE \textasciitilde183\%} --- tồi tệ hơn tất cả các mô hình
-  khác
-\item
-  Dự đoán dao động mạnh quanh giá trị 0, không nắm bắt được xu hướng
-\item
-  Giai đoạn COVID dự đoán giá trị âm hoặc gần 0
-\end{itemize}
-
-\textbf{Tại sao CIR\# không phù hợp:}
-
-Mặc dù CIR\# xuất sắc trên dữ liệu du lịch Ý (288 quan sát hàng tháng),
-mô hình không phù hợp với bài toán Việt Nam vì:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  \textbf{Dữ liệu quá ngắn:} Chỉ 55 quý (vs 288 tháng trong nghiên cứu
-  gốc). Cửa sổ trượt M=8 lấy mất 15\% dữ liệu, không đủ để fit CIR chính
-  xác.
-\item
-  \textbf{Giả định hồi quy trung bình:} CIR SDE kéo r(t) về θ (giá trị
-  dài hạn). Du lịch Việt Nam có xu hướng tăng mạnh liên tục, không hồi
-  quy --- mâu thuẫn cơ bản với giả định mô hình.
-\item
-  \textbf{Sốc COVID quá lớn:} Giảm \textasciitilde80\% rồi phục hồi hoàn
-  toàn. Biến đổi log-lợi suất khuếch đại nhiễu trong thành phần σ√r, gây
-  dao động hoang dã.
-\item
-  \textbf{Dữ liệu quarterly vs monthly:} Nghiên cứu gốc dùng dữ liệu
-  hàng tháng cho phép nắm bắt tính mùa vụ tốt hơn và có nhiều quan sát
-  hơn trên mỗi cửa sổ.
-\end{enumerate}
-
-\textbf{Bài học:} Không phải mọi mô hình SOTA đều phù hợp với mọi bộ dữ
-liệu. CIR\# là lựa chọn xuất sắc cho chuỗi thời gian tài chính/kinh tế
-có tính hồi quy trung bình, nhưngkhông phù hợp cho chuỗi có xu hướng
-tăng mạnh và sốc cấu trúc lớn. Đây là minh chứng cho tầm quan trọng của
-việc benchmark trên dữ liệu thực tế.
-
-\subsection{5.6 Chronos-T5 (Foundation
+\subsection{5.5 Chronos-T5 (Foundation
 Model)}\label{chronos-t5-foundation-model}
 
-Chronos là mô hình foundation model của Amazon, pretrained trên hàng
-triệu chuỗi thời gian. Hoạt động theo nguyên lý \textbf{zero-shot
-forecasting} --- không cần huấn luyện lại. Cung cấp dự đoán xác suất với
-khoảng tin cậy.
+Chronos is Amazon's pretrained time-series foundation model. It performs
+\textbf{zero-shot forecasting} --- no task-specific training needed.
+Four sizes were tested (Tiny/Small/Base/Large); Base (200M params) gave
+the best MAE.
 
-Thử nghiệm 4 kích thước: Tiny (8M), Small (46M), Base (200M), Large
-(710M). Chạy trên CPU.
+\subsection{5.6 CIR\# --- Stochastic Differential Equation Model
+(Considered but Not
+Adopted)}\label{cir-stochastic-differential-equation-model-considered-but-not-adopted}
 
-\subsection{5.7 So sánh hiệu suất các mô
-hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
+The CIR\# (Cox-Ingersoll-Ross Sharp) model from Clements et al.~(2023)
+extends the classic CIR SDE for tourism forecasting with disrupted data.
+It achieved MAPE 1.18\% on Italian monthly tourism data --- a 70\% error
+reduction vs SARIMA and Holt-Winters.
+
+\textbf{Why CIR\# does not fit this dataset:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Insufficient observations:} Only 55 quarterly data points (vs
+  288 monthly in the Italian study). The rolling window of M=8 consumes
+  15\% of data.
+\item
+  \textbf{Mean-reversion assumption violated:} The CIR SDE pulls toward
+  a long-run mean θ. Vietnam's tourism has a strong upward trend that
+  contradicts mean-reversion.
+\item
+  \textbf{COVID shock magnitude:} An 80\% drop followed by full recovery
+  causes the √r volatility term to amplify noise in log-returns,
+  producing wild oscillations.
+\item
+  \textbf{Quarterly vs monthly granularity:} The original paper's
+  success relied on monthly data providing more observations per window
+  and better seasonal capture.
+\end{enumerate}
+
+CIR\# achieved MAPE \textasciitilde183\% on this data --- far worse than
+all other models. This is an honest negative result: \textbf{not every
+state-of-the-art model fits every dataset}. CIR\# is designed for
+stationary, mean-reverting processes (interest rates, short-term
+economic indicators), not for trending series with structural breaks.
+
+\subsection{5.7 Model Comparison}\label{model-comparison}
 
 \begin{figure}
 \centering
 \includegraphics{output/model_comparison.png}
-\caption{Hình 6: So sánh hiệu suất các mô hình dự đoán}
+\caption{Figure 7: Model performance comparison}
 \end{figure}
 
-\begin{longtable}[]{@{}llll@{}}
+\begin{longtable}[]{@{}lllll@{}}
 \toprule\noalign{}
-Mô hình & MAE & RMSE & R² \\
+Model & MAE & RMSE & MAPE & R² \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-LR & 1,099,063 & 1,448,419 & 0.4846 \\
-RF & 1,098,133 & 1,548,464 & 0.4109 \\
-XGB & 1,037,611 & 1,467,481 & 0.4709 \\
-SARIMA & 1,548,896 & 2,096,619 & -0.0799 \\
-Chronos & 1,412,524 & 2,184,660 & -0.1725 \\
-RF (opt) & 1,081,460 & 1,538,767 & 0.4183 \\
-XGB (opt) & 1,092,469 & 1,553,966 & 0.4067 \\
+Linear Regression & 668,001 & 826,017 & 14.96\% & -0.11 \\
+Random Forest & 718,697 & 943,153 & 14.73\% & -0.44 \\
+Chronos-T5-Base & 760,788 & 970,698 & 15.42\% & -0.53 \\
+XGBoost & 983,132 & 1,396,363 & 21.32\% & -2.16 \\
+SARIMA & 2,191,581 & 2,369,273 & 47.23\% & -8.10 \\
 \end{longtable}
 
-\textbf{Nhận xét:}
+\textbf{Key observations:}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Chronos-T5-Base} cho MAE thấp nhất (0.92M) --- thấp hơn tất cả
-  mô hình truyền thống.
+  All R² values are \textbf{negative}, meaning every model performs
+  worse than predicting the mean. This is expected --- the post-COVID
+  surge is a structural break invisible to history-based models.
 \item
-  \textbf{Linear Regression} cho R² tốt nhất (0.48) --- nắm bắt xu hướng
-  tuyến tính.
+  \textbf{Linear Regression} has the lowest MAE (668K) and best R²
+  (-0.11). Its linear trend captures the overall direction.
 \item
-  \textbf{SARIMA} cho kết quả kém nhất do khoảng trống dữ liệu 2021 phá
-  vỡ tính liên tục.
+  \textbf{Chronos-T5-Base} has the lowest MAPE among ML models (15.42\%)
+  despite being zero-shot.
 \item
-  \textbf{Random Forest và XGBoost} không vượt trội hơn LR với dữ liệu
-  nhỏ (55 quý).
+  \textbf{SARIMA} performs worst due to the 2021 gap breaking the
+  seasonal continuity.
+\item
+  \textbf{XGBoost overfits} with only 51 training samples.
 \end{itemize}
 
-\textbf{Tại sao Base tốt hơn Large?} Với chỉ 55 điểm dữ liệu, mô hình
-lớn hơn ``overthinking'' --- tìm mẫu hình phức tạp trong khi chỉ có xu
-hướng tăng đơn giản bị gián đoạn bởi COVID-19. Prior của model lớn (từ
-tài chính, thời tiết\ldots) không phù hợp với du lịch Việt Nam.
+\newpage
+
+\section{6. Model Optimization}\label{model-optimization}
+
+\subsection{6.1 GridSearchCV for Random
+Forest}\label{gridsearchcv-for-random-forest}
+
+Hyperparameters tuned: \texttt{n\_estimators} (100, 200, 300),
+\texttt{max\_depth} (5, 10, 15, None), \texttt{min\_samples\_split} (2,
+5, 10). 3-fold cross-validation.
+
+\subsection{6.2 RandomizedSearchCV for
+XGBoost}\label{randomizedsearchcv-for-xgboost}
+
+50 random combinations from: \texttt{n\_estimators} (100-500),
+\texttt{max\_depth} (3-9), \texttt{learning\_rate} (0.01-0.2),
+\texttt{subsample} (0.7-1.0), \texttt{colsample\_bytree} (0.7-1.0).
+
+\textbf{Result:} Optimization provided marginal improvement for RF but
+\textbf{made XGBoost worse} --- overfitting on the small training set.
+This confirms that with 51 samples, simpler models are preferred.
+
+\subsection{6.3 External Features (Exchange Rates + Visa
+Policy)}\label{external-features-exchange-rates-visa-policy}
+
+Exchange rates (VND vs KRW, CNY, USD, JPY, TWD, MYR) were fetched from
+Yahoo Finance. Visa policy indicators were manually encoded: -
+\texttt{visa\_evisa}: E-visa available (2017+) -
+\texttt{visa\_evisa\_full}: E-visa for all countries, 90-day (2023 Q3+)
+- \texttt{covid\_restrict}: Travel restriction index (0-1)
+
+\textbf{Result:} External features improved LR slightly (MAE reduced
+\textasciitilde5\%) but made RF/XGB worse due to overfitting.
+\texttt{lag\_1} and \texttt{rolling\_mean\_4} remain the dominant
+features (\textasciitilde73\% importance). The post-COVID structural
+break remains the fundamental challenge.
 
 \newpage
 
-\section{6. Dự đoán vs Thực tế
-(2024--2026)}\label{dux1ef1-ux111ouxe1n-vs-thux1ef1c-tux1ebf-20242026}
-
-\begin{figure}
-\centering
-\includegraphics{output/pred_vs_actual.png}
-\caption{Hình 6b: Dự đoán vs Thực tế --- Tập test}
-\end{figure}
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0746}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1343}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0746}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1493}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1343}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1493}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1343}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1493}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Quý
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Thực tế
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-LR
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Sai lệch
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-XGBoost
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Sai lệch
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Chronos
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Sai lệch
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-2024 Q1 & 4,642,798 & 3,893,818 & -16.1\% & 3,738,777 & -19.5\% &
-3,784,412 & -18.5\% \\
-2024 Q3 & 3,873,045 & 4,236,586 & +9.4\% & 3,827,625 & -1.2\% &
-3,965,012 & +2.4\% \\
-2025 Q1 & 6,018,708 & 4,594,127 & -23.7\% & 4,506,910 & -25.1\% &
-4,088,150 & -32.1\% \\
-2026 Q1 & 6,762,175 & 5,070,457 & -25.0\% & 4,506,910 & -33.4\% &
-4,334,424 & -35.9\% \\
-\end{longtable}
-
-\textbf{Thách thức ``hậu COVID-19'':} Không mô hình nào --- kể cả
-Chronos foundation model --- có thể dự đoán chính xác sự phục hồi hậu
-đại dịch. Dữ liệu huấn luyện kết thúc 2023 với \textasciitilde5 triệu,
-nhưng 2025--2026 bùng nổ lên 6--7 triệu. Đây là structural break mà mô
-hình dựa vào lịch sử không thể nắm bắt.
-
-\newpage
-
-\section{7. Dự đoán tương
-lai}\label{dux1ef1-ux111ouxe1n-tux1b0ux1a1ng-lai}
+\section{7. Future Forecasting}\label{future-forecasting}
 
 \begin{figure}
 \centering
 \includegraphics{output/forecast_plot.png}
-\caption{Hình 7: Dự đoán lượng khách 4 quý tiếp theo}
+\caption{Figure 8: SARIMA forecast for next 4 quarters}
 \end{figure}
-
-Dự đoán SARIMA cho 4 quý tiếp theo:
 
 \begin{longtable}[]{@{}lll@{}}
 \toprule\noalign{}
-Quý & Dự đoán & Khoảng tin cậy 95\% \\
+Quarter & Forecast & 95\% Confidence Interval \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-2027 Q1 & 1,421,545 & {[}-247,180 --- 3,090,271{]} \\
-2027 Q2 & -209,643 & {[}-3,479,627 --- 3,060,341{]} \\
-2027 Q3 & -1,549,742 & {[}-5,812,211 --- 2,712,728{]} \\
-2027 Q4 & -1,132,213 & {[}-6,199,123 --- 3,934,697{]} \\
+2026 Q3 & 4,157,874 & {[}2,764,158 --- 5,551,591{]} \\
+2026 Q4 & 4,156,459 & {[}2,435,914 --- 5,877,004{]} \\
+2027 Q1 & 4,129,710 & {[}2,167,419 --- 6,092,001{]} \\
+2027 Q2 & 4,129,570 & {[}1,962,482 --- 6,296,659{]} \\
 \end{longtable}
 
-\textbf{Lưu ý:} Khoảng tin cậy rất rộng, phản ánh mức độ không chắc chắn
-cao do COVID-19 và dữ liệu hạn chế.
+\textbf{Note:} The very wide confidence intervals reflect fundamental
+uncertainty. SARIMA cannot capture the growth trend visible in recent
+quarters (6M+ in 2025-2026) and reverts toward the historical mean
+(\textasciitilde4M).
+
+\begin{figure}
+\centering
+\includegraphics{output/pred_vs_actual.png}
+\caption{Figure 9: Predicted vs Actual (test set detail)}
+\end{figure}
+
+\textbf{Per-quarter accuracy (best models):}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+Quarter & Actual & Best Model & Prediction & Error \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2024 Q2 & 3,893,572 & Chronos & 3,602,994 & -7.5\% \\
+2024 Q3 & 3,656,240 & XGBoost & 3,686,331 & +0.8\% \\
+2024 Q4 & 4,428,526 & LR & 4,030,040 & -9.0\% \\
+2025 Q1 & 5,408,927 & LR & 4,288,777 & -20.7\% \\
+2026 Q1 & 6,058,711 & LR & 4,708,762 & -22.3\% \\
+\end{longtable}
+
+Models perform well on ``normal'' quarters (Q2-Q3) but severely
+underestimate the surge quarters (Q1 of 2025-2026). This is the
+\textbf{post-COVID structural break} problem.
 
 \newpage
 
-\section{8. Tổng kết}\label{tux1ed5ng-kux1ebft}
+\section{8. Conclusion}\label{conclusion}
 
-\subsection{8.1 Kết quả đạt
-được}\label{kux1ebft-quux1ea3-ux111ux1ea1t-ux111ux1b0ux1ee3c}
+\subsection{8.1 Key Findings}\label{key-findings}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
-  Phân tích thành công dữ liệu du lịch 2008--2026,chỉ ra xu hướng tăng
-  trưởng và tác động COVID-19.
+  \textbf{Coverage bias is significant:} Only 11-12 countries reported
+  during 2009-2011 vs 30+ from 2012. Raw aggregate totals are
+  misleading; growth rates should be used for fair comparison.
 \item
-  Xác định Trung Quốc và Hàn Quốc là thị trường nguồn lớn nhất.
+  \textbf{China and South Korea dominate} the tourism market, but
+  emerging markets (Hong Kong, Spain, Italy, Philippines) grew fastest
+  during 2012-2019.
 \item
-  Phát hiện tính mùa vụ: Q1 cao nhất.
+  \textbf{Strong seasonality:} Q1 consistently has the highest arrivals
+  (Tet holiday effect).
 \item
-  Xây dựng 5 mô hình, Chronos-T5-Base cho MAE thấp nhất.
+  \textbf{Linear Regression is surprisingly effective} with only 51
+  training samples, achieving the lowest MAE (668K) and best R² (-0.11).
+  More complex models overfit.
 \item
-  Dự đoán 4 quý tiếp theo với khoảng tin cậy.
+  \textbf{No model predicts the post-COVID surge well.} All R² values
+  are negative. The structural break is invisible to history-based
+  models.
+\item
+  \textbf{CIR\# (state-of-the-art SDE model) fails on this data} due to
+  insufficient observations, mean-reversion assumption violation, and
+  quarterly granularity. This is a valuable negative finding.
+\item
+  \textbf{External features (exchange rates, visa policy) provide
+  marginal improvement} for LR but not for tree-based models with
+  limited data.
 \end{enumerate}
 
-\subsection{8.2 Hạn chế}\label{hux1ea1n-chux1ebf}
+\subsection{8.2 Limitations}\label{limitations}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Dữ liệu hạn chế (55 quý huấn luyện).
+  \textbf{Small training set} (51 quarterly observations after removing
+  2021)
 \item
-  Khoảng trống 2021 phá vỡ tính liên tục chuỗi thời gian.
+  \textbf{2021 gap} breaks time-series continuity
 \item
-  Thiếu đặc trưng bên ngoài (chính sách visa, tỷ giá\ldots).
+  \textbf{Missing external features:} GDP, flight capacity, Google
+  Trends, oil prices
 \item
-  Dự đoán SARIMA không ổn định.
+  \textbf{Country coverage inconsistency} (2009-2011 only 11-12
+  countries)
 \end{enumerate}
 
-\subsection{8.3 Hướng phát
-triển}\label{hux1b0ux1edbng-phuxe1t-triux1ec3n}
+\subsection{8.3 Future Directions}\label{future-directions}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Thu thập dữ liệu theo tháng để tăng mẫu.
+  \textbf{Monthly data} to increase sample size and improve seasonal
+  capture
 \item
-  Bổ sung đặc trưng bên ngoài (visa, tỷ giá, sự kiện du lịch).
+  \textbf{External leading indicators:} Source-country GDP, exchange
+  rates, Google Trends search volume, flight route capacity
 \item
-  Thử nghiệm Prophet, LSTM.
+  \textbf{Per-country models} instead of aggregate (different recovery
+  trajectories)
 \item
-  Dự đoán theo từng quốc gia riêng lẻ.
+  \textbf{Ensemble methods} combining LR (trend) with Chronos (pattern
+  recognition)
 \item
-  Xây dựng dashboard tương tác.
+  \textbf{Regime-switching models} that explicitly handle the pre-COVID
+  / during-COVID / post-COVID transitions
+\item
+  \textbf{Interactive dashboard} for real-time tourism monitoring and
+  forecasting
+\end{enumerate}
+
+\newpage
+
+\section{References}\label{references}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Clements, A.E., et al.~(2024). ``Forecasting disrupted tourism demand:
+  the CIR\# model.'' \emph{Tourism Review}, 79(2), 445-470.
+\item
+  Clements, A.E., et al.~(2023). ``The CIR\# model for time series
+  forecasting.'' \emph{Technological and Economic Development of
+  Economy}, 29(5), 1403-1427.
+\item
+  Scikit-learn documentation: https://scikit-learn.org/
+\item
+  XGBoost documentation: https://xgboost.readthedocs.io/
+\item
+  Statsmodels SARIMA: https://www.statsmodels.org/
+\item
+  Chronos (Amazon):
+  https://github.com/amazon-science/chronos-forecasting
+\item
+  Yahoo Finance (exchange rate data): https://finance.yahoo.com/
+\item
+  Vietnam General Statistics Office (GSO): https://www.gso.gov.vn/
 \end{enumerate}
 
 \end{document}

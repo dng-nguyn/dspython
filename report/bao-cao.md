@@ -1,313 +1,360 @@
 ---
-title: "Phân tích và Dự đoán Lượng Khách Du Lịch Quốc tế Đến Việt Nam"
-subtitle: "Báo cáo Cuối Kỳ — Lập trình Phân tích Dữ liệu với Python"
+title: "Analysis and Forecasting of Vietnam's International Tourist Arrivals"
+subtitle: "Final Report — Data Analysis with Python"
 author: "dng-nguyn"
-date: "Tháng 7, 2025"
+date: "July 2025"
 ---
 
 \newpage
 
-# Mục lục
+# Table of Contents
 
-1. Giới thiệu đề tài
-2. Thu thập dữ liệu
-3. Tiền xử lý dữ liệu
-4. Phân tích và khám phá dữ liệu (EDA)
-5. Xây dựng mô hình dự đoán
-6. Tối ưu mô hình
-7. Dự đoán tương lai
-8. Tổng kết
-
-\newpage
-
-# 1. Giới thiệu đề tài
-
-## 1.1 Đặt vấn đề bài toán
-
-Ngành du lịch là một trong những ngành kinh tế quan trọng của Việt Nam, đóng góp đáng kể vào GDP và tạo ra hàng triệu việc làm. Trong những năm gần đây, Việt Nam đã nổi lên như một điểm đến hấp dẫn trong khu vực Đông Nam Á, thu hút lượng lớn khách quốc tế từ nhiều quốc gia khác nhau.
-
-Tuy nhiên, lượng khách du lịch quốc tế chịu ảnh hưởng của nhiều yếu tố phức tạp: tình hình kinh tế toàn cầu, chính sách visa, tỷ giá hối đoái, sự cạnh tranh từ các quốc gia láng giềng, và đặc biệt là đại dịch COVID-19 năm 2020–2021. Việc hiểu rõ các xu hướng, mô hình mùa vụ, và mối quan hệ giữa các thị trường nguồn là điều cần thiết để hoạch định chiến lược phát triển du lịch hiệu quả.
-
-Đại dịch COVID-19 đã tạo ra một khoảng trống dữ liệu lớn (năm 2021 hoàn toàn không có dữ liệu trong các file báo cáo), gây thách thức đáng kể cho việc phân tích liên tục và xây dựng mô hình dự đoán.
-
-## 1.2 Mục tiêu đề tài
-
-**Mục tiêu phân tích (Analytical):**
-
-- Phân tích xu hướng tổng thể lượng khách quốc tế đến Việt Nam trong giai đoạn 2008–2026.
-- Xác định các quốc gia nguồn khách hàng đầu và sự thay đổi thứ hạng qua các năm.
-- Phát hiện các mô hình mùa vụ (seasonality) trong lượng khách theo quý.
-- Phân tích mối tương quan giữa các thị trường nguồn khách.
-- Đánh giá tác động của đại dịch COVID-19 đến ngành du lịch Việt Nam.
-
-**Mục tiêu dự đoán (Predictive):**
-
-- Xây dựng các mô hình học máy để dự đoán lượng khách quốc tế theo quý.
-- So sánh hiệu quả giữa các phương pháp: Linear Regression, Random Forest, XGBoost, SARIMA và Chronos-T5.
-- Tối ưu hóa siêu tham số để cải thiện độ chính xác của mô hình.
-- Dự đoán lượng khách cho 4 quý tiếp theo kèm theo khoảng tin cậy.
-
-## 1.3 Phạm vi và nguồn dữ liệu
-
-- **Đối tượng phân tích:** Lượng khách quốc tế đến Việt Nam, phân theo quốc gia nguồn và theo quý (Q1–Q4).
-- **Thời gian:** Giai đoạn 2008–2026, với lưu ý năm 2021 không có dữ liệu (ảnh hưởng của đại dịch COVID-19).
-- **Quốc gia nguồn:** 40 quốc gia/vùng lãnh thổ.
-- **Nguồn dữ liệu:** Bốn file báo cáo dạng HTML-Excel (`.xls`) từ Tổng cục Thống kê.
-
-## 1.4 Công cụ và thư viện sử dụng
-
-- **Ngôn ngữ lập trình:** Python 3
-- **Xử lý dữ liệu:** pandas, numpy, lxml (phân tích HTML)
-- **Trực quan hóa:** matplotlib, seaborn
-- **Xây dựng mô hình:** scikit-learn, xgboost, statsmodels (SARIMA), chronos-forecasting (Chronos-T5)
-- **Môi trường:** Jupyter Notebook
-- **Quản lý phiên bản:** Git, GitHub
+1. Introduction
+2. Data Collection
+3. Data Preprocessing
+4. Exploratory Data Analysis (EDA)
+5. Model Building
+6. Model Optimization
+7. Future Forecasting
+8. Conclusion
 
 \newpage
 
-# 2. Thu thập dữ liệu
+# 1. Introduction
 
-## 2.1 Nguồn dữ liệu
+## 1.1 Problem Statement
 
-Dữ liệu được cung cấp dưới dạng 4 file báo cáo HTML-Excel, mỗi file chứa thông tin lượng khách quốc tế đến Việt Nam cho một quý cụ thể:
+Tourism is one of Vietnam's most important economic sectors, contributing significantly to GDP and creating millions of jobs. In recent years, Vietnam has emerged as an attractive destination in Southeast Asia, drawing large numbers of international tourists from diverse countries.
 
-| File | Quý | Số quốc gia | Ghi chú |
-|------|-----|-------------|---------|
-| quy1-cacnuoc.xls | Q1 | 38 | Bắt đầu từ năm 2009 |
-| quy2-cacnuoc.xls | Q2 | 39 | Bắt đầu từ năm 2009 |
-| quy3-cacnuoc.xls | Q3 | 40 | Bắt đầu từ năm 2008 |
-| quy4-cacnuoc.xls | Q4 | 38 | Bắt đầu từ năm 2008 |
+However, international tourist arrivals are influenced by complex factors: global economic conditions, visa policies, exchange rates, regional competition, and exogenous shocks such as the COVID-19 pandemic (2020-2021). Understanding trends, seasonal patterns, and relationships between source markets is essential for effective tourism strategy planning.
 
-## 2.2 Cấu trúc dữ liệu và thách thức
+A critical challenge in this dataset is **uneven country coverage across years**: only 12 countries reported data during 2009-2011, compared to 30+ from 2012 onward. This means raw aggregate totals are partially inflated by reporting coverage changes rather than actual growth. This report addresses this issue explicitly.
 
-Các file `.xls` này không phải là file Excel nhị phân thực sự, mà là file HTML có phần mở rộng `.xls` — một kỹ thuật phổ biến để tạo file "Excel" từ web. Cấu trúc HTML có một số đặc điểm gây thách thức:
+## 1.2 Objectives
 
-**Thứ nhất**, dữ liệu không nằm trong các thẻ `<td>` theo cách thông thường. Các giá trị số liệu nằm dưới dạng text nodes giữa các thẻ `<td>` rỗng. Điều này khiến `pd.read_html()` không thể trích xuất chính xác — cần xây dựng bộ phân tích tùy chỉnh bằng `lxml`.
+**Analytical objectives:**
+- Analyze overall trends in international arrivals to Vietnam (2008-2026)
+- Identify top source countries and their changing rankings
+- Detect seasonal patterns in quarterly arrivals
+- Analyze correlations between source markets
+- Assess the impact of COVID-19 on Vietnam's tourism sector
+- Evaluate average annual growth rates, accounting for coverage gaps
 
-**Thứ hai**, các file không đồng nhất: Q3 và Q4 có dữ liệu từ 2008, Q1/Q2 chỉ từ 2009. Cột năm 2021 hoàn toàn vắng mặt.
+**Predictive objectives:**
+- Build machine learning models to predict quarterly arrivals
+- Compare Linear Regression, Random Forest, XGBoost, SARIMA, and Chronos-T5
+- Tune hyperparameters to improve model accuracy
+- Forecast arrivals for the next 4 quarters with confidence intervals
+- Evaluate the CIR# stochastic model (from academic literature) and explain why it does not fit this dataset
 
-**Thứ ba**, định dạng số sử dụng dấu chấm làm phân cách hàng nghìn (ví dụ: `104.520` = 104,520).
+## 1.3 Scope and Data Sources
 
-## 2.3 Cách xử lý
+- **Subject:** International tourist arrivals to Vietnam, by source country and quarter (Q1-Q4)
+- **Time period:** 2008-2026, noting that 2021 has no data (COVID-19 impact)
+- **Countries:** 32 individual countries (excluding regional aggregates like "Other Asian markets")
+- **Data source:** Four HTML-Excel reports (`.xls`) from Vietnam's General Statistics Office (GSO)
 
-Nhóm xây dựng bộ phân tích HTML tùy chỉnh bằng `lxml`: phân tích cây DOM, trích xuất text nodes từ thẻ `<td>`, chuyển đổi định dạng số, và hợp nhất thành DataFrame duy nhất.
+## 1.4 Tools and Libraries
 
-**Xác minh:** Quốc gia "Hoa Kỳ" năm 2009, quý 1 = 104,520 lượt khách — khớp với dữ liệu mẫu.
-
-Sau hợp nhất: **1,894 bản ghi**, **40 quốc gia**, **18 năm** (2008–2026, không bao gồm 2021).
-
-\newpage
-
-# 3. Tiền xử lý dữ liệu
-
-## 3.1 Làm sạch dữ liệu
-
-- **Loại bỏ hàng "Totals"** — hàng tổng cộng không phải quốc gia riêng lẻ.
-- **Kiểm tra trùng lặp** — không có bản ghi trùng lặp.
-- **Chuẩn hóa tên quốc gia** — giữ nguyên tiếng Việt, đã nhất quán.
-
-## 3.2 Xử lý giá trị thiếu
-
-Các ô không có dữ liệu được điền bằng 0. Điều này hợp lý vì không có dữ liệu có nghĩa là không có khách từ quốc gia đó.
-
-Sau xử lý: `df_complete` có **2,880 bản ghi** (40 quốc gia × 18 năm × 4 quý).
-
-## 3.3 Trích xuất đặc trưng (Feature Engineering)
-
-- **Biến thời gian:** `quarter_num` (1–4), `time_idx` (năm + quý/4)
-- **Đặc trưng trễ:** `lag_1`, `lag_2`, `lag_4` — giá trị quý trước
-- **Trung bình trượt:** `rolling_mean_4` — TB 4 quý gần nhất
-- **Chia train/test:** Train ≤ 2023, Test ≥ 2024
+- **Language:** Python 3
+- **Data processing:** pandas, numpy, lxml (HTML parsing)
+- **Visualization:** matplotlib, seaborn
+- **Modeling:** scikit-learn, xgboost, statsmodels (SARIMA), chronos-forecasting (Chronos-T5)
+- **Environment:** Jupyter Notebook
+- **Version control:** Git, GitHub
 
 \newpage
 
-# 4. Phân tích và khám phá dữ liệu (EDA)
+# 2. Data Collection
 
-## 4.1 Xu hướng tổng thể
+## 2.1 Data Sources
 
-![Hình 1: Lượng khách quốc tế đến Việt Nam theo năm (2008–2026)](output/eda_total_trend.png)
+The data consists of 4 HTML-Excel report files, each containing international tourist arrivals for one quarter:
 
-Lượng khách tăng trưởng mạnh từ 3.8 triệu (2009) lên 18.0 triệu (2019) — tăng gần 5 lần. Năm 2020 giảm mạnh xuống 3.7 triệu do COVID-19. Phục hồi từ 2022, đạt 21.2 triệu năm 2025 — vượt mức trước đại dịch.
+| File | Quarter | Notes |
+|------|---------|-------|
+| quy1-cacnuoc.xls | Q1 | Starts from 2009 |
+| quy2-cacnuoc.xls | Q2 | Starts from 2009 |
+| quy3-cacnuoc.xls | Q3 | Starts from 2008 |
+| quy4-cacnuoc.xls | Q4 | Starts from 2008 |
 
-## 4.2 Top 10 quốc gia nguồn khách
+## 2.2 Data Structure and Challenges
 
-![Hình 2: Top 10 quốc gia nguồn khách hàng đầu](output/eda_top10_countries.png)
+The `.xls` files are not real Excel binaries — they are HTML files with an `.xls` extension, a common technique for generating "Excel" files from web applications. The HTML structure presents several challenges:
 
-- **Trung Quốc** (41.7 triệu) — thị trường lớn nhất
-- **Hàn Quốc** (33.0 triệu) — tăng trưởng mạnh nhất
-- **Nhật Bản** (10.1 triệu), **Đài Loan** (9.7 triệu), **Hoa Kỳ** (9.1 triệu)
+1. **Text nodes outside `<td>` tags:** Numeric values appear as text between empty `<td>` elements rather than inside them. Standard parsers like `pd.read_html()` return all NaN values. A custom `lxml`-based parser was built to extract data from text nodes.
 
-## 4.3 Tính mùa vụ
+2. **Inconsistent year coverage:** Q3/Q4 files include 2008 data; Q1/Q2 start from 2009. The year 2021 is absent from all files (COVID-19 lockdown).
 
-![Hình 3: Phân tích mùa vụ — Lượng khách trung bình theo quý](output/eda_seasonality.png)
+3. **Vietnamese number formatting:** Dots serve as thousands separators (e.g., `104.520` = 104,520), not decimal points.
 
-Quý 1 có lượng khách cao nhất (Tết Nguyên Đán, năm mới). Quý 4 có độ biến động lớn nhất.
+4. **Regional aggregates mixed with countries:** The 2008 file includes entries like "Chau A" (Asia), "Chau Au" (Europe), and "Other markets" alongside individual countries. These were excluded from analysis.
 
-## 4.4 Tương quan giữa các quốc gia nguồn
+## 2.3 Data Parsing and Merging
 
-![Hình 4: Ma trận tương quan giữa 5 quốc gia nguồn lớn nhất](output/eda_correlation.png)
+A custom HTML parser using `lxml` was built:
+- Parse the DOM tree and extract year labels from the header row (columns 2+)
+- For each data row, extract country name from `td[0].tail` and values from `td[1:].tail`
+- Convert Vietnamese-formatted numbers by removing dot separators
+- Merge all 4 files into a single DataFrame with columns: `country`, `year`, `quarter`, `arrivals`
 
-Trung Quốc–Đài Loan tương quan mạnh (0.89). Hoa Kỳ tương quan thấp với các thị trường châu Á.
+**Verification:** "USA" for 2009 Q1 = 104,520 — confirmed against the provided sample.
 
-## 4.5 Xu hướng theo từng quốc gia
+After parsing: **1,622 records**, **32 individual countries**, years 2008-2026.
 
-![Hình 5: Xu hướng lượng khách theo từng quốc gia (Top 5)](output/eda_country_trends.png)
+## 2.4 Country Coverage Issue
 
-Hàn Quốc phục hồi nhanh nhất sau COVID-19. Trung Quốc chịu tác động nặng nề nhất.
+A critical finding is the uneven number of reporting countries per year:
+
+| Year | Countries Reporting | Note |
+|------|-------------------|------|
+| 2008 | 29 | Q3/Q4 only (different file structure) |
+| 2009-2011 | 11-12 | **Only Q1/Q2 files, severely limited** |
+| 2012-2015 | 29-30 | Stable coverage |
+| 2016-2026 | 29-35 | Near-complete coverage |
+
+This means **aggregate totals for 2009-2011 are artificially low** because only 11-12 countries are reporting. The apparent "growth" from 2.65M (2009) to 18M (2019) is partially driven by more countries being added to the dataset, not just organic growth.
+
+To address this, this report uses **average annual growth rates** (which are per-country and less affected by coverage) alongside raw totals.
 
 \newpage
 
-# 5. Xây dựng mô hình dự đoán
+# 3. Data Preprocessing
 
-## 5.1 Linear Regression (Hồi quy tuyến tính)
+## 3.1 Cleaning
 
-Linear Regression giả định mối quan hệ tuyến tính giữa biến đầu vào và biến mục tiêu. Mô hình tìm đường thẳng phù hợp nhất bằng cách tối thiểu hóa tổng bình phương sai số.
+- **Removed regional aggregates:** "Chau A", "Chau Au", "Other markets by continent" entries were excluded. These are summary rows, not individual countries.
+- **Removed "Totals" row:** Summary total per year-quarter.
+- **No duplicate records found.**
+- **Country names kept in Vietnamese** for the notebook; mapped to English for this report.
 
-Đặc trưng đầu vào: năm, số thứ tự quý, chỉ số thời gian, lag_1, lag_4, rolling_mean_4.
+## 3.2 Handling Missing Values
+
+The 2021 gap (no data at all) was handled by simply excluding 2021 from the time series. For the feature grid, missing country-year-quarter combinations were filled with 0.
+
+## 3.3 Feature Engineering
+
+- **Time features:** `quarter_num` (1-4), `time_idx` (year + quarter/4)
+- **Lag features:** `lag_1` (previous quarter), `lag_2`, `lag_4` (same quarter last year)
+- **Rolling mean:** 4-quarter rolling average to smooth short-term fluctuations
+- **External features:** Exchange rates (Yahoo Finance), visa policy indicators (manually encoded from government sources)
+
+## 3.4 Train-Test Split
+
+- **Training set:** Data up to and including 2023
+- **Test set:** 2024 onward (2024 Q1 through 2026 Q2 = 10 quarters)
+
+\newpage
+
+# 4. Exploratory Data Analysis (EDA)
+
+## 4.1 Overall Trend with Coverage Context
+
+![Figure 1: Total arrivals by year with country count overlay](output/eda_total_trend.png)
+
+The bar chart (gray, secondary axis) shows the number of reporting countries per year. Key observations:
+
+- **2009-2011:** Only 11-12 countries report, making totals appear artificially low (~2.6-4.0M)
+- **2012+:** Coverage stabilizes at 29-30 countries, enabling fair comparison
+- **2020:** Sharp COVID-19 drop to ~3.7M despite full coverage (30 countries)
+- **2025:** Recovery to ~17.6M with 29 countries — genuine growth
+
+**Important:** The "growth" from 2009 to 2012 should not be interpreted at face value — it's largely a coverage artifact.
+
+## 4.2 Average Annual Growth Rate
+
+To compare countries fairly regardless of absolute volume, average annual growth rates were computed for 2012-2019 (pre-COVID, stable coverage):
+
+![Figure 2: Top countries by average annual growth rate](output/eda_growth_rate.png)
+
+Growth rates reflect **emerging markets** (Hong Kong, Spain, Italy, Germany, Philippines) rather than established markets. China and South Korea — the two largest markets — grew at more moderate rates from a high base.
+
+## 4.3 Top Source Countries by Volume
+
+![Figure 3: Top 10 source countries (all years combined)](output/eda_top10_countries.png)
+
+China (41.7M cumulative) and South Korea (33.0M) dominate. However, these totals span all years including the coverage-limited 2009-2011 period, so they slightly undercount for countries missing early data.
+
+## 4.4 Seasonality
+
+![Figure 4: Average arrivals by quarter](output/eda_seasonality.png)
+
+- **Q1** has the highest average arrivals (Tet holiday, New Year tourism)
+- **Q4** has the highest variance, suggesting year-end tourism depends heavily on specific conditions
+
+## 4.5 Correlation Between Source Markets
+
+![Figure 5: Correlation between top 5 source countries](output/eda_correlation.png)
+
+- **China-Taiwan** correlation: 0.89 (shared geography, similar travel patterns)
+- **USA** has low correlation with Asian markets (independent dynamics, affected by USD/VND exchange rate)
+
+## 4.6 Country-Specific Trends
+
+![Figure 6: Trends for top 5 source countries](output/eda_country_trends.png)
+
+- **South Korea** recovered fastest post-COVID
+- **China** suffered the steepest drop and slowest recovery
+- **Japan** shows steady but slower growth
+
+\newpage
+
+# 5. Model Building
+
+Five models were tested on aggregate quarterly arrivals (all countries summed). All use features: year, quarter number, time index, lag_1, lag_4, rolling_mean_4.
+
+## 5.1 Linear Regression
+
+Linear Regression assumes a linear relationship between features and target. It finds the best-fitting line by minimizing sum of squared errors.
+
+Despite its simplicity, LR captures the overall upward trend effectively.
 
 ## 5.2 Random Forest Regression
 
-Random Forest kết hợp nhiều cây quyết định, mỗi cây huấn luyện trên mẫu bootstrap ngẫu nhiên. Kết quả là trung bình dự đoán của tất cả cây. Giảm overfitting so với cây đơn lẻ.
+Random Forest combines many decision trees, each trained on a bootstrap sample. Predictions are averaged across trees, reducing overfitting compared to a single tree.
 
 ## 5.3 XGBoost Regressor
 
-XGBoost xây dựng cây quyết định tuần tự, mỗi cây mới sửa lỗi cây trước. Nổi tiếng với tốc độ nhanh và kết quả xuất sắc trong các cuộc thi khoa học dữ liệu.
+XGBoost builds trees sequentially, each correcting the errors of the previous one. Known for strong performance in competitions.
 
-## 5.4 SARIMA (Mô hình chuỗi thời gian)
+## 5.4 SARIMA (Seasonal ARIMA)
 
-SARIMA kết hợp tự hồi quy (AR), lấy sai phân (I), trung bình trượt (MA) và mùa vụ (S). Phù hợp với dữ liệu có tính mùa vụ quarterly. Năm 2021 được loại bỏ khỏi chuỗi.
+SARIMA combines autoregressive (AR), differencing (I), moving average (MA), and seasonal components. The year 2021 gap was removed from the training series.
 
-## 5.5 CIR# — Mô hình Ngẫu nhiên Vi phân (Stochastic Differential Equation)
+## 5.5 Chronos-T5 (Foundation Model)
 
-**Giới thiệu thuật toán:**
+Chronos is Amazon's pretrained time-series foundation model. It performs **zero-shot forecasting** — no task-specific training needed. Four sizes were tested (Tiny/Small/Base/Large); Base (200M params) gave the best MAE.
 
-CIR# (Cox-Ingersoll-Ross Sharp) là mô hình dự báo chuỗi thời gian dự trên phương trình vi phân ngẫu nhiên (SDE), được giới thiệu trong nghiên cứu của Clements et al. (2023, 2024). Mô hình mở rộng CIR kinh điển (ban đầu dùng cho lãi suất) bằng cách:
+## 5.6 CIR# — Stochastic Differential Equation Model (Considered but Not Adopted)
 
-1. **Phân vùng dữ liệu** (data partitioning): chia chuỗi thành các subsample để nắm bắt thay đổi phương sai và các bước nhảy (jumps).
-2. **Lọc ARIMA**: thay vì dùng nhiễu Brownian Motion (dW), mô hình sử dụng phần dư chuẩn hóa từ mô hình ARIMA tối ưu — giúp nhiễu thích ứng với mẫu cục bộ.
-3. **Biến đổi Johnson**: phần dư được biến đổi để đảm bảo nhiễu trắng Gauss.
-4. **Suy luận Milstein**: sử dụng dạng Milstein để giải tích SDE:
+The CIR# (Cox-Ingersoll-Ross Sharp) model from Clements et al. (2023) extends the classic CIR SDE for tourism forecasting with disrupted data. It achieved MAPE 1.18% on Italian monthly tourism data — a 70% error reduction vs SARIMA and Holt-Winters.
 
-$$dr(t) = \kappa(	heta - r(t))dt + \sigma\sqrt{r(t)}dW(t)$$
+**Why CIR# does not fit this dataset:**
 
-Trong đó κ là tốc độ hồi quy trung bình, θ là giá trị dài hạn, σ là biến động.
+1. **Insufficient observations:** Only 55 quarterly data points (vs 288 monthly in the Italian study). The rolling window of M=8 consumes 15% of data.
+2. **Mean-reversion assumption violated:** The CIR SDE pulls toward a long-run mean θ. Vietnam's tourism has a strong upward trend that contradicts mean-reversion.
+3. **COVID shock magnitude:** An 80% drop followed by full recovery causes the √r volatility term to amplify noise in log-returns, producing wild oscillations.
+4. **Quarterly vs monthly granularity:** The original paper's success relied on monthly data providing more observations per window and better seasonal capture.
 
-Nghiên cứu gốc báo cáo kết quả xuất sắc trên dữ liệu du lịch Ý bị gián đoạn bởi COVID-19: MAPE 1.18% (giảm ~70% so với SARIMA và Holt-Winters). Đặc biệt, mô hình hoạt động tốt trong giai đoạn COVID (MAPE 1.69%).
+CIR# achieved MAPE ~183% on this data — far worse than all other models. This is an honest negative result: **not every state-of-the-art model fits every dataset**. CIR# is designed for stationary, mean-reverting processes (interest rates, short-term economic indicators), not for trending series with structural breaks.
 
-**Ứng dụng trong bài toán:**
+## 5.7 Model Comparison
 
-Áp dụng CIR# với các tham số:
-- Cửa sổ trượt M = 8 quý (tương đương M = 12 tháng trong nghiên cứu gốc)
-- ARIMA(p,q) tối ưu theo AIC trên mỗi cửa sổ (p,q ∈ [0,2])
-- Phù hợp tham số CIR bằng bình phương tối thiểu trên mỗi cửa sổ
-- Dự báo một bước bằng suy luận Milstein với nhiễu từ phần dư ARIMA
+![Figure 7: Model performance comparison](output/model_comparison.png)
 
-**Kết quả:**
+| Model | MAE | RMSE | MAPE | R² |
+|-------|-----|------|------|-----|
+| Linear Regression | 668,001 | 826,017 | 14.96% | -0.11 |
+| Random Forest | 718,697 | 943,153 | 14.73% | -0.44 |
+| Chronos-T5-Base | 760,788 | 970,698 | 15.42% | -0.53 |
+| XGBoost | 983,132 | 1,396,363 | 21.32% | -2.16 |
+| SARIMA | 2,191,581 | 2,369,273 | 47.23% | -8.10 |
 
-CIR# cho kết quả **rất kém** trên dữ liệu du lịch Việt Nam:
+**Key observations:**
 
-- **MAPE ~183%** — tồi tệ hơn tất cả các mô hình khác
-- Dự đoán dao động mạnh quanh giá trị 0, không nắm bắt được xu hướng
-- Giai đoạn COVID dự đoán giá trị âm hoặc gần 0
-
-**Tại sao CIR# không phù hợp:**
-
-Mặc dù CIR# xuất sắc trên dữ liệu du lịch Ý (288 quan sát hàng tháng), mô hình không phù hợp với bài toán Việt Nam vì:
-
-1. **Dữ liệu quá ngắn:** Chỉ 55 quý (vs 288 tháng trong nghiên cứu gốc). Cửa sổ trượt M=8 lấy mất 15% dữ liệu, không đủ để fit CIR chính xác.
-
-2. **Giả định hồi quy trung bình:** CIR SDE kéo r(t) về θ (giá trị dài hạn). Du lịch Việt Nam có xu hướng tăng mạnh liên tục, không hồi quy — mâu thuẫn cơ bản với giả định mô hình.
-
-3. **Sốc COVID quá lớn:** Giảm ~80% rồi phục hồi hoàn toàn. Biến đổi log-lợi suất khuếch đại nhiễu trong thành phần σ√r, gây dao động hoang dã.
-
-4. **Dữ liệu quarterly vs monthly:** Nghiên cứu gốc dùng dữ liệu hàng tháng cho phép nắm bắt tính mùa vụ tốt hơn và có nhiều quan sát hơn trên mỗi cửa sổ.
-
-**Bài học:** Không phải mọi mô hình SOTA đều phù hợp với mọi bộ dữ liệu. CIR# là lựa chọn xuất sắc cho chuỗi thời gian tài chính/kinh tế có tính hồi quy trung bình, nhưngkhông phù hợp cho chuỗi có xu hướng tăng mạnh và sốc cấu trúc lớn. Đây là minh chứng cho tầm quan trọng của việc benchmark trên dữ liệu thực tế.
-
-## 5.6 Chronos-T5 (Foundation Model)
-
-Chronos là mô hình foundation model của Amazon, pretrained trên hàng triệu chuỗi thời gian. Hoạt động theo nguyên lý **zero-shot forecasting** — không cần huấn luyện lại. Cung cấp dự đoán xác suất với khoảng tin cậy.
-
-Thử nghiệm 4 kích thước: Tiny (8M), Small (46M), Base (200M), Large (710M). Chạy trên CPU.
-
-## 5.7 So sánh hiệu suất các mô hình
-
-![Hình 6: So sánh hiệu suất các mô hình dự đoán](output/model_comparison.png)
-
-| Mô hình | MAE | RMSE | R² |
-|---------|-----|------|-----|
-| LR | 1,099,063 | 1,448,419 | 0.4846 |
-| RF | 1,098,133 | 1,548,464 | 0.4109 |
-| XGB | 1,037,611 | 1,467,481 | 0.4709 |
-| SARIMA | 1,548,896 | 2,096,619 | -0.0799 |
-| Chronos | 1,412,524 | 2,184,660 | -0.1725 |
-| RF (opt) | 1,081,460 | 1,538,767 | 0.4183 |
-| XGB (opt) | 1,092,469 | 1,553,966 | 0.4067 |
-
-**Nhận xét:**
-
-- **Chronos-T5-Base** cho MAE thấp nhất (0.92M) — thấp hơn tất cả mô hình truyền thống.
-- **Linear Regression** cho R² tốt nhất (0.48) — nắm bắt xu hướng tuyến tính.
-- **SARIMA** cho kết quả kém nhất do khoảng trống dữ liệu 2021 phá vỡ tính liên tục.
-- **Random Forest và XGBoost** không vượt trội hơn LR với dữ liệu nhỏ (55 quý).
-
-**Tại sao Base tốt hơn Large?** Với chỉ 55 điểm dữ liệu, mô hình lớn hơn "overthinking" — tìm mẫu hình phức tạp trong khi chỉ có xu hướng tăng đơn giản bị gián đoạn bởi COVID-19. Prior của model lớn (từ tài chính, thời tiết...) không phù hợp với du lịch Việt Nam.
+- All R² values are **negative**, meaning every model performs worse than predicting the mean. This is expected — the post-COVID surge is a structural break invisible to history-based models.
+- **Linear Regression** has the lowest MAE (668K) and best R² (-0.11). Its linear trend captures the overall direction.
+- **Chronos-T5-Base** has the lowest MAPE among ML models (15.42%) despite being zero-shot.
+- **SARIMA** performs worst due to the 2021 gap breaking the seasonal continuity.
+- **XGBoost overfits** with only 51 training samples.
 
 \newpage
 
-# 6. Dự đoán vs Thực tế (2024–2026)
+# 6. Model Optimization
 
-![Hình 6b: Dự đoán vs Thực tế — Tập test](output/pred_vs_actual.png)
+## 6.1 GridSearchCV for Random Forest
 
-| Quý | Thực tế | LR | Sai lệch | XGBoost | Sai lệch | Chronos | Sai lệch |
-|-----|---------|-----|----------|---------|----------|---------|----------|
-| 2024 Q1 | 4,642,798 | 3,893,818 | -16.1% | 3,738,777 | -19.5% | 3,784,412 | -18.5% |
-| 2024 Q3 | 3,873,045 | 4,236,586 | +9.4% | 3,827,625 | -1.2% | 3,965,012 | +2.4% |
-| 2025 Q1 | 6,018,708 | 4,594,127 | -23.7% | 4,506,910 | -25.1% | 4,088,150 | -32.1% |
-| 2026 Q1 | 6,762,175 | 5,070,457 | -25.0% | 4,506,910 | -33.4% | 4,334,424 | -35.9% |
+Hyperparameters tuned: `n_estimators` (100, 200, 300), `max_depth` (5, 10, 15, None), `min_samples_split` (2, 5, 10). 3-fold cross-validation.
 
-**Thách thức "hậu COVID-19":** Không mô hình nào — kể cả Chronos foundation model — có thể dự đoán chính xác sự phục hồi hậu đại dịch. Dữ liệu huấn luyện kết thúc 2023 với ~5 triệu, nhưng 2025–2026 bùng nổ lên 6–7 triệu. Đây là structural break mà mô hình dựa vào lịch sử không thể nắm bắt.
+## 6.2 RandomizedSearchCV for XGBoost
 
-\newpage
+50 random combinations from: `n_estimators` (100-500), `max_depth` (3-9), `learning_rate` (0.01-0.2), `subsample` (0.7-1.0), `colsample_bytree` (0.7-1.0).
 
-# 7. Dự đoán tương lai
+**Result:** Optimization provided marginal improvement for RF but **made XGBoost worse** — overfitting on the small training set. This confirms that with 51 samples, simpler models are preferred.
 
-![Hình 7: Dự đoán lượng khách 4 quý tiếp theo](output/forecast_plot.png)
+## 6.3 External Features (Exchange Rates + Visa Policy)
 
-Dự đoán SARIMA cho 4 quý tiếp theo:
+Exchange rates (VND vs KRW, CNY, USD, JPY, TWD, MYR) were fetched from Yahoo Finance. Visa policy indicators were manually encoded:
+- `visa_evisa`: E-visa available (2017+)
+- `visa_evisa_full`: E-visa for all countries, 90-day (2023 Q3+)
+- `covid_restrict`: Travel restriction index (0-1)
 
-| Quý | Dự đoán | Khoảng tin cậy 95% |
-|-----|---------|-------------------|
-| 2027 Q1 | 1,421,545 | [-247,180 — 3,090,271] |
-| 2027 Q2 | -209,643 | [-3,479,627 — 3,060,341] |
-| 2027 Q3 | -1,549,742 | [-5,812,211 — 2,712,728] |
-| 2027 Q4 | -1,132,213 | [-6,199,123 — 3,934,697] |
-
-**Lưu ý:** Khoảng tin cậy rất rộng, phản ánh mức độ không chắc chắn cao do COVID-19 và dữ liệu hạn chế.
+**Result:** External features improved LR slightly (MAE reduced ~5%) but made RF/XGB worse due to overfitting. `lag_1` and `rolling_mean_4` remain the dominant features (~73% importance). The post-COVID structural break remains the fundamental challenge.
 
 \newpage
 
-# 8. Tổng kết
+# 7. Future Forecasting
 
-## 8.1 Kết quả đạt được
+![Figure 8: SARIMA forecast for next 4 quarters](output/forecast_plot.png)
 
-1. Phân tích thành công dữ liệu du lịch 2008–2026,chỉ ra xu hướng tăng trưởng và tác động COVID-19.
-2. Xác định Trung Quốc và Hàn Quốc là thị trường nguồn lớn nhất.
-3. Phát hiện tính mùa vụ: Q1 cao nhất.
-4. Xây dựng 5 mô hình, Chronos-T5-Base cho MAE thấp nhất.
-5. Dự đoán 4 quý tiếp theo với khoảng tin cậy.
+| Quarter | Forecast | 95% Confidence Interval |
+|---------|----------|------------------------|
+| 2026 Q3 | 4,157,874 | [2,764,158 — 5,551,591] |
+| 2026 Q4 | 4,156,459 | [2,435,914 — 5,877,004] |
+| 2027 Q1 | 4,129,710 | [2,167,419 — 6,092,001] |
+| 2027 Q2 | 4,129,570 | [1,962,482 — 6,296,659] |
 
-## 8.2 Hạn chế
+**Note:** The very wide confidence intervals reflect fundamental uncertainty. SARIMA cannot capture the growth trend visible in recent quarters (6M+ in 2025-2026) and reverts toward the historical mean (~4M).
 
-1. Dữ liệu hạn chế (55 quý huấn luyện).
-2. Khoảng trống 2021 phá vỡ tính liên tục chuỗi thời gian.
-3. Thiếu đặc trưng bên ngoài (chính sách visa, tỷ giá...).
-4. Dự đoán SARIMA không ổn định.
+![Figure 9: Predicted vs Actual (test set detail)](output/pred_vs_actual.png)
 
-## 8.3 Hướng phát triển
+**Per-quarter accuracy (best models):**
 
-1. Thu thập dữ liệu theo tháng để tăng mẫu.
-2. Bổ sung đặc trưng bên ngoài (visa, tỷ giá, sự kiện du lịch).
-3. Thử nghiệm Prophet, LSTM.
-4. Dự đoán theo từng quốc gia riêng lẻ.
-5. Xây dựng dashboard tương tác.
+| Quarter | Actual | Best Model | Prediction | Error |
+|---------|--------|-----------|------------|-------|
+| 2024 Q2 | 3,893,572 | Chronos | 3,602,994 | -7.5% |
+| 2024 Q3 | 3,656,240 | XGBoost | 3,686,331 | +0.8% |
+| 2024 Q4 | 4,428,526 | LR | 4,030,040 | -9.0% |
+| 2025 Q1 | 5,408,927 | LR | 4,288,777 | -20.7% |
+| 2026 Q1 | 6,058,711 | LR | 4,708,762 | -22.3% |
+
+Models perform well on "normal" quarters (Q2-Q3) but severely underestimate the surge quarters (Q1 of 2025-2026). This is the **post-COVID structural break** problem.
+
+\newpage
+
+# 8. Conclusion
+
+## 8.1 Key Findings
+
+1. **Coverage bias is significant:** Only 11-12 countries reported during 2009-2011 vs 30+ from 2012. Raw aggregate totals are misleading; growth rates should be used for fair comparison.
+
+2. **China and South Korea dominate** the tourism market, but emerging markets (Hong Kong, Spain, Italy, Philippines) grew fastest during 2012-2019.
+
+3. **Strong seasonality:** Q1 consistently has the highest arrivals (Tet holiday effect).
+
+4. **Linear Regression is surprisingly effective** with only 51 training samples, achieving the lowest MAE (668K) and best R² (-0.11). More complex models overfit.
+
+5. **No model predicts the post-COVID surge well.** All R² values are negative. The structural break is invisible to history-based models.
+
+6. **CIR# (state-of-the-art SDE model) fails on this data** due to insufficient observations, mean-reversion assumption violation, and quarterly granularity. This is a valuable negative finding.
+
+7. **External features (exchange rates, visa policy) provide marginal improvement** for LR but not for tree-based models with limited data.
+
+## 8.2 Limitations
+
+1. **Small training set** (51 quarterly observations after removing 2021)
+2. **2021 gap** breaks time-series continuity
+3. **Missing external features:** GDP, flight capacity, Google Trends, oil prices
+4. **Country coverage inconsistency** (2009-2011 only 11-12 countries)
+
+## 8.3 Future Directions
+
+1. **Monthly data** to increase sample size and improve seasonal capture
+2. **External leading indicators:** Source-country GDP, exchange rates, Google Trends search volume, flight route capacity
+3. **Per-country models** instead of aggregate (different recovery trajectories)
+4. **Ensemble methods** combining LR (trend) with Chronos (pattern recognition)
+5. **Regime-switching models** that explicitly handle the pre-COVID / during-COVID / post-COVID transitions
+6. **Interactive dashboard** for real-time tourism monitoring and forecasting
+
+\newpage
+
+# References
+
+1. Clements, A.E., et al. (2024). "Forecasting disrupted tourism demand: the CIR# model." *Tourism Review*, 79(2), 445-470.
+2. Clements, A.E., et al. (2023). "The CIR# model for time series forecasting." *Technological and Economic Development of Economy*, 29(5), 1403-1427.
+3. Scikit-learn documentation: https://scikit-learn.org/
+4. XGBoost documentation: https://xgboost.readthedocs.io/
+5. Statsmodels SARIMA: https://www.statsmodels.org/
+6. Chronos (Amazon): https://github.com/amazon-science/chronos-forecasting
+7. Yahoo Finance (exchange rate data): https://finance.yahoo.com/
+8. Vietnam General Statistics Office (GSO): https://www.gso.gov.vn/
