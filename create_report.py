@@ -1,3 +1,23 @@
+#!/usr/bin/env python3
+"""Generate the comprehensive bao-cao notebook matching the example PDF structure."""
+import nbformat
+from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell
+
+nb = new_notebook()
+nb.metadata.kernelspec = {"display_name": "Python 3", "language": "python", "name": "python3"}
+
+cells = []
+
+def md(text):
+    cells.append(new_markdown_cell(text.strip()))
+
+def code(text):
+    cells.append(new_code_cell(text.strip()))
+
+# ============================================================
+# COVER PAGE
+# ============================================================
+md(r"""
 BỘ GIÁO DỤC VÀ ĐÀO TẠO
 
 TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
@@ -13,7 +33,12 @@ TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
 **Giảng viên hướng dẫn:** ThS. Nguyễn Anh Tuấn
 
 ### HÀ NỘI, THÁNG 7 NĂM 2025
+""")
 
+# ============================================================
+# TABLE OF CONTENTS
+# ============================================================
+md(r"""
 ## Mục lục
 
 1. Giới thiệu đề tài
@@ -60,7 +85,12 @@ TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
    - 8.1 Kết quả đạt được
    - 8.2 Hạn chế
    - 8.3 Hướng phát triển
+""")
 
+# ============================================================
+# LIST OF FIGURES
+# ============================================================
+md(r"""
 ## Danh sách hình vẽ
 
 1. Lượng khách quốc tế đến Việt Nam theo năm (2008–2026)
@@ -70,7 +100,12 @@ TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
 5. Xu hướng lượng khách theo từng quốc gia (Top 5)
 6. So sánh hiệu suất các mô hình dự đoán
 7. Dự đoán lượng khách 4 quý tiếp theo với khoảng tin cậy 95%
+""")
 
+# ============================================================
+# CHAPTER 1: INTRODUCTION
+# ============================================================
+md(r"""
 ## 1. Giới thiệu đề tài
 
 ### 1.1 Đặt vấn đề bài toán
@@ -117,7 +152,12 @@ Quá trình thực hiện đề tài được hỗ trợ bởi các công cụ v
 - **Xây dựng mô hình:** scikit-learn (Linear Regression, Random Forest, GridSearchCV, RandomizedSearchCV), xgboost (XGBoost Regressor), statsmodels (SARIMA)
 - **Môi trường:** Jupyter Notebook
 - **Quản lý phiên bản:** Git, GitHub
+""")
 
+# ============================================================
+# CHAPTER 2: DATA COLLECTION
+# ============================================================
+md(r"""
 ## 2. Thu thập dữ liệu
 
 ### 2.1 Nguồn dữ liệu
@@ -177,7 +217,12 @@ Quá trình thu thập và xử lý dữ liệu gặp không ít thách thức, 
 **Để xác minh tính chính xác**, nhóm đã kiểm tra chéo với dữ liệu mẫu được cung cấp: quốc gia "Hoa Kỳ" năm 2009, quý 1 có giá trị `104.520` (tương đương 104,520 lượt khách). Kết quả phân tích trả về đúng giá trị này, xác nhận dữ liệu được trích xuất chính xác.
 
 Sau khi hợp nhất, tập dữ liệu cuối cùng có **1,894 bản ghi**, bao gồm **40 quốc gia** và **18 năm** (2008–2026, không bao gồm 2021).
+""")
 
+# ============================================================
+# CHAPTER 3: PREPROCESSING
+# ============================================================
+md(r"""
 ## 3. Tiền xử lý dữ liệu
 
 ### 3.1 Làm sạch dữ liệu
@@ -227,7 +272,12 @@ Các đặc trưng trễ giúp mô hình học được tính chu kỳ và quán
 - **Tập kiểm tra:** Dữ liệu từ năm 2024 trở đi
 
 Việc chia này đảm bảo mô hình được đánh giá trên dữ liệu "tương lai" mà nó chưa từng thấy, phản ánh đúng khả năng dự đoán thực tế.
+""")
 
+# ============================================================
+# CHAPTER 4: EDA
+# ============================================================
+md(r"""
 ## 4. Phân tích và khám phá dữ liệu (EDA)
 
 Trước khi tiến hành xây dựng mô hình dự đoán, việc phân tích và khám phá dữ liệu (Exploratory Data Analysis – EDA) là bước quan trọng, không thể thiếu. EDA giúp hiểu rõ hơn về cấu trúc dữ liệu, phát hiện các xu hướng, mô hình mùa vụ, và mối quan hệ giữa các thị trường nguồn khách.
@@ -235,10 +285,9 @@ Trước khi tiến hành xây dựng mô hình dự đoán, việc phân tích 
 ### 4.1 Phân tích tổng quan lượng khách quốc tế
 
 Biểu đồ dưới đây thể hiện xu hướng tổng thể lượng khách quốc tế đến Việt Nam theo giai đoạn 2008–2026.
+""")
 
-
-```
-import pandas as pd
+code(r"""import pandas as pd
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -291,9 +340,9 @@ ax.set_xticks(yearly['year']); ax.set_xticklabels(yearly['year'], rotation=45)
 covid_val = yearly[yearly['year']==2020]['total_arrivals'].values[0]/1e6
 ax.annotate('COVID-19', xy=(2020, covid_val), xytext=(2018, covid_val+1.5),
             fontsize=11, ha='center', arrowprops=dict(arrowstyle='->', color='red', lw=1.5), color='red', fontweight='bold')
-ax.grid(True, alpha=0.3); plt.tight_layout(); plt.savefig('eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+ax.grid(True, alpha=0.3); plt.tight_layout(); plt.savefig('eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 **Nhận xét:**
 
 Biểu đồ cho thấy lượng khách quốc tế đến Việt Nam có xu hướng tăng trưởng mạnh trong giai đoạn 2009–2019, từ khoảng 3.8 triệu lượt (2009) lên đến 18.0 triệu lượt (2019) — tăng gần 5 lần trong một thập kỷ. Giai đoạn tăng trưởng đặc biệt mạnh từ 2016 (10.0 triệu) đến 2019 (18.0 million), với tốc độ tăng trung bình khoảng 2.7 triệu lượt/năm.
@@ -305,10 +354,9 @@ Biểu đồ cho thấy lượng khách quốc tế đến Việt Nam có xu hư
 **Dữ liệu năm 2026:** Dữ liệu năm 2026 chỉ bao gồm Q1 và Q2 (tổng 10.6 triệu), nên chưa thể đánh giá đầy đủ cho cả năm.
 
 ### 4.2 Phân tích theo quốc gia nguồn
+""")
 
-
-```
-top10 = df_total.groupby('country')['total_arrivals'].sum().sort_values(ascending=False).head(10)
+code(r"""top10 = df_total.groupby('country')['total_arrivals'].sum().sort_values(ascending=False).head(10)
 fig, ax = plt.subplots(figsize=(12, 7))
 colors = sns.color_palette('viridis', len(top10))
 bars = ax.barh(range(len(top10)), top10.values/1e6, color=colors)
@@ -318,9 +366,9 @@ ax.set_title('Hình 2: Top 10 quốc gia nguồn khách hàng đầu', fontsize=
 ax.invert_yaxis()
 for bar, val in zip(bars, top10.values):
     ax.text(bar.get_width()+0.1, bar.get_y()+bar.get_height()/2, f'{val/1e6:.1f}M', va='center', fontsize=10)
-plt.tight_layout(); plt.savefig('eda_top10_countries.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+plt.tight_layout(); plt.savefig('eda_top10_countries.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 **Nhận xét:**
 
 Biểu đồ cho thấy sự phân hóa rõ rệt giữa các thị trường nguồn khách:
@@ -336,19 +384,18 @@ Biểu đồ cho thấy sự phân hóa rõ rệt giữa các thị trường ng
 - **Malaysia**, **Úc**, **Nga**, và **Campuchia** cũng nằm trong top 10, mỗi thị trường đóng góp từ 5–6 triệu lượt trong toàn giai đoạn.
 
 ### 4.3 Phân tích tính mùa vụ (Seasonality)
+""")
 
-
-```
-fig, ax = plt.subplots(figsize=(10, 6))
+code(r"""fig, ax = plt.subplots(figsize=(10, 6))
 quarterly = df_long.groupby('quarter')['arrivals'].agg(['mean','std']).reindex(['Q1','Q2','Q3','Q4'])
 ax.bar(quarterly.index, quarterly['mean']/1e3, yerr=quarterly['std']/1e3,
        capsize=5, color=['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4'], edgecolor='black')
 ax.set_xlabel('Quý', fontsize=12); ax.set_ylabel('Lượng khách TB (nghìn)', fontsize=12)
 ax.set_title('Hình 3: Phân tích mùa vụ — Lượng khách trung bình theo quý', fontsize=14, fontweight='bold')
 ax.grid(axis='y', alpha=0.3)
-plt.tight_layout(); plt.savefig('eda_seasonality.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+plt.tight_layout(); plt.savefig('eda_seasonality.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 **Nhận xét:**
 
 Biểu đồ mùa vụ cho thấy sự khác biệt rõ rệt giữa các quý:
@@ -362,18 +409,17 @@ Biểu đồ mùa vụ cho thấy sự khác biệt rõ rệt giữa các quý:
 Độ lệch chuẩn lớn ở tất cả các quý phản ánh sự biến động đáng kể qua các năm, đặc biệt do tác động của COVID-19.
 
 ### 4.4 Tương quan giữa các quốc gia nguồn
+""")
 
-
-```
-top5 = top10.head(5).index.tolist()
+code(r"""top5 = top10.head(5).index.tolist()
 pivot = df_total[df_total['country'].isin(top5)].pivot_table(index='year', columns='country', values='total_arrivals', aggfunc='sum')
 corr = pivot.corr()
 fig, ax = plt.subplots(figsize=(10, 8))
 sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', center=0, ax=ax, square=True, linewidths=0.5)
 ax.set_title('Hình 4: Ma trận tương quan giữa 5 quốc gia nguồn lớn nhất', fontsize=14, fontweight='bold')
-plt.tight_layout(); plt.savefig('eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+plt.tight_layout(); plt.savefig('eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 **Nhận xét:**
 
 Ma trận tương quan揭示了一些有趣的 patterns:
@@ -385,10 +431,9 @@ Ma trận tương quan揭示了一些有趣的 patterns:
 - **Hoa Kỳ** có tương quan thấp hơn với các thị trường châu Á, cho thấy thị trường Mỹ có động lực riêng, có thể受 ảnh hưởng bởi các yếu tố如 tỷ giá USD/VND, khoảng cách địa lý, và chính sách visa.
 
 ### 4.5 Phân tích xu hướng quốc gia cụ thể
+""")
 
-
-```
-fig, axes = plt.subplots(3, 2, figsize=(16, 14))
+code(r"""fig, axes = plt.subplots(3, 2, figsize=(16, 14))
 axes = axes.flatten()
 for i, country in enumerate(top5):
     cdata = df_total[df_total['country']==country].sort_values('year')
@@ -397,9 +442,9 @@ for i, country in enumerate(top5):
     axes[i].set_ylabel('Lượt khách (nghìn)'); axes[i].grid(True, alpha=0.3)
 axes[5].set_visible(False)
 plt.suptitle('Hình 5: Xu hướng lượng khách theo từng quốc gia (Top 5)', fontsize=16, fontweight='bold', y=1.01)
-plt.tight_layout(); plt.savefig('eda_country_trends.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+plt.tight_layout(); plt.savefig('eda_country_trends.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 **Nhận xét chi tiết từng quốc gia:**
 
 - **Trung Quốc:** Tăng trưởng mạnh nhất trong giai đoạn 2015–2019, từ 1.1 triệu lên 5.8 triệu lượt. Tuy nhiên, chịu tác động nặng nề nhất từ COVID-19, giảm xuống chỉ còn 0.4 triệu (2020). Phục hồi chậm hơn so với Hàn Quốc, đạt 1.4 triệu (2024) và 1.6 triệu (2025).
@@ -411,7 +456,12 @@ plt.tight_layout(); plt.savefig('eda_country_trends.png', dpi=150, bbox_inches='
 - **Đài Loan:** Tăng trưởng mạnh trong giai đoạn 2015–2019, nhưng phục hồi chậm hơn sau COVID-19 so với Hàn Quốc.
 
 - **Hoa Kỳ:** Tăng trưởng ổn định qua các năm, từ 0.4 triệu (2009) lên 1.3 triệu (2025). Thị trường Mỹ ít受 ảnh hưởng bởi COVID-19 hơn so với các thị trường châu Á.
+""")
 
+# ============================================================
+# CHAPTER 5: MODELING
+# ============================================================
+md(r"""
 ## 5. Xây dựng mô hình dự đoán
 
 Trong phần này, nhóm xây dựng và so sánh 4 mô hình dự đoán lượng khách quốc tế theo quý: Linear Regression, Random Forest, XGBoost và SARIMA. Mỗi mô hình được đánh giá bằng các chỉ số: MAE (Mean Absolute Error), RMSE (Root Mean Squared Error), và R² (Hệ số xác định).
@@ -499,10 +549,9 @@ SARIMA được áp dụng trên chuỗi thời gian tổng hợp (tổng lượ
 SARIMA cho kết quả kém nhất với R² âm (-0.08), nghĩa là mô hình dự đoán còn tệ hơn so với việc dự đoán bằng giá trị trung bình. Nguyên nhân chính là do khoảng trống dữ liệu năm 2021打破了 tính liên tục của chuỗi thời gian, khiến mô hình không thể học được đúng pattern mùa vụ.
 
 ### 5.5 So sánh hiệu suất các mô hình
+""")
 
-
-```
-# Run models and create comparison
+code(r"""# Run models and create comparison
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -558,9 +607,9 @@ for ax, metric, title in zip(axes, ['MAE','RMSE','R²'], ['MAE','RMSE','R² Scor
     ax.set_title(title, fontweight='bold')
     if metric == 'R²': ax.axhline(y=0, color='red', ls='--', alpha=0.5)
 plt.suptitle('Hình 6: So sánh hiệu suất các mô hình dự đoán', fontweight='bold')
-plt.tight_layout(); plt.savefig('model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+plt.tight_layout(); plt.savefig('model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 **Nhận xét tổng thể:**
 
 - **Linear Regression** cho kết quả tốt nhất với R² = 0.48, cho thấy mối quan hệ tuyến tính giữa các đặc trưng và lượng khách là đáng kể.
@@ -569,7 +618,12 @@ plt.tight_layout(); plt.savefig('model_comparison.png', dpi=150, bbox_inches='ti
 - **SARIMA** cho kết quả kém nhất do ảnh hưởng của khoảng trống dữ liệu năm 2021.
 
 Với kích thước mẫu nhỏ (chỉ 56 mẫu huấn luyện), các mô hình phức tạp hơn (Random Forest, XGBoost) không có lợi thế明显 so với Linear Regression đơn giản. Đây là một insight quan trọng: **với dữ liệu nhỏ, mô hình đơn giản thường tốt hơn mô hình phức tạp**.
+""")
 
+# ============================================================
+# CHAPTER 6: OPTIMIZATION
+# ============================================================
+md(r"""
 ## 6. Tối ưu mô hình
 
 Để cải thiện hiệu suất của các mô hình, nhóm thực hiện tối ưu hóa siêu tham số (hyperparameter tuning) cho Random Forest và XGBoost.
@@ -633,10 +687,9 @@ Siêu tham số tốt nhất: `{'subsample': 0.7, 'n_estimators': 200, 'max_dept
 Đối với Random Forest, tối ưu hóa chỉ cải thiện nhẹ (R² tăng từ 0.41 lên 0.42).
 
 **Bảng so sánh最终:**
+""")
 
-
-```
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+code(r"""from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 rf_gs = GridSearchCV(RandomForestRegressor(random_state=42), {'n_estimators':[100,200,300],'max_depth':[5,10,15,None],'min_samples_split':[2,5,10]}, cv=3, scoring='neg_mean_absolute_error', n_jobs=-1).fit(X_train, y_train)
 y_rf_gs = rf_gs.predict(X_test)
 xgb_rs = RandomizedSearchCV(xgb.XGBRegressor(random_state=42), {'n_estimators':[100,200,300,500],'max_depth':[3,5,7,9],'learning_rate':[0.01,0.05,0.1,0.2],'subsample':[0.7,0.8,0.9,1.0],'colsample_bytree':[0.7,0.8,0.9,1.0]}, n_iter=50, cv=3, scoring='neg_mean_absolute_error', n_jobs=-1, random_state=42).fit(X_train, y_train)
@@ -645,9 +698,12 @@ mae_rf_gs = mean_absolute_error(y_test, y_rf_gs); rmse_rf_gs = np.sqrt(mean_squa
 mae_xgb_rs = mean_absolute_error(y_test, y_xgb_rs); rmse_xgb_rs = np.sqrt(mean_squared_error(y_test, y_xgb_rs)); r2_xgb_rs = r2_score(y_test, y_xgb_rs)
 
 comp = pd.DataFrame({'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA','RF (optimized)','XGBoost (optimized)'], 'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_rf_gs,mae_xgb_rs], 'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_rf_gs,rmse_xgb_rs], 'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_rf_gs,r2_xgb_rs]})
-print(comp.to_string(index=False))
-```
+print(comp.to_string(index=False))""")
 
+# ============================================================
+# CHAPTER 7: FORECASTING
+# ============================================================
+md(r"""
 ## 7. Dự đoán tương lai
 
 ### 7.1 Dự đoán 4 quý tiếp theo bằng SARIMA
@@ -655,10 +711,9 @@ print(comp.to_string(index=False))
 Mặc dù SARIMA cho kết quả kém trên tập kiểm tra, nhóm vẫn sử dụng mô hình này để dự đoán 4 quý tiếp theo vì SARIMA là mô hình chuỗi thời gian专门用于预测, và nó có thể提供 khoảng tin cậy (confidence interval) — một tính năng quan trọng cho việc ra quyết định.
 
 Mô hình SARIMA được huấn luyện lại trên toàn bộ dữ liệu (loại bỏ năm 2021) trước khi dự đoán.
+""")
 
-
-```
-full_ts = df_long.groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
+code(r"""full_ts = df_long.groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
 full_ts = full_ts[full_ts['year']!=2021]
 s_full = SARIMAX(full_ts['arrivals'].values, order=(1,1,1), seasonal_order=(1,1,1,4), enforce_stationarity=False, enforce_invertibility=False).fit(disp=False, maxiter=500)
 fc = s_full.get_forecast(steps=4)
@@ -684,9 +739,9 @@ ax.axvline(x=len(hist)-0.5, color='gray', ls='--', alpha=0.5)
 ax.set_xlabel('Quý'); ax.set_ylabel('Tổng lượng khách (triệu)')
 ax.set_title('Hình 7: Dự đoán lượng khách 4 quý tiếp theo với khoảng tin cậy 95%', fontweight='bold')
 ax.legend(fontsize=11); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig('forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()
-```
+plt.tight_layout(); plt.savefig('forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md(r"""
 ### 7.2 Phân tích khoảng tin cậy
 
 **Nhận xét về dự đoán:**
@@ -701,7 +756,12 @@ Kết quả dự đoán cho thấy một số vấn đề值得注意:
   - Lượng khách có tính biến động cao
 
 **Lưu ý quan trọng:** Các dự đoán này chỉ mang tính tham khảo và không nên được sử dụng làm cơ sở duy nhất cho việc ra quyết định. Cần kết hợp với phân tích định性 và các yếu tố bên ngoài (chính sách visa, tình hình kinh tế, etc.) để đưa ra dự đoán chính xác hơn.
+""")
 
+# ============================================================
+# CHAPTER 8: CONCLUSION
+# ============================================================
+md(r"""
 ## 8. Tổng kết
 
 ### 8.1 Kết quả đạt được
@@ -743,7 +803,12 @@ Kết quả dự đoán cho thấy một số vấn đề值得注意:
 4. **Dự đoán theo từng quốc gia:** Xây dựng mô hình riêng cho từng thị trường nguồn để có dự đoán chi tiết hơn.
 
 5. **Xây dựng dashboard tương tác:** Tạo dashboard để theo dõi và dự đoán lượng khách theo thời gian thực.
+""")
 
+# ============================================================
+# REFERENCES
+# ============================================================
+md(r"""
 ## Tài liệu tham khảo
 
 1. Scikit-learn documentation: https://scikit-learn.org/
@@ -751,3 +816,10 @@ Kết quả dự đoán cho thấy một số vấn đề值得注意:
 3. Statsmodels SARIMA documentation: https://www.statsmodels.org/
 4. Pandas documentation: https://pandas.pydata.org/
 5. Matplotlib documentation: https://matplotlib.org/
+""")
+
+# Write notebook
+nb.cells = cells
+with open('bao-cao.ipynb', 'w') as f:
+    nbformat.write(nb, f)
+print(f'Created bao-cao.ipynb with {len(cells)} cells')
