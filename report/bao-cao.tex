@@ -425,7 +425,99 @@ SARIMA kết hợp tự hồi quy (AR), lấy sai phân (I), trung bình trượ
 và mùa vụ (S). Phù hợp với dữ liệu có tính mùa vụ quarterly. Năm 2021
 được loại bỏ khỏi chuỗi.
 
-\subsection{5.5 Chronos-T5 (Foundation
+\subsection{5.5 CIR\# --- Mô hình Ngẫu nhiên Vi phân (Stochastic
+Differential
+Equation)}\label{cir-muxf4-huxecnh-ngux1eabu-nhiuxean-vi-phuxe2n-stochastic-differential-equation}
+
+\textbf{Giới thiệu thuật toán:}
+
+CIR\# (Cox-Ingersoll-Ross Sharp) là mô hình dự báo chuỗi thời gian dự
+trên phương trình vi phân ngẫu nhiên (SDE), được giới thiệu trong nghiên
+cứu của Clements et al.~(2023, 2024). Mô hình mở rộng CIR kinh điển (ban
+đầu dùng cho lãi suất) bằng cách:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Phân vùng dữ liệu} (data partitioning): chia chuỗi thành các
+  subsample để nắm bắt thay đổi phương sai và các bước nhảy (jumps).
+\item
+  \textbf{Lọc ARIMA}: thay vì dùng nhiễu Brownian Motion (dW), mô hình
+  sử dụng phần dư chuẩn hóa từ mô hình ARIMA tối ưu --- giúp nhiễu thích
+  ứng với mẫu cục bộ.
+\item
+  \textbf{Biến đổi Johnson}: phần dư được biến đổi để đảm bảo nhiễu
+  trắng Gauss.
+\item
+  \textbf{Suy luận Milstein}: sử dụng dạng Milstein để giải tích SDE:
+\end{enumerate}
+
+\[dr(t) = \kappa(   heta - r(t))dt + \sigma\sqrt{r(t)}dW(t)\]
+
+Trong đó κ là tốc độ hồi quy trung bình, θ là giá trị dài hạn, σ là biến
+động.
+
+Nghiên cứu gốc báo cáo kết quả xuất sắc trên dữ liệu du lịch Ý bị gián
+đoạn bởi COVID-19: MAPE 1.18\% (giảm \textasciitilde70\% so với SARIMA
+và Holt-Winters). Đặc biệt, mô hình hoạt động tốt trong giai đoạn COVID
+(MAPE 1.69\%).
+
+\textbf{Ứng dụng trong bài toán:}
+
+Áp dụng CIR\# với các tham số: - Cửa sổ trượt M = 8 quý (tương đương M =
+12 tháng trong nghiên cứu gốc) - ARIMA(p,q) tối ưu theo AIC trên mỗi cửa
+sổ (p,q ∈ {[}0,2{]}) - Phù hợp tham số CIR bằng bình phương tối thiểu
+trên mỗi cửa sổ - Dự báo một bước bằng suy luận Milstein với nhiễu từ
+phần dư ARIMA
+
+\textbf{Kết quả:}
+
+CIR\# cho kết quả \textbf{rất kém} trên dữ liệu du lịch Việt Nam:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{MAPE \textasciitilde183\%} --- tồi tệ hơn tất cả các mô hình
+  khác
+\item
+  Dự đoán dao động mạnh quanh giá trị 0, không nắm bắt được xu hướng
+\item
+  Giai đoạn COVID dự đoán giá trị âm hoặc gần 0
+\end{itemize}
+
+\textbf{Tại sao CIR\# không phù hợp:}
+
+Mặc dù CIR\# xuất sắc trên dữ liệu du lịch Ý (288 quan sát hàng tháng),
+mô hình không phù hợp với bài toán Việt Nam vì:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Dữ liệu quá ngắn:} Chỉ 55 quý (vs 288 tháng trong nghiên cứu
+  gốc). Cửa sổ trượt M=8 lấy mất 15\% dữ liệu, không đủ để fit CIR chính
+  xác.
+\item
+  \textbf{Giả định hồi quy trung bình:} CIR SDE kéo r(t) về θ (giá trị
+  dài hạn). Du lịch Việt Nam có xu hướng tăng mạnh liên tục, không hồi
+  quy --- mâu thuẫn cơ bản với giả định mô hình.
+\item
+  \textbf{Sốc COVID quá lớn:} Giảm \textasciitilde80\% rồi phục hồi hoàn
+  toàn. Biến đổi log-lợi suất khuếch đại nhiễu trong thành phần σ√r, gây
+  dao động hoang dã.
+\item
+  \textbf{Dữ liệu quarterly vs monthly:} Nghiên cứu gốc dùng dữ liệu
+  hàng tháng cho phép nắm bắt tính mùa vụ tốt hơn và có nhiều quan sát
+  hơn trên mỗi cửa sổ.
+\end{enumerate}
+
+\textbf{Bài học:} Không phải mọi mô hình SOTA đều phù hợp với mọi bộ dữ
+liệu. CIR\# là lựa chọn xuất sắc cho chuỗi thời gian tài chính/kinh tế
+có tính hồi quy trung bình, nhưngkhông phù hợp cho chuỗi có xu hướng
+tăng mạnh và sốc cấu trúc lớn. Đây là minh chứng cho tầm quan trọng của
+việc benchmark trên dữ liệu thực tế.
+
+\subsection{5.6 Chronos-T5 (Foundation
 Model)}\label{chronos-t5-foundation-model}
 
 Chronos là mô hình foundation model của Amazon, pretrained trên hàng
@@ -436,7 +528,7 @@ khoảng tin cậy.
 Thử nghiệm 4 kích thước: Tiny (8M), Small (46M), Base (200M), Large
 (710M). Chạy trên CPU.
 
-\subsection{5.6 So sánh hiệu suất các mô
+\subsection{5.7 So sánh hiệu suất các mô
 hình}\label{so-suxe1nh-hiux1ec7u-suux1ea5t-cuxe1c-muxf4-huxecnh}
 
 \begin{figure}
