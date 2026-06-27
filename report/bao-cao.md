@@ -561,6 +561,39 @@ plt.suptitle('Hình 6: So sánh hiệu suất các mô hình dự đoán', fontw
 plt.tight_layout(); plt.savefig('output/model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()
 ```
 
+
+```
+results = te[['year','quarter_num']].copy()
+results['quarter'] = 'Q' + results['quarter_num'].astype(str)
+results['actual'] = y_test
+results['LR'] = y_lr; results['RF'] = y_rf; results['XGB'] = y_xgb
+results['LR_err%'] = ((y_lr - y_test) / y_test * 100).round(1)
+results['RF_err%'] = ((y_rf - y_test) / y_test * 100).round(1)
+results['XGB_err%'] = ((y_xgb - y_test) / y_test * 100).round(1)
+print(results[['year','quarter','actual','LR','LR_err%','RF','RF_err%','XGB','XGB_err%']].to_string(index=False))
+
+fig, ax = plt.subplots(figsize=(14, 6))
+x = range(len(results)); labels = results['year'].astype(str) + ' ' + results['quarter']
+ax.bar([i-0.25 for i in x], results['actual']/1e6, 0.2, label='Thực tế', color='#2196F3')
+ax.bar([i+0.0 for i in x], results['LR']/1e6, 0.2, label='LR', color='#FF9800')
+ax.bar([i+0.25 for i in x], results['XGB']/1e6, 0.2, label='XGB', color='#4CAF50')
+ax.set_xticks(x); ax.set_xticklabels(labels, rotation=45, ha='right')
+ax.set_ylabel('Lượng khách (triệu)'); ax.set_title('Hình 6b: Dự đoán vs Thực tế — Tập test (2024–2026)', fontweight='bold')
+ax.legend(); ax.grid(axis='y', alpha=0.3)
+plt.tight_layout(); plt.savefig('output/pred_vs_actual.png', dpi=150, bbox_inches='tight'); plt.show()
+```
+
+**Nhận xét chi tiết theo quý:**
+
+Bảng trên cho thấy chi tiết dự đoán so với thực tế cho từng quý trong tập test:
+
+- **Quý 2024 Q3** là dự đoán chính xác nhất: Random Forest chỉ sai lệch 0.2%, XGBoost sai -1.2%.
+- **Quý 2025 Q1** và **2026 Q1** là dự đoán kém nhất: tất cả các mô hình đều低估 đáng kể (sai lệch -23% đến -37%). Nguyên nhân chính là xu hướng tăng trưởng mạnh của du lịch Việt Nam trong giai đoạn phục hồi hậu COVID-19, vượt quá dự đoán của mô hình dựa trên dữ liệu lịch sử.
+- **Xu hướng chung:** Các mô hình đều có xu hướng **underestimate** (dự đoán thấp hơn thực tế), đặc biệt với các quý có lượng khách cao. Điều này phản ánh giới hạn của mô hình khi dữ liệu huấn luyện không bao gồm giai đoạn tăng trưởng nhanh hậu đại dịch.
+- **Linear Regression** có vẻ "ổn định" hơn ở mức sai lệch trung bình, trong khi **Random Forest** có độ biến động lớn hơn giữa các quý.
+
+Kết quả này cho thấy cần bổ sung thêm dữ liệu bên ngoài (chính sách visa, sự kiện du lịch, v.v.) để cải thiện khả năng dự đoán, đặc biệt trong giai đoạn biến động mạnh.
+
 **Nhận xét tổng thể:**
 
 - **Linear Regression** cho kết quả tốt nhất với R² = 0.48, cho thấy mối quan hệ tuyến tính giữa các đặc trưng và lượng khách là đáng kể.
