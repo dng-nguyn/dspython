@@ -60,10 +60,10 @@ def parse_quarterly_file(filepath, quarter_label):
     return pd.DataFrame(records)
 
 files = [
-    ('Q1', 'quy1-cacnuoc.xls'),
-    ('Q2', 'quy2-cacnuoc.xls'),
-    ('Q3', 'quy3-cacnuoc.xls'),
-    ('Q4', 'quy4-cacnuoc.xls'),
+    ('Q1', 'data/quy1-cacnuoc.xls'),
+    ('Q2', 'data/quy2-cacnuoc.xls'),
+    ('Q3', 'data/quy3-cacnuoc.xls'),
+    ('Q4', 'data/quy4-cacnuoc.xls'),
 ]
 
 dfs = []
@@ -178,7 +178,7 @@ ax.annotate('COVID-19', xy=(2020, covid_val), xytext=(2018, covid_val + 1.5),
             arrowprops=dict(arrowstyle='->', color='red', lw=1.5),
             color='red', fontweight='bold')
 plt.tight_layout()
-plt.savefig('eda_total_trend.png', dpi=150, bbox_inches='tight')
+plt.savefig('output/eda_total_trend.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("✓ eda_total_trend.png")
 
@@ -197,7 +197,7 @@ for bar, val in zip(bars, top10_countries.values):
     ax.text(bar.get_width() + 0.1, bar.get_y() + bar.get_height()/2,
             f'{val/1e6:.1f}M', va='center', fontsize=10)
 plt.tight_layout()
-plt.savefig('eda_top10_countries.png', dpi=150, bbox_inches='tight')
+plt.savefig('output/eda_top10_countries.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("✓ eda_top10_countries.png")
 
@@ -211,7 +211,7 @@ ax.set_ylabel('Mean Arrivals (thousands)', fontsize=12)
 ax.set_title('Seasonality: Average Arrivals by Quarter', fontsize=14, fontweight='bold')
 ax.grid(axis='y', alpha=0.3)
 plt.tight_layout()
-plt.savefig('eda_seasonality.png', dpi=150, bbox_inches='tight')
+plt.savefig('output/eda_seasonality.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("✓ eda_seasonality.png")
 
@@ -225,7 +225,7 @@ sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', center=0, ax=ax,
             square=True, linewidths=0.5)
 ax.set_title('Correlation Between Top 5 Source Countries', fontsize=14, fontweight='bold')
 plt.tight_layout()
-plt.savefig('eda_correlation.png', dpi=150, bbox_inches='tight')
+plt.savefig('output/eda_correlation.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("✓ eda_correlation.png")
 
@@ -241,7 +241,7 @@ for i, country in enumerate(top5):
 axes[5].set_visible(False)
 plt.suptitle('Country-Specific Arrival Trends', fontsize=16, fontweight='bold', y=1.01)
 plt.tight_layout()
-plt.savefig('eda_country_trends.png', dpi=150, bbox_inches='tight')
+plt.savefig('output/eda_country_trends.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("✓ eda_country_trends.png")
 
@@ -438,7 +438,7 @@ axes[2].axhline(y=0, color='red', linestyle='--', alpha=0.5)
 
 plt.suptitle('Model Performance Comparison', fontsize=14, fontweight='bold')
 plt.tight_layout()
-plt.savefig('model_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('output/model_comparison.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("\n✓ model_comparison.png")
 
@@ -516,7 +516,7 @@ try:
     ax.legend(fontsize=11)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
-    plt.savefig('forecast_plot.png', dpi=150, bbox_inches='tight')
+    plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches='tight')
     plt.close()
     print("\n✓ forecast_plot.png")
     
@@ -533,13 +533,13 @@ print("SECTION 8: SAVING OUTPUTS")
 print("=" * 60)
 
 # Save CSVs
-df_long.to_csv('df_long.csv', index=False)
-df_total.to_csv('df_total.csv', index=False)
+df_long.to_csv('output/df_long.csv', index=False)
+df_total.to_csv('output/df_total.csv', index=False)
 print("✓ df_long.csv")
 print("✓ df_total.csv")
 
 # Save comparison table
-comparison_v2.to_csv('model_comparison.csv', index=False)
+comparison_v2.to_csv('output/model_comparison.csv', index=False)
 print("✓ model_comparison.csv")
 
 # Save forecast
@@ -551,7 +551,7 @@ if forecast_mean is not None:
         'ci_lower': forecast_ci[:, 0],
         'ci_upper': forecast_ci[:, 1],
     })
-    fc_df.to_csv('forecast.csv', index=False)
+    fc_df.to_csv('output/forecast.csv', index=False)
     print("✓ forecast.csv")
 
 print("\n✓ All outputs saved successfully!")

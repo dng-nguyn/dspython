@@ -53,7 +53,7 @@ code("""def parse_quarterly_file(filepath, quarter_label):
     return pd.DataFrame(records)
 
 dfs = []
-for label, f in [('Q1','quy1-cacnuoc.xls'),('Q2','quy2-cacnuoc.xls'),('Q3','quy3-cacnuoc.xls'),('Q4','quy4-cacnuoc.xls')]:
+for label, f in [('Q1','data/quy1-cacnuoc.xls'),('Q2','data/quy2-cacnuoc.xls'),('Q3','data/quy3-cacnuoc.xls'),('Q4','data/quy4-cacnuoc.xls')]:
     df = parse_quarterly_file(f, label)
     dfs.append(df)
     print(f"{label}: {len(df)} records, {df['country'].nunique()} countries, years {df['year'].min()}-{df['year'].max()}")
@@ -119,7 +119,7 @@ covid_val = yearly[yearly['year']==2020]['total_arrivals'].values[0]/1e6
 ax.annotate('COVID-19', xy=(2020, covid_val), xytext=(2018, covid_val+1.5),
             fontsize=11, ha='center', arrowprops=dict(arrowstyle='->', color='red', lw=1.5), color='red', fontweight='bold')
 ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig('eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()""")
+plt.tight_layout(); plt.savefig('output/eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 md("## 5. Top 10 quốc gia nguồn khách")
 
@@ -133,7 +133,7 @@ ax.set_xlabel('Tổng lượng khách (triệu)'); ax.set_title('Top 10 quốc g
 ax.invert_yaxis()
 for bar, val in zip(bars, top10.values):
     ax.text(bar.get_width()+0.1, bar.get_y()+bar.get_height()/2, f'{val/1e6:.1f}M', va='center', fontsize=10)
-plt.tight_layout(); plt.savefig('eda_top10_countries.png', dpi=150, bbox_inches='tight'); plt.show()""")
+plt.tight_layout(); plt.savefig('output/eda_top10_countries.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 md("## 6. Mùa vụ")
 
@@ -144,7 +144,7 @@ ax.bar(quarterly.index, quarterly['mean']/1e3, yerr=quarterly['std']/1e3,
 ax.set_xlabel('Quý'); ax.set_ylabel('Lượng khách TB (nghìn)')
 ax.set_title('Mùa vụ: Lượng khách trung bình theo quý', fontweight='bold')
 ax.grid(axis='y', alpha=0.3)
-plt.tight_layout(); plt.savefig('eda_seasonality.png', dpi=150, bbox_inches='tight'); plt.show()""")
+plt.tight_layout(); plt.savefig('output/eda_seasonality.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 md("## 7. Tương quan giữa các quốc gia nguồn (Top 5)")
 
@@ -154,7 +154,7 @@ corr = pivot.corr()
 fig, ax = plt.subplots(figsize=(10, 8))
 sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', center=0, ax=ax, square=True, linewidths=0.5)
 ax.set_title('Tương quan giữa 5 quốc gia nguồn lớn nhất', fontweight='bold')
-plt.tight_layout(); plt.savefig('eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()
+plt.tight_layout(); plt.savefig('output/eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()
 print("\\nNhận xét: Trung Quốc-Đài Loan tương quan cao (0.89), Hoa Kỳ tương quan thấp với các thị trường châu Á.")""")
 
 md("## 8. Xu hướng theo từng quốc gia (Top 5)")
@@ -167,7 +167,7 @@ for i, c in enumerate(top5):
     axes.flatten()[i].grid(True, alpha=0.3)
 axes.flatten()[5].set_visible(False)
 plt.suptitle('Xu hướng lượng khách theo quốc gia', fontweight='bold', y=1.01)
-plt.tight_layout(); plt.savefig('eda_country_trends.png', dpi=150, bbox_inches='tight'); plt.show()""")
+plt.tight_layout(); plt.savefig('output/eda_country_trends.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 # --- Modeling ---
 md("## 9. Modeling — Chuẩn bị dữ liệu")
@@ -239,7 +239,7 @@ for ax, metric, title in zip(axes, ['MAE','RMSE','R²'], ['MAE','RMSE','R² Scor
     ax.set_title(title, fontweight='bold')
     if metric=='R²': ax.axhline(y=0, color='red', ls='--', alpha=0.5)
 plt.suptitle('So sánh hiệu suất mô hình', fontweight='bold')
-plt.tight_layout(); plt.savefig('model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()""")
+plt.tight_layout(); plt.savefig('output/model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 md("## 15. Tối ưu siêu tham số")
 
@@ -301,15 +301,15 @@ ax.axvline(x=len(hist)-0.5, color='gray', ls='--', alpha=0.5)
 ax.set_xlabel('Quý'); ax.set_ylabel('Tổng lượng khách (triệu)')
 ax.set_title('Dự đoán SARIMA — 4 quý tiếp theo', fontweight='bold')
 ax.legend(); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig('forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
+plt.tight_layout(); plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 md("## 17. Lưu kết quả")
 
-code("""df_long.to_csv('df_long.csv', index=False)
-df_total.to_csv('df_total.csv', index=False)
-comp.to_csv('model_comparison.csv', index=False)
+code("""df_long.to_csv('output/df_long.csv', index=False)
+df_total.to_csv('output/df_total.csv', index=False)
+comp.to_csv('output/model_comparison.csv', index=False)
 pd.DataFrame({'year':[y for y,q in fqs],'quarter':[f'Q{q}' for y,q in fqs],
-    'forecast':fc_mean,'ci_lower':fc_ci[:,0],'ci_upper':fc_ci[:,1]}).to_csv('forecast.csv', index=False)
+    'forecast':fc_mean,'ci_lower':fc_ci[:,0],'ci_upper':fc_ci[:,1]}).to_csv('output/forecast.csv', index=False)
 print("✓ Saved: df_long.csv, df_total.csv, model_comparison.csv, forecast.csv")""")
 
 nb.cells = cells

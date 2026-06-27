@@ -2,6 +2,7 @@
 __pycache__/
 venv/
 .ipynb_checkpoints/
-83h5ir.zip
-example_highscore.pdf
+data/83h5ir.zip
+data/example_highscore.pdf
 notebook.tex
+_tmp_report.ipynb
