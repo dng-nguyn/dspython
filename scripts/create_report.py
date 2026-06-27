@@ -578,6 +578,14 @@ Chúng ta thử nghiệm 4 kích thước mô hình: Tiny (8M tham số), Small 
 
 Hiện tượng này cũng xảy ra với SARIMA và là dấu hiệu cho thấy **bài toán dự đoán du lịch hậu COVID-19 là cực kỳ khó khăn** đối với mọi mô hình.
 
+**Tại sao Base tốt hơn Large?** Điều đáng chú ý là chronos-t5-base (200M tham số) cho kết quả tốt hơn chronos-t5-large (710M tham số). Đây không phải là lỗi — nguyên nhân bao gồm:
+
+1. **Ngữ cảnh quá ngắn:** Với chỉ 55 điểm dữ liệu đầu vào, mô hình lớn hơn có xu hướng "overthinking" — tìm kiếm các mẫu hình phức tạp trong khi thực tế chỉ có một xu hướng tăng đơn giản bị gián đoạn bởi COVID-19.
+2. **Prior quá mạnh:** Mô hình lớn hơn đã học được nhiều pattern hơn từ dữ liệu tiền huấn luyện, nhưng các pattern đó (từ tài chính, thời tiết, bán lẻ...) có thể không phù hợp với dữ liệu du lịch Việt Nam. Mô hình base "ít kiến thức hơn" nên ít bị ảnh hưởng bởi prior sai.
+3. **Hiệu ứng overfitting zero-shot:** Trong zero-shot forecasting, lớn hơn không phải lúc nào cũng tốt hơn. Điều này đã được ghi nhận trong nhiều benchmark gần đây (QuitoBench 2026, TIME benchmark).
+
+Đây là một bài viết quan trọng: **khi chọn foundation model, cần benchmark trên dữ liệu thực tế thay vì mặc định chọn model lớn nhất**.
+
 ### 5.6 So sánh hiệu suất các mô hình
 """)
 
