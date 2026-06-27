@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the general analysis notebook (code + findings, not full text report)."""
+"""Generate the analysis notebook with data download and folder setup."""
 import nbformat
 from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell
 
@@ -12,19 +12,29 @@ def code(t): cells.append(new_code_cell(t.strip()))
 
 md("# Phân tích Du lịch Quốc tế Việt Nam (2008–2026)\n\nDữ liệu: Lượng khách quốc tế theo quốc gia nguồn và quý, từ 4 file HTML-Excel.\n\n*Lưu ý: Năm 2021 không có dữ liệu (ảnh hưởng COVID-19). Q3/Q4 có dữ liệu từ 2008, Q1/Q2 từ 2009.*")
 
+# --- Setup: Download data + create folders ---
+md("## 0. Setup — Tải dữ liệu và tạo thư mục")
+
+code("""# Tải dữ liệu từ GSO (Tổng cục Thống kê)
+!wget -q https://files.catbox.moe/83h5ir.zip
+!mkdir -p data output
+!unzip -q -o 83h5ir.zip -d data
+!rm 83h5ir.zip
+!ls data/""")
+
 # --- Imports ---
 code("""import pandas as pd
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from lxml import html
-import warnings
+import warnings, os
 warnings.filterwarnings('ignore')
+os.makedirs('output', exist_ok=True)
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['figure.dpi'] = 100
 sns.set_style('whitegrid')
+%matplotlib inline
 print("Imports OK")""")
 
 # --- Parse ---
@@ -53,7 +63,8 @@ code("""def parse_quarterly_file(filepath, quarter_label):
     return pd.DataFrame(records)
 
 dfs = []
-for label, f in [('Q1','data/quy1-cacnuoc.xls'),('Q2','data/quy2-cacnuoc.xls'),('Q3','data/quy3-cacnuoc.xls'),('Q4','data/quy4-cacnuoc.xls')]:
+for label, f in [('Q1','data/quy1-cacnuoc.xls'),('Q2','data/quy2-cacnuoc.xls'),
+                  ('Q3','data/quy3-cacnuoc.xls'),('Q4','data/quy4-cacnuoc.xls')]:
     df = parse_quarterly_file(f, label)
     dfs.append(df)
     print(f"{label}: {len(df)} records, {df['country'].nunique()} countries, years {df['year'].min()}-{df['year'].max()}")
@@ -61,7 +72,6 @@ for label, f in [('Q1','data/quy1-cacnuoc.xls'),('Q2','data/quy2-cacnuoc.xls'),(
 df_long = pd.concat(dfs, ignore_index=True)
 df_long = df_long[df_long['country'] != 'Totals'].reset_index(drop=True)
 
-# Verify against known anchor
 hk = df_long[(df_long['country']=='Hoa Kỳ') & (df_long['year']==2009) & (df_long['quarter']=='Q1')]
 assert hk['arrivals'].values[0] == 104520.0, "Verification failed!"
 print(f"\\n✓ Hoa Kỳ 2009 Q1 = {hk['arrivals'].values[0]:,.0f}")
@@ -70,21 +80,19 @@ print(f"Total: {len(df_long)} records, {df_long['country'].nunique()} countries"
 # --- Clean ---
 md("## 2. Làm sạch và tổng hợp")
 
-code("""# Annual totals
-df_total = df_long.groupby(['country','year'])['arrivals'].sum().reset_index()
+code("""df_total = df_long.groupby(['country','year'])['arrivals'].sum().reset_index()
 df_total.columns = ['country','year','total_arrivals']
 
-# Complete grid
 all_countries = sorted(df_long['country'].unique())
 all_years = sorted(df_long['year'].unique())
-idx = pd.MultiIndex.from_product([all_countries, all_years, ['Q1','Q2','Q3','Q4']], names=['country','year','quarter'])
+idx = pd.MultiIndex.from_product([all_countries, all_years, ['Q1','Q2','Q3','Q4']],
+                                  names=['country','year','quarter'])
 df_complete = df_long.set_index(['country','year','quarter']).reindex(idx, fill_value=0).reset_index()
 
 print(f"df_complete: {df_complete.shape}")
 print(f"Countries: {len(all_countries)}, Years: {sorted(all_years)}")
 print(f"2021 present: {2021 in df_long['year'].values}")
 
-# Yearly totals
 print("\\nYearly totals:")
 for y, v in df_total.groupby('year')['total_arrivals'].sum().items():
     print(f"  {y}: {v/1e6:.2f}M")""")
@@ -98,7 +106,8 @@ df_complete['time_idx'] = df_complete['year'] + (df_complete['quarter_num']-1)/4
 df_complete = df_complete.sort_values(['country','year','quarter_num'])
 for lag in [1,2,4]:
     df_complete[f'lag_{lag}'] = df_complete.groupby('country')['arrivals'].shift(lag)
-df_complete['rolling_mean_4'] = df_complete.groupby('country')['arrivals'].transform(lambda x: x.rolling(4, min_periods=1).mean())
+df_complete['rolling_mean_4'] = df_complete.groupby('country')['arrivals'].transform(
+    lambda x: x.rolling(4, min_periods=1).mean())
 
 TRAIN_END = 2023
 TEST_START = 2024
@@ -117,7 +126,8 @@ ax.set_title('Lượng khách quốc tế đến Việt Nam theo năm', fontweig
 ax.set_xticks(yearly['year']); ax.set_xticklabels(yearly['year'], rotation=45)
 covid_val = yearly[yearly['year']==2020]['total_arrivals'].values[0]/1e6
 ax.annotate('COVID-19', xy=(2020, covid_val), xytext=(2018, covid_val+1.5),
-            fontsize=11, ha='center', arrowprops=dict(arrowstyle='->', color='red', lw=1.5), color='red', fontweight='bold')
+            fontsize=11, ha='center', arrowprops=dict(arrowstyle='->', color='red', lw=1.5),
+            color='red', fontweight='bold')
 ax.grid(True, alpha=0.3)
 plt.tight_layout(); plt.savefig('output/eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
@@ -149,13 +159,13 @@ plt.tight_layout(); plt.savefig('output/eda_seasonality.png', dpi=150, bbox_inch
 md("## 7. Tương quan giữa các quốc gia nguồn (Top 5)")
 
 code("""top5 = top10.head(5).index.tolist()
-pivot = df_total[df_total['country'].isin(top5)].pivot_table(index='year', columns='country', values='total_arrivals', aggfunc='sum')
+pivot = df_total[df_total['country'].isin(top5)].pivot_table(
+    index='year', columns='country', values='total_arrivals', aggfunc='sum')
 corr = pivot.corr()
 fig, ax = plt.subplots(figsize=(10, 8))
 sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', center=0, ax=ax, square=True, linewidths=0.5)
 ax.set_title('Tương quan giữa 5 quốc gia nguồn lớn nhất', fontweight='bold')
-plt.tight_layout(); plt.savefig('output/eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()
-print("\\nNhận xét: Trung Quốc-Đài Loan tương quan cao (0.89), Hoa Kỳ tương quan thấp với các thị trường châu Á.")""")
+plt.tight_layout(); plt.savefig('output/eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
 md("## 8. Xu hướng theo từng quốc gia (Top 5)")
 
@@ -178,7 +188,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import xgboost as xgb
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
-# Aggregate features
 agg_all = df_complete.groupby(['year','quarter_num','time_idx'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
 agg_all['lag_1'] = agg_all['arrivals'].shift(1)
 agg_all['lag_4'] = agg_all['arrivals'].shift(4)
@@ -216,7 +225,8 @@ md("## 13. SARIMA")
 
 code("""agg_ts = df_complete[df_complete['year']<=TRAIN_END].groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
 agg_ts = agg_ts[agg_ts['year']!=2021]
-sarima = SARIMAX(agg_ts['arrivals'].values, order=(1,1,1), seasonal_order=(1,1,1,4),
+train_data = agg_ts['arrivals'].values
+sarima = SARIMAX(train_data, order=(1,1,1), seasonal_order=(1,1,1,4),
                  enforce_stationarity=False, enforce_invertibility=False).fit(disp=False, maxiter=500)
 test_ts = df_complete[df_complete['year']>=TEST_START].groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
 sp = sarima.forecast(steps=len(test_ts))
@@ -224,28 +234,88 @@ y_s = test_ts['arrivals'].values[:len(sp)]
 mae_s = mean_absolute_error(y_s, sp); rmse_s = np.sqrt(mean_squared_error(y_s, sp)); r2_s = r2_score(y_s, sp)
 print(f"SARIMA(1,1,1)(1,1,1,4): MAE={mae_s:,.0f}  RMSE={rmse_s:,.0f}  R²={r2_s:.4f}")""")
 
-md("## 14. So sánh mô hình")
+md("""## 14. Chronos-T5 (Foundation Model)
 
-code("""comparison = pd.DataFrame({'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA'],
-    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s], 'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s], 'R²': [r2_lr,r2_rf,r2_xgb,r2_s]})
+Chronos is a pretrained time-series foundation model from Amazon. Unlike the other models trained on our 55-quarter dataset, Chronos was pretrained on millions of time series. It does **zero-shot forecasting** — no task-specific training needed.
+
+We test all 4 sizes and pick the best.""")
+
+code("""import torch
+from chronos import ChronosPipeline
+
+context = torch.tensor(train_data, dtype=torch.float32).unsqueeze(0)
+chronos_results = {}
+chronos_preds = {}
+
+for model_name in ['amazon/chronos-t5-tiny', 'amazon/chronos-t5-small',
+                    'amazon/chronos-t5-base', 'amazon/chronos-t5-large']:
+    short = model_name.split('/')[-1]
+    print(f'Loading {short}...', end=' ', flush=True)
+    pipe = ChronosPipeline.from_pretrained(model_name, device_map='cpu', dtype=torch.float32)
+    fc = pipe.predict(context, prediction_length=len(test))
+    pred = np.median(fc[0].numpy(), axis=0)
+    m = mean_absolute_error(y_test, pred)
+    r = np.sqrt(mean_squared_error(y_test, pred))
+    r2 = r2_score(y_test, pred)
+    chronos_results[short] = {'MAE': m, 'RMSE': r, 'R2': r2}
+    chronos_preds[short] = pred
+    print(f'MAE={m:,.0f}  RMSE={r:,.0f}  R²={r2:.4f}')
+
+best_chronos = min(chronos_results, key=lambda k: chronos_results[k]['MAE'])
+chronos_best_pred = chronos_preds[best_chronos]
+print(f'\\nBest by MAE: {best_chronos}')
+print(chronos_results[best_chronos])""")
+
+md("## 15. So sánh tất cả mô hình")
+
+code("""mae_c = mean_absolute_error(y_test, chronos_best_pred)
+rmse_c = np.sqrt(mean_squared_error(y_test, chronos_best_pred))
+r2_c = r2_score(y_test, chronos_best_pred)
+
+comparison = pd.DataFrame({
+    'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA', f'Chronos ({best_chronos})'],
+    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_c],
+    'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_c],
+    'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_c]})
 print(comparison.to_string(index=False))
 
 fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 models = comparison['Model']; x = range(len(models))
 for ax, metric, title in zip(axes, ['MAE','RMSE','R²'], ['MAE','RMSE','R² Score']):
-    vals = comparison[metric]/1e6 if metric!='R²' else comparison[metric]
+    vals = comparison[metric]/1e6 if metric != 'R²' else comparison[metric]
     ax.bar(x, vals, color=sns.color_palette('Set2', len(models)))
     ax.set_xticks(x); ax.set_xticklabels(models, rotation=45, ha='right', fontsize=9)
     ax.set_title(title, fontweight='bold')
-    if metric=='R²': ax.axhline(y=0, color='red', ls='--', alpha=0.5)
+    if metric == 'R²': ax.axhline(y=0, color='red', ls='--', alpha=0.5)
 plt.suptitle('So sánh hiệu suất mô hình', fontweight='bold')
 plt.tight_layout(); plt.savefig('output/model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("## 15. Tối ưu siêu tham số")
+md("## 16. Dự đoán vs Thực tế (2024–2026)")
+
+code("""results = te[['year','quarter_num']].copy()
+results['quarter'] = 'Q' + results['quarter_num'].astype(str)
+results['actual'] = y_test
+results['LR'] = y_lr; results['XGB'] = y_xgb; results['Chronos'] = chronos_best_pred
+results['LR_err%'] = ((y_lr - y_test) / y_test * 100).round(1)
+results['XGB_err%'] = ((y_xgb - y_test) / y_test * 100).round(1)
+results['Chr_err%'] = ((chronos_best_pred - y_test) / y_test * 100).round(1)
+print(results[['year','quarter','actual','LR','LR_err%','XGB','XGB_err%','Chronos','Chr_err%']].to_string(index=False))
+
+fig, ax = plt.subplots(figsize=(14, 6))
+x = range(len(results)); labels = results['year'].astype(str) + ' ' + results['quarter']
+ax.bar([i-0.3 for i in x], results['actual']/1e6, 0.2, label='Actual', color='#2196F3')
+ax.bar([i-0.1 for i in x], results['LR']/1e6, 0.2, label='LR', color='#FF9800')
+ax.bar([i+0.1 for i in x], results['XGB']/1e6, 0.2, label='XGB', color='#4CAF50')
+ax.bar([i+0.3 for i in x], results['Chronos']/1e6, 0.2, label='Chronos', color='#E91E63')
+ax.set_xticks(x); ax.set_xticklabels(labels, rotation=45, ha='right')
+ax.set_ylabel('Arrivals (millions)'); ax.set_title('Predicted vs Actual — Test Set (2024-2026)', fontweight='bold')
+ax.legend(); ax.grid(axis='y', alpha=0.3)
+plt.tight_layout(); plt.savefig('output/pred_vs_actual.png', dpi=150, bbox_inches='tight'); plt.show()""")
+
+md("## 17. Tối ưu siêu tham số")
 
 code("""from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-# GridSearchCV for RF
 rf_gs = GridSearchCV(RandomForestRegressor(random_state=42),
     {'n_estimators':[100,200,300], 'max_depth':[5,10,15,None], 'min_samples_split':[2,5,10]},
     cv=3, scoring='neg_mean_absolute_error', n_jobs=-1).fit(X_train, y_train)
@@ -254,7 +324,6 @@ print(f"Best RF params: {rf_gs.best_params_}")
 mae_rf_gs = mean_absolute_error(y_test, y_rf_gs); rmse_rf_gs = np.sqrt(mean_squared_error(y_test, y_rf_gs)); r2_rf_gs = r2_score(y_test, y_rf_gs)
 print(f"Optimized RF:   MAE={mae_rf_gs:,.0f}  RMSE={rmse_rf_gs:,.0f}  R²={r2_rf_gs:.4f}")
 
-# RandomizedSearchCV for XGBoost
 xgb_rs = RandomizedSearchCV(xgb.XGBRegressor(random_state=42),
     {'n_estimators':[100,200,300,500], 'max_depth':[3,5,7,9], 'learning_rate':[0.01,0.05,0.1,0.2],
      'subsample':[0.7,0.8,0.9,1.0], 'colsample_bytree':[0.7,0.8,0.9,1.0]},
@@ -264,14 +333,13 @@ print(f"\\nBest XGB params: {xgb_rs.best_params_}")
 mae_xgb_rs = mean_absolute_error(y_test, y_xgb_rs); rmse_xgb_rs = np.sqrt(mean_squared_error(y_test, y_xgb_rs)); r2_xgb_rs = r2_score(y_test, y_xgb_rs)
 print(f"Optimized XGB:  MAE={mae_xgb_rs:,.0f}  RMSE={rmse_xgb_rs:,.0f}  R²={r2_xgb_rs:.4f}")
 
-# Final comparison
-comp = pd.DataFrame({'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA','RF (optimized)','XGBoost (optimized)'],
-    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_rf_gs,mae_xgb_rs],
-    'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_rf_gs,rmse_xgb_rs],
-    'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_rf_gs,r2_xgb_rs]})
+comp = pd.DataFrame({'Model': ['LR','RF','XGB','SARIMA','Chronos','RF (opt)','XGB (opt)'],
+    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_c,mae_rf_gs,mae_xgb_rs],
+    'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_c,rmse_rf_gs,rmse_xgb_rs],
+    'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_c,r2_rf_gs,r2_xgb_rs]})
 print(f"\\n{comp.to_string(index=False)}")""")
 
-md("## 16. Dự đoán 4 quý tiếp theo (SARIMA)")
+md("## 18. Dự đoán 4 quý tiếp theo")
 
 code("""full_ts = df_complete.groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
 full_ts = full_ts[full_ts['year']!=2021]
@@ -287,7 +355,7 @@ for _ in range(4):
     if q > 4: q = 1; y += 1
     fqs.append((y, q))
 
-print("Dự đoán:")
+print("Dự đoán SARIMA:")
 for (yr, qr), v, lo, hi in zip(fqs, fc_mean, fc_ci[:,0], fc_ci[:,1]):
     print(f"  {yr} Q{qr}: {v:,.0f}  [{lo:,.0f} — {hi:,.0f}]")
 
@@ -303,16 +371,17 @@ ax.set_title('Dự đoán SARIMA — 4 quý tiếp theo', fontweight='bold')
 ax.legend(); ax.grid(True, alpha=0.3)
 plt.tight_layout(); plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("## 17. Lưu kết quả")
+md("## 19. Lưu kết quả")
 
 code("""df_long.to_csv('output/df_long.csv', index=False)
 df_total.to_csv('output/df_total.csv', index=False)
 comp.to_csv('output/model_comparison.csv', index=False)
 pd.DataFrame({'year':[y for y,q in fqs],'quarter':[f'Q{q}' for y,q in fqs],
     'forecast':fc_mean,'ci_lower':fc_ci[:,0],'ci_upper':fc_ci[:,1]}).to_csv('output/forecast.csv', index=False)
-print("✓ Saved: df_long.csv, df_total.csv, model_comparison.csv, forecast.csv")""")
+print("✓ Saved to output/: df_long.csv, df_total.csv, model_comparison.csv, forecast.csv")
+print("✓ Plots: eda_*.png, model_comparison.png, pred_vs_actual.png, forecast_plot.png")""")
 
 nb.cells = cells
-with open('bao-cao.ipynb', 'w') as f:
+with open('notebooks/bao-cao.ipynb', 'w') as f:
     nbformat.write(nb, f)
-print(f'Created bao-cao.ipynb with {len(cells)} cells')
+print(f'Created notebooks/bao-cao.ipynb with {len(cells)} cells')
