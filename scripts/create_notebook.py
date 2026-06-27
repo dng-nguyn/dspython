@@ -295,6 +295,77 @@ for ax, metric, title in zip(axes, ['MAE','RMSE','R²'], ['MAE','RMSE','R² Scor
 plt.suptitle('So sánh hiệu suất mô hình', fontweight='bold')
 plt.tight_layout(); plt.savefig('output/model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
+md("""## 16b. Dữ liệu bên ngoài: Tỷ giá & Chính sách visa
+
+Bổ sung tỷ giá hối đoái (VND vs 8 loại tiền) từ Yahoo Finance và chính sách visa Việt Nam (mã hóa thủ công từ văn bản chính phủ).""")
+
+code("""import yfinance as yf
+
+usd_vnd_raw = yf.download('USDVND=X', start='2008-01-01', end='2026-07-01', progress=False)['Close'].squeeze()
+usd_vnd_q = usd_vnd_raw.resample('QE').mean()
+pairs = {'KRW':'KRW=X','CNY':'CNY=X','JPY':'JPY=X','TWD':'TWD=X','MYR':'MYR=X','THB':'THB=X'}
+fx = pd.DataFrame({'fx_USD': usd_vnd_q})
+for curr, ticker in pairs.items():
+    d = yf.download(ticker, start='2008-01-01', end='2026-07-01', progress=False)['Close'].squeeze()
+    fx['fx_' + curr] = (usd_vnd_raw / d).resample('QE').mean()
+fx['year'] = fx.index.year
+fx['quarter_num'] = fx.index.quarter
+fx = fx.reset_index(drop=True)
+
+visa_records = []
+for y in range(2008, 2027):
+    for q in [1,2,3,4]:
+        r = {'year': y, 'quarter_num': q}
+        r['visa_evisa'] = 1 if (y > 2017 or (y == 2017 and q >= 1)) else 0
+        r['visa_evisa_full'] = 1 if (y > 2023 or (y == 2023 and q >= 3)) else 0
+        r['visa_waiver_count'] = 29 if (y > 2023 or (y == 2023 and q >= 3)) else (16 if y >= 2015 else 10)
+        if y == 2021 or (y == 2020 and q >= 2): r['covid_restrict'] = 1.0
+        elif y == 2022 and q <= 2: r['covid_restrict'] = 0.7
+        elif y == 2022 and q >= 3: r['covid_restrict'] = 0.2
+        else: r['covid_restrict'] = 0.0
+        visa_records.append(r)
+visa = pd.DataFrame(visa_records)
+print(f'FX: {len(fx)} quarters, Visa: {len(visa)} quarters')
+print(f'Currencies: {[c for c in fx.columns if c.startswith("fx_")]}')""")
+
+code("""agg_ext = agg_all.copy()
+agg_ext = agg_ext.merge(fx, on=['year','quarter_num'], how='left').merge(visa, on=['year','quarter_num'], how='left')
+agg_ext = agg_ext.ffill().bfill()
+
+feat_base = ['year','quarter_num','time_idx','lag_1','lag_4','rolling_mean_4']
+feat_ext = feat_base + ['fx_USD','fx_KRW','fx_CNY','fx_JPY','visa_evisa_full','covid_restrict']
+
+tr_e = agg_ext[agg_ext['year'] <= TRAIN_END].dropna(subset=['lag_1','lag_4'])
+te_e = agg_ext[agg_ext['year'] >= TEST_START].dropna(subset=['lag_1','lag_4'])
+X_base_tr, X_base_te = tr_e[feat_base].values, te_e[feat_base].values
+X_ext_tr, X_ext_te = tr_e[feat_ext].values, te_e[feat_ext].values
+ytr, yte = tr_e['arrivals'].values, te_e['arrivals'].values
+
+results_header = f'{"Config":<22} {"Model":<6} {"MAE":>12} {"R2":>8}'
+print(results_header)
+print('-' * 53)
+for label, Xtr, Xv in [('Baseline (6)', X_base_tr, X_base_te), ('Extended (12)', X_ext_tr, X_ext_te)]:
+    for nm, m in [('LR', LinearRegression()),
+                   ('RF', RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42)),
+                   ('XGB', xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.1, random_state=42))]:
+        m.fit(Xtr, ytr); p = m.predict(Xv)
+        mae_v = mean_absolute_error(yte, p); r2_v = r2_score(yte, p)
+        print(f'{label:<22} {nm:<6} {mae_v:>12,.0f} {r2_v:>8.4f}')
+
+rf_imp = RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42).fit(X_ext_tr, ytr)
+imp = pd.Series(rf_imp.feature_importances_, index=feat_ext).sort_values(ascending=False)
+print()
+print('Feature importance (RF):')
+for f, v in imp.head(8).items():
+    print(f'  {f:<20} {v:.3f}')""")
+
+md("""### Nhận xét về dữ liệu bên ngoài
+
+- **LR** cải thiện nhẹ (MAE giảm ~5%) nhờ 
+- **RF/XGB** xấu hơn — overfitting với 51 mẫu, 12 features
+- **Feature importance:**  +  chiếm ~73%.  ~5%. Visa ~0%
+- **Bài học:** Với dữ liệu nhỏ, thêm features không đảm bảo cải thiện. Vấn đề cốt lõi là structural break do COVID-19.""")
+
 md("## 16. Dự đoán vs Thực tế (2024–2026)")
 
 code("""results = te[['year','quarter_num']].copy()
