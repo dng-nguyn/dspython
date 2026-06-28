@@ -112,6 +112,7 @@ dụng Dữ liệu Hàng tháng}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
 \tightlist
 \item
   Giới thiệu
@@ -142,21 +143,22 @@ dụng Dữ liệu Hàng tháng}
 \subsection{Bối cảnh}\label{bux1ed1i-cux1ea3nh}
 
 Du lịch là một trong những ngành kinh tế quan trọng nhất của Việt Nam,
-đóng góp khoảng 6--7\% GDP và hỗ trợ gần 6 triệu việc làm trên cả nước
-trong những năm gần đây {[}1{]}. Việt Nam đã chào đón lượng khách kỷ lục
-18,0 triệu lượt khách quốc tế vào năm 2019, xếp thứ tư tại Đông Nam Á
-{[}2{]}. Đại dịch COVID-19 đã khiến lượng khách quốc tế giảm 78,7\% vào
-năm 2020 {[}3{]}, với các biên giới bị đóng cửa hiệu quả từ tháng 4 năm
-2020 đến đầu năm 2022. Ngành du lịch Việt Nam sau đó đã phục hồi mạnh
-mẽ, đạt mức cao kỷ lục mọi thời đại là 21,2 triệu lượt khách vào năm
-2025 {[}4{]}.
+đóng góp khoảng 7\% GDP và hỗ trợ khoảng 5,96 triệu việc làm tính đến
+năm 2024 trên cả nước trong những năm gần đây {[}1{]}. Việt Nam đã chào
+đón lượng khách kỷ lục 18,0 triệu lượt khách quốc tế vào năm 2019, xếp
+thứ năm ở khu vực Châu Á - Thái Bình Dương (thứ tư ở Đông Nam Á theo dữ
+liệu PATA nửa đầu năm 2019) {[}2{]}. Đại dịch COVID-19 đã khiến lượng
+khách quốc tế giảm 78,7\% vào năm 2020 {[}3{]}, với các biên giới bị
+đóng cửa hiệu quả từ tháng 4 năm 2020 đến tháng 3 năm 2022 (Nghị quyết
+số 32/NQ-CP). Ngành du lịch Việt Nam sau đó đã phục hồi mạnh mẽ, đạt mức
+cao kỷ lục mọi thời đại là 21,2 triệu lượt khách vào năm 2025 {[}4{]}.
 
 Nghiên cứu này phân tích lượng khách du lịch quốc tế hàng tháng đến Việt
-Nam từ 12 quốc gia nguồn trong giai đoạn 2008--2026 bằng cách sử dụng dữ
+Nam từ 32 quốc gia nguồn trong giai đoạn 2008--2026 bằng cách sử dụng dữ
 liệu do Tổng cục Thống kê (GSO) công bố. Độ phân giải hàng tháng cung
-cấp số lượng quan sát nhiều hơn khoảng 12\(\times\) so với tổng hợp theo
-quý, cho phép suy luận thống kê mạnh mẽ hơn và độ phân giải mùa vụ chi
-tiết hơn.
+cấp số lượng quan sát nhiều gấp khoảng 12 lần so với tổng hợp theo quý,
+cho phép suy luận thống kê mạnh mẽ hơn và độ phân giải mùa vụ chi tiết
+hơn.
 
 \subsection{Mục tiêu}\label{mux1ee5c-tiuxeau}
 
@@ -454,11 +456,11 @@ ngay cuối tháng {[}17{]}. Khi được sử dụng làm đặc trưng, tỷ g
 trễ một tháng để tránh rò rỉ dữ liệu, vì tỷ giá tháng hiện tại không có
 sẵn tại thời điểm dự báo. Các chỉ báo chính sách visa được mã hóa thủ
 công từ các nguồn của chính phủ Việt Nam {[}18, 19{]}: -
-\texttt{visa\_evisa}: Nhị phân, được đặt thành 1 từ tháng 1 năm 2017
+\texttt{visa\_evisa}: Nhị phân, được đặt thành 1 từ tháng 2 năm 2017
 (thí điểm e-visa cho 40 quốc gia) - \texttt{visa\_evisa\_full}: Nhị
-phân, được đặt thành 1 từ tháng 8 năm 2023 (e-visa 90 ngày phổ quát) -
-\texttt{covid\_restrict}: Thứ hạng (0--1), mã hóa mức độ nghiêm trọng
-của các hạn chế đi lại
+phân, được đặt thành 1 từ ngày 15 tháng 8 năm 2023 (e-visa 90 ngày phổ
+quát) - \texttt{covid\_restrict}: Thứ hạng (0--1), mã hóa mức độ nghiêm
+trọng của các hạn chế đi lại
 
 \newpage
 
@@ -622,11 +624,11 @@ Mô hình tối thiểu hóa tổng bình phương phần dư (Ordinary Least Sq
 
 \textbf{Các giả định:} Tính tuyến tính, tính độc lập của các phần dư,
 tính đồng nhất phương sai (homoscedasticity), các sai số phân phối
-chuẩn. Với 120 mẫu huấn luyện và 6 đặc trưng, tỷ lệ quan sát trên tham
+chuẩn. Với 144 mẫu huấn luyện và 6 đặc trưng, tỷ lệ quan sát trên tham
 số (24:1) là đầy đủ.
 
 \textbf{Khả năng áp dụng:} Đặc trưng \texttt{time\_idx} cung cấp một tín
-hiệu tuyến tính mạnh mẽ cho xu hướng đi lên tổng thể. Với 120 mẫu huấn
+hiệu tuyến tính mạnh mẽ cho xu hướng đi lên tổng thể. Với 144 mẫu huấn
 luyện, sự tinh giản của mô hình là một lợi thế so với các giải pháp thay
 thế phức tạp {[}11{]}.
 
@@ -649,10 +651,10 @@ tính (bagging).
 \textbf{Các giả định:} Các mẫu độc lập và phân phối chuẩn (i.i.d.).
 Không yêu cầu tính dừng (stationarity) hoặc tính tuyến tính. \textbf{Các
 siêu tham số chính:} \texttt{n\_estimators} = 200, \texttt{max\_depth} =
-10 (để giới hạn quá khớp trên 120 mẫu), \texttt{min\_samples\_split} =
+10 (để giới hạn quá khớp trên 144 mẫu), \texttt{min\_samples\_split} =
 2.
 
-\textbf{Lợi thế so với phân tích hàng quý:} Với 120 mẫu huấn luyện (so
+\textbf{Lợi thế so với phân tích hàng quý:} Với 144 mẫu huấn luyện (so
 với 51 mẫu theo quý), Random Forest có thể xây dựng các cây quyết định
 đa dạng hơn và có khả năng tổng quát hóa tốt hơn.
 
@@ -711,7 +713,7 @@ chính xác.
 
 Chronos {[}12{]} là một họ các mô hình nền tảng dựa trên Transformer
 được huấn luyện trước cho chuỗi thời gian. Không giống như các mô hình
-khác học từ 120 mẫu huấn luyện, Chronos không được huấn luyện trên dữ
+khác học từ 144 mẫu huấn luyện, Chronos không được huấn luyện trên dữ
 liệu này; nó đã được huấn luyện trước trên hàng triệu chuỗi thời gian từ
 nhiều lĩnh vực khác nhau. Nó hoạt động bằng cách mã hóa (tokenizing) các
 giá trị chuỗi thời gian và tạo ra các dự báo xác suất thông qua lấy mẫu
@@ -729,7 +731,7 @@ chronos-t5-small & 46M & 512 tokens \\
 chronos-t5-base & 200M & 512 tokens \\
 \end{longtable}
 
-\textbf{Lợi thế của dữ liệu hàng tháng:} Với 120 điểm ngữ cảnh (so với
+\textbf{Lợi thế của dữ liệu hàng tháng:} Với 144 điểm ngữ cảnh (so với
 55 điểm theo quý), mô hình có tín hiệu dày đặc hơn để nhận dạng mẫu. Cửa
 sổ ngữ cảnh 512 token hoàn toàn nằm trong giới hạn cho phép.
 
@@ -747,7 +749,7 @@ Holt--Winters. Phần mở rộng CIR\# thay thế chuyển động Brown bằng
 phần dư được lọc bằng ARIMA và phân chia dữ liệu thành các mẫu phụ xung
 quanh các điểm gãy cấu trúc.
 
-\textbf{Đánh giá trên dữ liệu hàng tháng của Việt Nam:} Với 120 quan sát
+\textbf{Đánh giá trên dữ liệu hàng tháng của Việt Nam:} Với 144 quan sát
 huấn luyện, CIR\# có đủ dữ liệu để ước lượng tham số MLE nhưng phải đối
 mặt với ba thách thức cơ bản: (1) ngành du lịch của Việt Nam thể hiện
 một xu hướng đi lên mạnh mẽ vi phạm giả định hồi quy về giá trị trung
@@ -798,7 +800,7 @@ CIR\# & 489.200 & 573.449 & 28,54\% & −1,14 \\
   \texttt{lag\_1} nhưng bị giới hạn bởi điểm gãy cấu trúc giữa tập huấn
   luyện (2012--2019 + 2022--2023) và tập kiểm tra (2024--2025).
 \item
-  Dữ liệu hàng tháng cung cấp 120 mẫu huấn luyện (so với 51 mẫu theo
+  Dữ liệu hàng tháng cung cấp 144 mẫu huấn luyện (so với 51 mẫu theo
   quý), cho phép các mô hình dựa trên cây quyết định tổng quát hóa tốt
   hơn.
 \item
@@ -1011,8 +1013,8 @@ Tháng 12/2026 & 429.562 & 309.729 & 34.750 & 70.569 & 15.117 \\
 Random Forest, XGBoost và SARIMAX. Phạm vi bất đồng mô hình: 8,2M--10,1M
 tổng.}
 
-5 quốc gia hàng đầu chiếm 55,3\% tổng dự báo tập hợp năm 2026 (9,1 trên
-16,5 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất, tiếp
+5 quốc gia hàng đầu chiếm 52,3\% tổng dự báo tập hợp năm 2026 (9,1 trên
+17,3 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất, tiếp
 theo là Trung Quốc. Dải bóng trong hình hiển thị phạm vi giữa dự báo cao
 nhất và thấp nhất của các mô hình --- thước đo dễ hiểu hơn khoảng tin
 cậy SARIMAX.
@@ -1204,7 +1206,7 @@ achieved 21.2 million international arrivals in 2025,'' VietnamNet,
 Jan.~2026. {[}Online{]}. Available: https://vietnamnet.vn/
 
 {[}5{]} H. Song and S. F. Witt, \emph{Tourism Demand Modelling and
-Forecasting: Modern Econometric Approaches}. Routledge, 2012.
+Forecasting: Modern Econometric Approaches}. Routledge, 2000.
 
 {[}6{]} H. Song, G. Li, and Z. Cao, ``Tourism demand modelling and
 forecasting --- A review of recent research,'' \emph{Tourism
@@ -1242,8 +1244,9 @@ forecasting,'' \emph{Technological and Economic Development of Economy},
 vol.~29, no. 5, pp.~1403--1427, 2023.
 
 {[}15{]} General Statistics Office of Vietnam, ``Quarterly and monthly
-international arrival statistics by country,'' GSO, Hanoi, 2008--2026.
-{[}Online{]}. Available: https://www.gso.gov.vn/
+international arrival statistics by country,'' GSO, Hanoi, 2008--tháng 5
+năm 2026 (dữ liệu một phần). {[}Online{]}. Available:
+https://www.gso.gov.vn/
 
 {[}16{]} R. J. A. Little and D. B. Rubin, \emph{Statistical Analysis
 with Missing Data}, 2nd ed.~Wiley, 2002.
@@ -1276,7 +1279,9 @@ Econometrics in Python,'' 2025. {[}Online{]}. Available:
 https://www.statsmodels.org/
 
 {[}25{]} Amazon Science, ``Chronos Forecasting,'' GitHub, 2024.
-{[}Online{]}. Available:
+
+{[}26{]} Pacific Asia Travel Association, ``Visitor Arrivals to Asia
+Pacific Destinations,'' PATA, nửa đầu năm 2019. {[}Online{]}. Available:
 https://github.com/amazon-science/chronos-forecasting
 
 \end{document}
