@@ -854,12 +854,6 @@ Set)}\label{predicted-vs.-actual-test-set}
 (2024--2025).}
 \end{figure}
 
-XGBoost and Random Forest track the actual values most closely (MAPE
-\(\approx\) 20\%), while SARIMAX and CIR\# diverge significantly.
-Chronos-T5-small provides the best overall accuracy (MAPE = 10.77\%) as
-a zero-shot method. Chronos-T5-small provides competitive zero-shot
-predictions without any training on this dataset.
-
 \textbf{Forecasting methodology note.} All four models generate
 12-month-ahead forecasts for 2026. The tree-based models (Linear
 Regression, Random Forest, XGBoost) use a recursive strategy: each
@@ -877,7 +871,6 @@ excluded from the final out-of-sample 2026 models to prevent data
 leakage, meaning the multi-step forecasts rely strictly on
 autoregressive patterns, calendar indices, and policy indicators. \#\#
 12-Month Ensemble Forecast (2026)
-\includegraphics{output/forecast_plot.png}
 \includegraphics{output/forecast_plot.png} \textbar{} Month \textbar{}
 Forecast \textbar{} 95\% CI Lower \textbar{} 95\% CI Upper \textbar{}
 \textbar-------\textbar----------\textbar--------------\textbar--------------\textbar{}
@@ -905,17 +898,8 @@ confidence intervals were exponentiated back to the original scale using
 \(\exp(\cdot) - 1\), naturally bounding the lower confidence intervals
 at zero without the need for arbitrary manual clipping. This approach
 produces wider confidence intervals than the raw-scale model, reflecting
-the asymmetric uncertainty inherent in multiplicative processes. To
-prevent the forecasting of physically impossible negative arrivals and
-to stabilize variance, the target variable was log-transformed
-(\(\log(y+1)\)) prior to SARIMAX fitting. The resulting forecasts and
-confidence intervals were exponentiated back to the original scale using
-\(\exp(\cdot) - 1\), naturally bounding the lower confidence intervals
-at zero without the need for arbitrary manual clipping. This approach
-produces wider confidence intervals than the raw-scale model, reflecting
-the asymmetric uncertainty inherent in multiplicative processes. The
-SARIMAX-only forecast is evaluated against actual 2026 data in Section
-8.4. \#\# Per-Country Forecasts (2026)
+the asymmetric uncertainty inherent in multiplicative processes. \#\#
+Per-Country Forecasts (2026)
 
 Ensemble models (averaging Linear Regression, Random Forest, XGBoost,
 and SARIMAX) were fitted to the top 5 source countries individually. The
@@ -1231,12 +1215,12 @@ foreign visitors,'' effective Feb.~1, 2017, initially for 40 countries.
 amendment of e-visa policy,'' approved Jun.~24, 2023, effective Aug.~15,
 2023.
 
-{[}21{]} VnExpress International, ``Cambodia replaces Taiwan to become
-Vietnam's 3rd largest source of tourists,'' Feb.~2026.
-
 {[}20{]} VietnamPlus, ``Russian tourists to Vietnam surge in 2024,''
 Vietnam News Agency, 2024. {[}Online{]}. Available:
 https://en.vietnamplus.vn/
+
+{[}21{]} VnExpress International, ``Cambodia replaces Taiwan to become
+Vietnam's 3rd largest source of tourists,'' Feb.~2026.
 
 {[}22{]} Scikit-learn developers, ``Scikit-learn: Machine Learning in
 Python,'' 2025. {[}Online{]}. Available: https://scikit-learn.org/

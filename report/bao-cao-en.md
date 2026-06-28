@@ -352,12 +352,10 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 ![Predicted vs. actual monthly arrivals for the test set (2024--2025).](output/pred_vs_actual.png)
 
-XGBoost and Random Forest track the actual values most closely (MAPE $\approx$ 20\%), while SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides the best overall accuracy (MAPE = 10.77\%) as a zero-shot method. Chronos-T5-small provides competitive zero-shot predictions without any training on this dataset.
 
 **Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a more interpretable uncertainty measure than the SARIMAX confidence interval, which spans several orders of magnitude due to the log-transformation. Furthermore, dynamic external features (such as exchange rates) were excluded from the final out-of-sample 2026 models to prevent data leakage, meaning the multi-step forecasts rely strictly on autoregressive patterns, calendar indices, and policy indicators.
 ## 12-Month Ensemble Forecast (2026)
 ![SARIMAX 12-month forecast for 2026 with 95\% confidence interval.](output/forecast_plot.png)
-![SARIMAX 12-month forecast for 2026 with 95\% confidence interval. Note: the ensemble forecast (not shown) uses the same SARIMAX component for its aggregate prediction.](output/forecast_plot.png)
 | Month | Forecast | 95\% CI Lower | 95\% CI Upper |
 |-------|----------|--------------|--------------|
 | Jan 2026 | 1,538,229 | 940,658 | 2,515,418 |
@@ -374,7 +372,6 @@ XGBoost and Random Forest track the actual values most closely (MAPE $\approx$ 2
 | Dec 2026 | 1,854,630 | 401,648 | 8,563,820 |
 
 To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes.
-To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes. The SARIMAX-only forecast is evaluated against actual 2026 data in Section 8.4.
 ## Per-Country Forecasts (2026)
 
 Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMAX) were fitted to the top 5 source countries individually. The tree-based models use recursive forecasting to generate 12-month-ahead predictions; SARIMAX uses its autoregressive structure directly.
@@ -513,9 +510,10 @@ The aggregate MAPE of 34.7\% confirms that the SARIMAX model systematically unde
 
 [19] Vietnam National Assembly, "Resolution on extension and amendment of e-visa policy," approved Jun. 24, 2023, effective Aug. 15, 2023.
 
-[21] VnExpress International, "Cambodia replaces Taiwan to become Vietnam's 3rd largest source of tourists," Feb. 2026.
 
 [20] VietnamPlus, "Russian tourists to Vietnam surge in 2024," Vietnam News Agency, 2024. [Online]. Available: https://en.vietnamplus.vn/
+
+[21] VnExpress International, "Cambodia replaces Taiwan to become Vietnam's 3rd largest source of tourists," Feb. 2026.
 
 [22] Scikit-learn developers, "Scikit-learn: Machine Learning in Python," 2025. [Online]. Available: https://scikit-learn.org/
 
