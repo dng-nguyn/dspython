@@ -355,7 +355,7 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 XGBoost and Random Forest track the actual values most closely, while SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides competitive zero-shot predictions without any training on this dataset.
 
-**Forecasting methodology note.** The tree-based models (Linear Regression, Random Forest, XGBoost) rely on `lag_1` as their dominant feature. On the 24-month test set (2024--2025), each month's actual `lag_1` value is available, so these models effectively perform one-step-ahead prediction. Generating a genuine 12-month-ahead forecast with these models would require a recursive strategy: predicting month $t$, then feeding that prediction back as the `lag_1` feature for month $t+1$. This approach accumulates error at each step and was not employed here. Instead, the 12-month forecast for 2026 is generated exclusively by SARIMAX, whose autoregressive and seasonal structure naturally produces multi-step-ahead predictions without requiring external lag inputs. Exchange rates and other external features were excluded from the out-of-sample forecast to prevent data leakage.
+**Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a more interpretable uncertainty measure than the SARIMAX confidence interval, which spans several orders of magnitude due to the log-transformation.
 
 ## 12-Month Forecast (2026)
 
@@ -386,21 +386,23 @@ SARIMAX models were also fitted to the top 5 source countries individually, each
 
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
-| Jan 2026 | 380,180 | 225,460 | 36,933 | 51,257 | 9,098 |
-| Feb 2026 | 387,218 | 239,567 | 34,718 | 59,976 | 8,491 |
-| Mar 2026 | 372,467 | 233,620 | 32,387 | 56,201 | 7,848 |
-| Apr 2026 | 396,242 | 267,890 | 32,350 | 54,744 | 9,146 |
-| May 2026 | 391,206 | 256,514 | 30,706 | 53,840 | 8,931 |
-| Jun 2026 | 399,179 | 240,941 | 30,260 | 53,611 | 8,764 |
-| Jul 2026 | 396,829 | 246,314 | 28,985 | 55,742 | 8,443 |
-| Aug 2026 | 441,167 | 248,874 | 29,721 | 67,062 | 8,902 |
-| Sep 2026 | 405,653 | 235,186 | 29,398 | 64,102 | 8,392 |
-| Oct 2026 | 405,516 | 242,237 | 31,653 | 59,949 | 8,427 |
-| Nov 2026 | 401,651 | 257,179 | 32,517 | 60,453 | 8,613 |
-| Dec 2026 | 423,479 | 261,057 | 34,580 | 63,432 | 8,798 |
-| **Total** | **4,800,787** | **2,954,839** | **424,126** | **700,369** | **103,853** |
+| Jan 2026 | 389,721 | 212,894 | 32,843 | 60,466 | 14,745 |
+| Feb 2026 | 407,507 | 230,786 | 31,082 | 60,571 | 15,503 |
+| Mar 2026 | 363,183 | 226,083 | 31,519 | 62,357 | 14,771 |
+| Apr 2026 | 350,430 | 227,242 | 30,196 | 59,207 | 13,652 |
+| May 2026 | 354,600 | 245,202 | 29,337 | 60,160 | 13,218 |
+| Jun 2026 | 363,588 | 252,661 | 28,884 | 58,926 | 12,304 |
+| Jul 2026 | 371,555 | 265,062 | 30,280 | 60,739 | 11,455 |
+| Aug 2026 | 420,453 | 277,285 | 29,165 | 75,738 | 11,884 |
+| Sep 2026 | 400,238 | 269,141 | 32,144 | 78,329 | 12,094 |
+| Oct 2026 | 406,438 | 271,010 | 32,529 | 64,637 | 12,410 |
+| Nov 2026 | 411,074 | 288,898 | 34,186 | 66,296 | 14,932 |
+| Dec 2026 | 429,562 | 309,729 | 34,750 | 70,569 | 15,117 |
+| **Total** | **4,668,349** | **3,075,993** | **376,915** | **777,995** | **162,085** |
 
-The top 5 countries account for 54.1\% of the total 2026 aggregate forecast (9.0M of 16.7M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. All per-country lower confidence bounds are naturally non-negative through the log-transformation, with no manual clipping required.
+*Table shows ensemble mean of Linear Regression, Random Forest, XGBoost, and SARIMAX. Model disagreement range: 8.2M–10.1M total.*
+
+The top 5 countries account for 55.3\% of the total 2026 ensemble forecast (9.1M of 16.5M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. The shaded band shows the range between the highest and lowest model predictions — a more interpretable measure of uncertainty than the SARIMAX confidence interval.
 
 \newpage
 

@@ -894,19 +894,17 @@ giá thấp mức độ phục hồi sau COVID. Các mô hình dựa trên cây 
 XGBoost) cho thấy sự biến động nhiều hơn trong các dự đoán, trong khi
 Hồi quy tuyến tính tạo ra các dự báo mượt mà hơn.
 
-\textbf{Ghi chú phương pháp dự báo.} Các mô hình dựa trên cây (Hồi quy
-tuyến tính, Random Forest, XGBoost) dựa vào \texttt{lag\_1} làm đặc
-trưng chính. Trên tập kiểm tra 24 tháng (2024--2025), giá trị
-\texttt{lag\_1} thực tế của mỗi tháng đều có sẵn, nên các mô hình này
-thực chất thực hiện dự đoán một bước. Để tạo dự báo trước 12 tháng thực
-sự, các mô hình này sẽ cần một chiến lược đệ quy: dự báo tháng \(t\),
-sau đó đưa dự báo đó trở lại làm đặc trưng \texttt{lag\_1} cho tháng
-\(t+1\). Cách tiếp cận này tích lũy sai số tại mỗi bước và không được sử
-dụng ở đây. Thay vào đó, dự báo 12 tháng cho năm 2026 được tạo độc quyền
-bởi SARIMAX, có cấu trúc tự hồi quy và mùa vụ tự nhiên tạo ra dự báo đa
-bước mà không cần đầu vào lag bên ngoài. Tỷ giá hối đoái và các đặc
-trưng bên ngoài khác đã bị loại khỏi dự báo ngoài mẫu để tránh rò rỉ dữ
-liệu.
+\textbf{Ghi chú phương pháp dự báo.} Tất cả bốn mô hình tạo dự báo trước
+12 tháng cho năm 2026. Các mô hình dựa trên cây (Hồi quy tuyến tính,
+Random Forest, XGBoost) sử dụng chiến lược đệ quy: dự báo của mỗi tháng
+được đưa trở lại làm đặc trưng \texttt{lag\_1} cho tháng tiếp theo. Cách
+tiếp cận này tích lũy sai số tại mỗi bước nhưng nắm bắt được các mẫu phi
+tuyến mà các mô hình cây đã học. SARIMAX sử dụng cấu trúc tự hồi quy để
+tạo dự báo đa bước trực tiếp. Giá trị trung bình tập hợp (hiển thị bằng
+màu đỏ) lấy trung bình của cả bốn mô hình, cung cấp dự báo mạnh mẽ hơn
+bất kỳ mô hình đơn lẻ nào. Dải bóng hiển thị phạm vi giữa mô hình lạc
+quan nhất và bi quan nhất --- thước đo dễ hiểu hơn khoảng tin cậy
+SARIMAX.
 
 \subsection{Dự báo 12 tháng
 (2026)}\label{dux1ef1-buxe1o-12-thuxe1ng-2026}
@@ -961,36 +959,41 @@ exogenous \texttt{covid\_closed}. \textbar{} Tháng \textbar{} Hàn Quốc
 \textbar{} Trung Quốc \textbar{} Campuchia \textbar{} Nhật Bản
 \textbar{} Nga \textbar{}
 \textbar-------\textbar----------\textbar------------\textbar-----------\textbar----------\textbar-----\textbar{}
-\textbar{} Tháng 1/2026 \textbar{} 380.180 \textbar{} 225.460 \textbar{}
-36.933 \textbar{} 51.257 \textbar{} 9.098 \textbar{} \textbar{} Tháng
-2/2026 \textbar{} 387.218 \textbar{} 239.567 \textbar{} 34.718
-\textbar{} 59.976 \textbar{} 8.491 \textbar{} \textbar{} Tháng 3/2026
-\textbar{} 372.467 \textbar{} 233.620 \textbar{} 32.387 \textbar{}
-56.201 \textbar{} 7.848 \textbar{} \textbar{} Tháng 4/2026 \textbar{}
-396.242 \textbar{} 267.890 \textbar{} 32.350 \textbar{} 54.744
-\textbar{} 9.146 \textbar{} \textbar{} Tháng 5/2026 \textbar{} 391.206
-\textbar{} 256.514 \textbar{} 30.706 \textbar{} 53.840 \textbar{} 8.931
-\textbar{} \textbar{} Tháng 6/2026 \textbar{} 399.179 \textbar{} 240.941
-\textbar{} 30.260 \textbar{} 53.611 \textbar{} 8.764 \textbar{}
-\textbar{} Tháng 7/2026 \textbar{} 396.829 \textbar{} 246.314 \textbar{}
-28.985 \textbar{} 55.742 \textbar{} 8.443 \textbar{} \textbar{} Tháng
-8/2026 \textbar{} 441.167 \textbar{} 248.874 \textbar{} 29.721
-\textbar{} 67.062 \textbar{} 8.902 \textbar{} \textbar{} Tháng 9/2026
-\textbar{} 405.653 \textbar{} 235.186 \textbar{} 29.398 \textbar{}
-64.102 \textbar{} 8.392 \textbar{} \textbar{} Tháng 10/2026 \textbar{}
-405.516 \textbar{} 242.237 \textbar{} 31.653 \textbar{} 59.949
-\textbar{} 8.427 \textbar{} \textbar{} Tháng 11/2026 \textbar{} 401.651
-\textbar{} 257.179 \textbar{} 32.517 \textbar{} 60.453 \textbar{} 8.613
-\textbar{} \textbar{} Tháng 12/2026 \textbar{} 423.479 \textbar{}
-261.057 \textbar{} 34.580 \textbar{} 63.432 \textbar{} 8.798 \textbar{}
-\textbar{} \textbf{Tổng} \textbar{} \textbf{4.800.787} \textbar{}
-\textbf{2.954.839} \textbar{} \textbf{424.126} \textbar{}
-\textbf{700.369} \textbar{} \textbf{103.853} \textbar{}
+\textbar{} Tháng 1/2026 \textbar{} 389.721 \textbar{} 212.894 \textbar{}
+32.843 \textbar{} 60.466 \textbar{} 14.745 \textbar{} \textbar{} Tháng
+2/2026 \textbar{} 407.507 \textbar{} 230.786 \textbar{} 31.082
+\textbar{} 60.571 \textbar{} 15.503 \textbar{} \textbar{} Tháng 3/2026
+\textbar{} 363.183 \textbar{} 226.083 \textbar{} 31.519 \textbar{}
+62.357 \textbar{} 14.771 \textbar{} \textbar{} Tháng 4/2026 \textbar{}
+350.430 \textbar{} 227.242 \textbar{} 30.196 \textbar{} 59.207
+\textbar{} 13.652 \textbar{} \textbar{} Tháng 5/2026 \textbar{} 354.600
+\textbar{} 245.202 \textbar{} 29.337 \textbar{} 60.160 \textbar{} 13.218
+\textbar{} \textbar{} Tháng 6/2026 \textbar{} 363.588 \textbar{} 252.661
+\textbar{} 28.884 \textbar{} 58.926 \textbar{} 12.304 \textbar{}
+\textbar{} Tháng 7/2026 \textbar{} 371.555 \textbar{} 265.062 \textbar{}
+30.280 \textbar{} 60.739 \textbar{} 11.455 \textbar{} \textbar{} Tháng
+8/2026 \textbar{} 420.453 \textbar{} 277.285 \textbar{} 29.165
+\textbar{} 75.738 \textbar{} 11.884 \textbar{} \textbar{} Tháng 9/2026
+\textbar{} 400.238 \textbar{} 269.141 \textbar{} 32.144 \textbar{}
+78.329 \textbar{} 12.094 \textbar{} \textbar{} Tháng 10/2026 \textbar{}
+406.438 \textbar{} 271.010 \textbar{} 32.529 \textbar{} 64.637
+\textbar{} 12.410 \textbar{} \textbar{} Tháng 11/2026 \textbar{} 411.074
+\textbar{} 288.898 \textbar{} 34.186 \textbar{} 66.296 \textbar{} 14.932
+\textbar{} \textbar{} Tháng 12/2026 \textbar{} 429.562 \textbar{}
+309.729 \textbar{} 34.750 \textbar{} 70.569 \textbar{} 15.117 \textbar{}
+\textbar{} \textbf{Tổng} \textbar{} \textbf{4.668.349} \textbar{}
+\textbf{3.075.993} \textbar{} \textbf{376.915} \textbar{}
+\textbf{777.995} \textbar{} \textbf{162.085} \textbar{}
 
-5 quốc gia hàng đầu chiếm 54,1\% tổng dự báo tích lũy năm 2026 (9,0 trên
-16,7 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất, tiếp
-theo là Trung Quốc. Tất cả các cận dưới khoảng tin cậy theo quốc gia đều
-tự nhiên không âm nhờ biến đổi log, không cần cắt thủ công.
+\emph{Bảng hiển thị giá trị trung bình tập hợp của Hồi quy tuyến tính,
+Random Forest, XGBoost và SARIMAX. Phạm vi bất đồng mô hình: 8,2M--10,1M
+tổng.}
+
+5 quốc gia hàng đầu chiếm 55,3\% tổng dự báo tập hợp năm 2026 (9,1 trên
+16,5 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất, tiếp
+theo là Trung Quốc. Dải bóng trong hình hiển thị phạm vi giữa dự báo cao
+nhất và thấp nhất của các mô hình --- thước đo dễ hiểu hơn khoảng tin
+cậy SARIMAX.
 
 \newpage
 
