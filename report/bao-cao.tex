@@ -995,6 +995,69 @@ gia đều tự nhiên không âm nhờ biến đổi log, không cần cắt th
 
 \newpage
 
+\subsection{Kiểm chứng dự báo (Tháng
+1--5/2026)}\label{kiux1ec3m-chux1ee9ng-dux1ef1-buxe1o-thuxe1ng-152026}
+
+Với dữ liệu thực tế có sẵn cho 5 tháng đầu năm 2026, chúng ta có thể
+đánh giá dự báo SARIMAX so với thực tế.
+
+\begin{figure}
+\centering
+\includegraphics{output/forecast_validation.png}
+\caption{Dự báo so với thực tế cho tháng 1---5/2026 (tổng hợp và các
+quốc gia nguồn hàng đầu).}
+\end{figure}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Tháng & Thực tế & Dự báo & Sai số \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Tháng 1/2026 & 1.897.983 & 1.538.229 & −19,0\% \\
+Tháng 2/2026 & 3.002.978 & 1.334.457 & −55,6\% \\
+Tháng 3/2026 & 1.735.764 & 1.077.130 & −37,9\% \\
+Tháng 4/2026 & 1.607.153 & 1.164.874 & −27,5\% \\
+Tháng 5/2026 & 1.531.220 & 1.074.181 & −29,8\% \\
+\textbf{MAPE} & & & \textbf{34,0\%} \\
+\end{longtable}
+
+\textbf{Kiểm chứng theo quốc gia:}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2400}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3600}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Quốc gia
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MAPE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Ghi chú
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Hàn Quốc & 8,3\% & Phù hợp tốt nhất; mô hình nắm bắt mẫu mùa vụ tốt \\
+Trung Quốc & 48,1\% & Đánh giá thấp nhất quán; tăng trưởng cấu trúc từ
+2024 không được nắm bắt \\
+Nhật Bản & 46,7\% & Ngoại lệ tháng 2/2026 (844K so với
+\textasciitilde67K thông thường) có thể là bất thường dữ liệu nguồn \\
+Campuchia & 92,0\% & Thay đổi cấu trúc lớn: lượng khách tăng từ
+\textasciitilde40K lên \textasciitilde440K \\
+\end{longtable}
+
+MAPE tổng hợp là 34,0\% xác nhận rằng mô hình SARIMAX đánh giá thấp nhất
+quán sự tăng tốc tăng trưởng sau COVID. Hàn Quốc là quốc gia duy nhất
+được dự báo tốt (MAPE = 8,3\%), vì quỹ đạo tăng trưởng của nó gần nhất
+với phân phối huấn luyện 2012--2023. Trường hợp Campuchia minh họa giới
+hạn cơ bản: mô hình không thể dự đoán sự thay đổi chế độ gấp 10 lần. Bất
+thường tháng 2 của Nhật Bản (844.009 lượt khách so với phạm vi thông
+thường 50--90K) cần được điều tra.
+
 \section{Kết luận}\label{kux1ebft-luux1eadn}
 
 \subsection{Kết quả chính}\label{kux1ebft-quux1ea3-chuxednh}

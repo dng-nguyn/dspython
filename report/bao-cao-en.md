@@ -403,6 +403,33 @@ The top 5 countries account for 59.3\% of the total 2026 aggregate forecast (10.
 
 \newpage
 
+## Forecast Validation (Jan–May 2026)
+
+With actual data available for the first five months of 2026, we can evaluate the SARIMAX forecast against reality.
+
+![Forecast vs Actual for Jan—May 2026 (aggregate and top source countries).](output/forecast_validation.png)
+
+| Month | Actual | Forecast | Error |
+|-------|--------|----------|-------|
+| Jan 2026 | 1,897,983 | 1,538,229 | −19.0% |
+| Feb 2026 | 3,002,978 | 1,334,457 | −55.6% |
+| Mar 2026 | 1,735,764 | 1,077,130 | −37.9% |
+| Apr 2026 | 1,607,153 | 1,164,874 | −27.5% |
+| May 2026 | 1,531,220 | 1,074,181 | −29.8% |
+| **MAPE** | | | **34.0%** |
+
+**Per-country validation:**
+
+| Country | MAPE | Notes |
+|---------|------|-------|
+| Hàn Quốc | 8.3% | Best fit; model captures seasonal pattern well |
+| Trung Quốc | 48.1% | Consistent underprediction; structural growth since 2024 not captured |
+| Nhật Bản | 46.7% | Feb 2026 outlier (844K vs ~67K typical) likely a source data anomaly |
+| Campuchia | 92.0% | Massive structural shift: arrivals jumped from ~40K to ~440K |
+
+The aggregate MAPE of 34.0% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản February anomaly (844,009 arrivals versus a typical 50–90K range) warrants investigation as a potential source data error.
+
+
 # Conclusion
 
 ## Key Findings
