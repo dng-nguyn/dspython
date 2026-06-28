@@ -428,9 +428,11 @@ With actual data available for the first five months of 2026, we can evaluate th
 | Hàn Quốc | 8.3% | Best fit; model captures seasonal pattern well |
 | Trung Quốc | 48.1% | Consistent underprediction; structural growth since 2024 not captured |
 | Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |
-| Campuchia | 50.3% | Structural growth since late 2024 not captured by training data |
+| Campuchia | 50.3% | Land-border regime shift: visa exemptions + new air routes + healthcare tourism; Jan 2026 hit 223K (3× Dec 2025) |
 
 **Russia (Nga) case study.** The model forecasts 7,000–12,000 arrivals/month for Russia in 2026; actual figures are 113,000–137,000 — a 10× error. This is not a model failure but a geopolitical regime shift. The Russia-Ukraine war (2022) closed EU and US destinations to Russian tourists. Vietnam, with its 45-day visa exemption, resumed direct flights (Aeroflot, VietJet, Vietnam Airlines), and affordable pricing, became a primary alternative. Russian arrivals grew from 39,921 (2022) to 689,714 (2025), surpassing the pre-pandemic peak of 646,524 (2019). No model trained on 2012–2023 data could anticipate this structural redirection of Russian outbound tourism [20].
+
+**Campuchia case study.** The model forecasts 27,000–38,000 Cambodian arrivals/month for 2026; actual figures are 113,000–470,000 — a 10× error comparable to Russia's. Cambodia surged from Vietnam's 9th largest source market (2024) to 3rd (January 2026), surpassing Taiwan. January 2026 alone saw 223,025 Cambodian arrivals — triple the previous month and double January 2025. The drivers are structural: reciprocal 30-day visa exemptions removed border friction; Air Cambodia launched new routes (Phnom Penh–Cam Ranh, Siem Reap–Cam Ranh) with ~10 daily flights; and cross-border healthcare tourism and shopping trips accelerated. Cambodia's proximity (6-hour bus from Phnom Penh to Ho Chi Minh City) makes it fundamentally different from air-dependent markets. The model's training data (2012–2023) shows Cambodia at 20,000–70,000/month — a regime that no longer exists [21].
 
 The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản February anomaly (844,009 arrivals versus a typical 50–90K range) warrants investigation as a potential source data error.
 
@@ -512,12 +514,14 @@ The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically under
 
 [19] Vietnam National Assembly, "Resolution on extension and amendment of e-visa policy," approved Jun. 24, 2023, effective Aug. 15, 2023.
 
+[21] VnExpress International, "Cambodia replaces Taiwan to become Vietnam's 3rd largest source of tourists," Feb. 2026.
+
 [20] VietnamPlus, "Russian tourists to Vietnam surge in 2024," Vietnam News Agency, 2024. [Online]. Available: https://en.vietnamplus.vn/
 
-[21] Scikit-learn developers, "Scikit-learn: Machine Learning in Python," 2025. [Online]. Available: https://scikit-learn.org/
+[22] Scikit-learn developers, "Scikit-learn: Machine Learning in Python," 2025. [Online]. Available: https://scikit-learn.org/
 
-[22] T. Chen et al., "XGBoost Documentation," 2025. [Online]. Available: https://xgboost.readthedocs.io/
+[23] T. Chen et al., "XGBoost Documentation," 2025. [Online]. Available: https://xgboost.readthedocs.io/
 
-[23] Statsmodels developers, "Statsmodels: Statistical Modeling and Econometrics in Python," 2025. [Online]. Available: https://www.statsmodels.org/
+[24] Statsmodels developers, "Statsmodels: Statistical Modeling and Econometrics in Python," 2025. [Online]. Available: https://www.statsmodels.org/
 
-[24] Amazon Science, "Chronos Forecasting," GitHub, 2024. [Online]. Available: https://github.com/amazon-science/chronos-forecasting
+[25] Amazon Science, "Chronos Forecasting," GitHub, 2024. [Online]. Available: https://github.com/amazon-science/chronos-forecasting
