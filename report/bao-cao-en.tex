@@ -918,7 +918,13 @@ Ensemble models (averaging Linear Regression, Random Forest, XGBoost,
 and SARIMAX) were fitted to the top 5 source countries individually. The
 tree-based models use recursive forecasting to generate 12-month-ahead
 predictions; SARIMAX uses its autoregressive structure directly.
+
+\begin{figure}
+\centering
 \includegraphics{output/country_forecasts_plot.png}
+\caption{Ensemble forecasts for top 5 source countries (2026). Model
+range band shows disagreement between LR, RF, XGBoost, and SARIMAX.}
+\end{figure}
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1273}}
@@ -979,7 +985,13 @@ interval.
 With actual data available for the first five months of 2026, we can
 evaluate the SARIMAX-only forecast against reality (the ensemble
 forecast uses the same SARIMAX component for its aggregate prediction).
+
+\begin{figure}
+\centering
 \includegraphics{output/forecast_validation.png}
+\caption{Forecast vs Actual for Jan---May 2026 (aggregate and top source
+countries).}
+\end{figure}
 
 \begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}

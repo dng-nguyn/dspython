@@ -378,6 +378,7 @@ To prevent the forecasting of physically impossible negative arrivals and to sta
 ## Per-Country Forecasts (2026)
 
 Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMAX) were fitted to the top 5 source countries individually. The tree-based models use recursive forecasting to generate 12-month-ahead predictions; SARIMAX uses its autoregressive structure directly.
+
 ![Ensemble forecasts for top 5 source countries (2026). Model range band shows disagreement between LR, RF, XGBoost, and SARIMAX.](output/country_forecasts_plot.png)
 
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
@@ -404,6 +405,7 @@ The top 5 countries account for 55.3\% of the total 2026 ensemble forecast (9.1M
 
 ## Forecast Validation (Jan–May 2026)
 With actual data available for the first five months of 2026, we can evaluate the SARIMAX-only forecast against reality (the ensemble forecast uses the same SARIMAX component for its aggregate prediction).
+
 ![Forecast vs Actual for Jan—May 2026 (aggregate and top source countries).](output/forecast_validation.png)
 
 | Month | Actual | Forecast | Error |
