@@ -201,39 +201,139 @@ China (41.7M cumulative) and South Korea (33.0M) dominate. However, these totals
 
 # 5. Model Building
 
-Five models were tested on aggregate quarterly arrivals (all countries summed). All use features: year, quarter number, time index, lag_1, lag_4, rolling_mean_4.
+This section describes each forecasting model applied to aggregate quarterly arrivals (all countries summed). Every model uses the same feature set: year, quarter number, time index, lag_1 (previous quarter), lag_4 (same quarter last year), and rolling_mean_4 (4-quarter moving average).
+
+Models are evaluated on the test set (2024 Q1 – 2026 Q2, 10 quarters) using four metrics:
+- **MAE** (Mean Absolute Error): average absolute deviation from actual values
+- **RMSE** (Root Mean Squared Error): penalizes large errors more heavily
+- **MAPE** (Mean Absolute Percentage Error): scale-independent accuracy measure
+- **R²** (Coefficient of Determination): proportion of variance explained; 1.0 = perfect, 0 = predicting the mean, negative = worse than the mean
 
 ## 5.1 Linear Regression
 
-Linear Regression assumes a linear relationship between features and target. It finds the best-fitting line by minimizing sum of squared errors.
+**Algorithm overview:**
 
-Despite its simplicity, LR captures the overall upward trend effectively.
+Linear Regression is the simplest supervised learning model. It assumes a linear relationship between the input features x and the target variable y:
+
+$$y = \mathbf{w}^T \mathbf{x} + b$$
+
+where **w** is the weight vector and *b* is the bias term. The model finds **w** and *b* by minimizing the sum of squared residuals (Ordinary Least Squares):
+
+$$\min_{\mathbf{w}, b} \sum_{i=1}^{n} (y_i - \mathbf{w}^T \mathbf{x}_i - b)^2$$
+
+This has a closed-form solution, making it extremely fast to train.
+
+**Why it works here:** Despite its simplicity, Linear Regression effectively captures the overall upward trend in Vietnam's tourism arrivals. The `time_idx` feature (year + quarter/4) provides a strong linear signal. With only 51 training samples, the model's simplicity is actually an advantage — it does not overfit.
+
+**Limitations:** Linear Regression cannot capture nonlinear patterns, seasonal cycles, or the COVID-19 structural break. It assumes the future is a linear extrapolation of the past.
 
 ## 5.2 Random Forest Regression
 
-Random Forest combines many decision trees, each trained on a bootstrap sample. Predictions are averaged across trees, reducing overfitting compared to a single tree.
+**Algorithm overview:**
+
+Random Forest is an ensemble method that combines hundreds of decision trees. Each tree is trained on a random bootstrap sample of the data, and at each split node, only a random subset of features is considered. The final prediction is the average of all tree predictions:
+
+$$\hat{y} = \frac{1}{T} \sum_{t=1}^{T} h_t(\mathbf{x})$$
+
+where $h_t$ is the $t$-th tree and $T$ is the total number of trees.
+
+The key insight is that individual trees are high-variance (they overfit), but averaging many uncorrelated trees reduces variance while preserving the ability to capture nonlinear patterns. This is known as **bagging** (Bootstrap Aggregating).
+
+**Key hyperparameters:**
+- `n_estimators`: Number of trees (200 in this study)
+- `max_depth`: Maximum depth of each tree (10 — prevents overfitting on small data)
+- `min_samples_split`: Minimum samples required to split a node
+
+**Why it is challenging here:** With only 51 training samples, Random Forest has limited data to build diverse trees. The random subspace mechanism loses information when feature count is small. Overfitting is a real risk.
 
 ## 5.3 XGBoost Regressor
 
-XGBoost builds trees sequentially, each correcting the errors of the previous one. Known for strong performance in competitions.
+**Algorithm overview:**
 
-## 5.4 SARIMA (Seasonal ARIMA)
+XGBoost (Extreme Gradient Boosting) builds trees **sequentially** rather than in parallel. Each new tree focuses on correcting the errors of the previous ensemble. The prediction after $K$ trees is:
 
-SARIMA combines autoregressive (AR), differencing (I), moving average (MA), and seasonal components. The year 2021 gap was removed from the training series.
+$$\hat{y}_i = \sum_{k=1}^{K} f_k(\mathbf{x}_i)$$
 
-## 5.5 Chronos-T5 (Foundation Model)
+At each step $k$, a new tree $f_k$ is added to minimize a regularized objective:
 
-Chronos is Amazon's pretrained time-series foundation model. It performs **zero-shot forecasting** — no task-specific training needed. Four sizes were tested (Tiny/Small/Base/Large); Base (200M params) gave the best MAE.
+$$\mathcal{L}^{(k)} = \sum_{i=1}^{n} \ell(y_i, \hat{y}_i^{(k-1)} + f_k(\mathbf{x}_i)) + \Omega(f_k)$$
+
+where $\ell$ is the loss function (squared error for regression) and $\Omega(f_k)$ penalizes tree complexity (number of leaves and leaf weights).
+
+XGBoost uses **second-order Taylor expansion** of the loss function for faster and more accurate optimization, plus **column subsampling** (like Random Forest) to reduce overfitting.
+
+**Key hyperparameters:**
+- `n_estimators`: Number of boosting rounds (200)
+- `max_depth`: Tree depth (6 — deeper trees capture more interactions)
+- `learning_rate`: Shrinkage factor applied to each tree (0.1 — smaller values need more trees but generalize better)
+- `subsample`: Fraction of data used per tree (1.0 here)
+- `colsample_bytree`: Fraction of features used per tree (1.0 here)
+
+**Why it struggles here:** XGBoost's sequential correction mechanism amplifies noise when the training set is small. With 51 samples and 6 features, the model memorizes training patterns that do not generalize.
+
+## 5.4 SARIMA (Seasonal AutoRegressive Integrated Moving Average)
+
+**Algorithm overview:**
+
+SARIMA is a classical statistical model for time series forecasting. It decomposes the series into four components:
+
+1. **AR (AutoRegressive):** The current value depends on its own past values
+2. **I (Integrated):** Differencing to achieve stationarity (removing trend)
+3. **MA (Moving Average):** The current value depends on past forecast errors
+4. **S (Seasonal):** The same three components repeated at seasonal lag $s$ (here $s=4$ for quarterly data)
+
+The full SARIMA$(p,d,q)(P,D,Q)_s$ model is:
+
+$$\Phi_P(B^s)\phi_p(B)(1-B^s)^D(1-B)^d y_t = \Theta_Q(B^s)\theta_q(B)\varepsilon_t$$
+
+In this study: SARIMA$(1,1,1)(1,1,1)_4$ — one autoregressive and one moving average term at both the regular and seasonal level, with first-order differencing at both levels.
+
+**Key parameters:**
+- $(p,d,q) = (1,1,1)$: Non-seasonal AR order, differencing order, MA order
+- $(P,D,Q)_s = (1,1,1)_4$: Seasonal AR, differencing, MA orders with period 4
+
+**Why it fails here:** SARIMA assumes the time series is stationary after differencing. The 2021 data gap breaks the seasonal continuity — the model sees 2020 Q4 followed directly by 2022 Q1, creating an artificial jump that distorts the estimated seasonal pattern. Additionally, SARIMA cannot model the strong post-COVID growth trend, which is a structural break rather than a continuation of pre-2020 dynamics.
+
+## 5.5 Chronos-T5 (Foundation Model for Time Series)
+
+**Algorithm overview:**
+
+Chronos is a family of pretrained foundation models for time series developed by Amazon (Ansari et al., 2024). Unlike the other models in this study, Chronos does not learn from our 51 training samples — it was pretrained on **millions of time series** from diverse domains (retail, finance, weather, web traffic, etc.) using a Transformer architecture (T5).
+
+Chronos works by **tokenizing** time series values into discrete bins and training an autoregressive language model to predict the next token. At inference time, it generates multiple possible futures via sampling, producing a **probabilistic forecast** (a distribution over possible outcomes, not just a point estimate).
+
+The key innovation is **zero-shot forecasting**: Chronos can predict any new time series without task-specific training. You simply pass the historical observations as context, and the model generates forecasts.
+
+Four model sizes were tested:
+
+| Model | Parameters | Description |
+|-------|-----------|-------------|
+| chronos-t5-tiny | 8M | Smallest, fastest |
+| chronos-t5-small | 46M | Small balanced |
+| chronos-t5-base | 200M | Best accuracy on this data |
+| chronos-t5-large | 710M | Largest, but overfit to pretraining distribution |
+
+**Why Base outperforms Large:** With only 55 quarterly data points as context, the larger model's stronger priors (learned from finance, weather, retail data) conflict with the tourism-specific pattern. The Base model is more flexible and less opinionated.
 
 ## 5.6 CIR# — Stochastic Differential Equation Model (Considered but Not Adopted)
 
-The CIR# (Cox-Ingersoll-Ross Sharp) model from Clements et al. (2023) extends the classic CIR SDE for tourism forecasting with disrupted data. It achieved MAPE 1.18% on Italian monthly tourism data — a 70% error reduction vs SARIMA and Holt-Winters.
+The CIR# (Cox-Ingersoll-Ross Sharp) model from Clements et al. (2023) extends the classic CIR stochastic differential equation for tourism forecasting with disrupted data. It achieved MAPE 1.18% on Italian monthly tourism data — a 70% error reduction vs SARIMA and Holt-Winters.
+
+**Algorithm overview:**
+
+The classic CIR process models mean-reverting stochastic dynamics:
+
+$$dr(t) = \kappa(\theta - r(t))dt + \sigma\sqrt{r(t)}dW(t)$$
+
+where $\kappa$ is mean-reversion speed, $\theta$ is the long-run mean, $\sigma$ is volatility, and $dW(t)$ is a Brownian motion increment.
+
+The CIR# extension replaces Brownian motion with **ARIMA-filtered residuals**: instead of generating random noise, the model uses the actual forecast errors from an ARIMA model fitted to a rolling window. This gives "exact trajectory" fitted values rather than Monte Carlo averages. The data is also partitioned into subsamples to capture variance changes around structural breaks (e.g., COVID-19).
 
 **Why CIR# does not fit this dataset:**
 
 1. **Insufficient observations:** Only 55 quarterly data points (vs 288 monthly in the Italian study). The rolling window of M=8 consumes 15% of data.
-2. **Mean-reversion assumption violated:** The CIR SDE pulls toward a long-run mean θ. Vietnam's tourism has a strong upward trend that contradicts mean-reversion.
-3. **COVID shock magnitude:** An 80% drop followed by full recovery causes the √r volatility term to amplify noise in log-returns, producing wild oscillations.
+2. **Mean-reversion assumption violated:** The CIR SDE pulls toward a long-run mean $\theta$. Vietnam's tourism has a strong upward trend that contradicts mean-reversion.
+3. **COVID shock magnitude:** An 80% drop followed by full recovery causes the $\sqrt{r}$ volatility term to amplify noise in log-returns, producing wild oscillations.
 4. **Quarterly vs monthly granularity:** The original paper's success relied on monthly data providing more observations per window and better seasonal capture.
 
 CIR# achieved MAPE ~183% on this data — far worse than all other models. This is an honest negative result: **not every state-of-the-art model fits every dataset**. CIR# is designed for stationary, mean-reverting processes (interest rates, short-term economic indicators), not for trending series with structural breaks.
@@ -352,9 +452,11 @@ Models perform well on "normal" quarters (Q2-Q3) but severely underestimate the 
 
 1. Clements, A.E., et al. (2024). "Forecasting disrupted tourism demand: the CIR# model." *Tourism Review*, 79(2), 445-470.
 2. Clements, A.E., et al. (2023). "The CIR# model for time series forecasting." *Technological and Economic Development of Economy*, 29(5), 1403-1427.
-3. Scikit-learn documentation: https://scikit-learn.org/
-4. XGBoost documentation: https://xgboost.readthedocs.io/
-5. Statsmodels SARIMA: https://www.statsmodels.org/
-6. Chronos (Amazon): https://github.com/amazon-science/chronos-forecasting
-7. Yahoo Finance (exchange rate data): https://finance.yahoo.com/
-8. Vietnam General Statistics Office (GSO): https://www.gso.gov.vn/
+3. Ansari, A.F., et al. (2024). "Chronos: Learning the Language of Time Series." *arXiv:2403.07815*.
+4. Chen, T. & Guestrin, C. (2016). "XGBoost: A Scalable Tree Boosting System." *KDD '16*.
+5. Scikit-learn documentation: https://scikit-learn.org/
+6. XGBoost documentation: https://xgboost.readthedocs.io/
+7. Statsmodels SARIMA: https://www.statsmodels.org/
+8. Chronos (Amazon): https://github.com/amazon-science/chronos-forecasting
+9. Yahoo Finance (exchange rate data): https://finance.yahoo.com/
+10. Vietnam General Statistics Office (GSO): https://www.gso.gov.vn/
