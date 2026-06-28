@@ -18,6 +18,7 @@
 \usepackage{lmodern}
 \ifPDFTeX\else
   % xetex/luatex font selection
+  \setmainfont[]{DejaVu Sans}
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -65,27 +66,41 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
 \ifLuaTeX
+\usepackage[bidi=basic]{babel}
+\else
+\usepackage[bidi=default]{babel}
+\fi
+\babelprovide[main,import]{english}
+\ifPDFTeX
+\else
+\babelfont{rm}[]{DejaVu Sans}
+\fi
+% get rid of language-specific shorthands (see #6817):
+\let\LanguageShortHands\languageshorthands
+\def\languageshorthands#1{}
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Analysis and Forecasting of Vietnam's International Tourist Arrivals},
-  pdfauthor={dng-nguyn},
+  pdftitle={Analysis and Forecasting of Vietnam's International Tourist Arrivals Using Monthly Data},
+  pdfauthor={Nguyen Dinh Cap (dng-nguyn)},
+  pdflang={en},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
 \title{Analysis and Forecasting of Vietnam's International Tourist
-Arrivals}
+Arrivals Using Monthly Data}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{Final Report --- Data Analysis with Python}
-\author{dng-nguyn}
+\subtitle{Data Analysis with Python --- Final Report}
+\author{Nguyen Dinh Cap (dng-nguyn)}
 \date{July 2025}
 
 \begin{document}
@@ -101,360 +116,424 @@ Arrivals}
 \item
   Introduction
 \item
-  Data Collection
+  Literature Review
+\item
+  Data Collection and Parsing
 \item
   Data Preprocessing
 \item
-  Exploratory Data Analysis (EDA)
+  Exploratory Data Analysis
 \item
   Model Building
 \item
-  Model Optimization
+  Model Optimization and External Features
 \item
-  Future Forecasting
+  Forecasting and Evaluation
 \item
   Conclusion
+\item
+  References
 \end{enumerate}
 
 \newpage
 
-\section{1. Introduction}\label{introduction}
+\section{Introduction}\label{introduction}
 
-\subsection{1.1 Problem Statement}\label{problem-statement}
+\subsection{Background}\label{background}
 
 Tourism is one of Vietnam's most important economic sectors,
-contributing significantly to GDP and creating millions of jobs. In
-recent years, Vietnam has emerged as an attractive destination in
-Southeast Asia, drawing large numbers of international tourists from
-diverse countries.
+contributing approximately 6--7\% of GDP and supporting nearly 6 million
+jobs nationally in recent years {[}1{]}. Vietnam welcomed a record 18.0
+million international visitors in 2019, ranking fourth in Southeast Asia
+{[}2{]}. The COVID-19 pandemic caused international arrivals to fall by
+78.7\% in 2020 {[}3{]}, with borders effectively closed from April 2020
+through early 2022. Vietnam's tourism has since recovered strongly,
+reaching an all-time high of 21.2 million arrivals in 2025 {[}4{]}.
 
-However, international tourist arrivals are influenced by complex
-factors: global economic conditions, visa policies, exchange rates,
-regional competition, and exogenous shocks such as the COVID-19 pandemic
-(2020-2021). Understanding trends, seasonal patterns, and relationships
-between source markets is essential for effective tourism strategy
-planning.
+This study analyzes monthly international tourist arrivals to Vietnam
+from 12 source countries over the period 2008--2026 using data published
+by Vietnam's General Statistics Office (GSO). Monthly granularity
+provides approximately 12\(\times\) more observations than quarterly
+aggregation, enabling more robust statistical inference and finer
+seasonal resolution.
 
-A critical challenge in this dataset is \textbf{uneven country coverage
-across years}: only 12 countries reported data during 2009-2011,
-compared to 30+ from 2012 onward. This means raw aggregate totals are
-partially inflated by reporting coverage changes rather than actual
-growth. This report addresses this issue explicitly.
+\subsection{Objectives}\label{objectives}
 
-\subsection{1.2 Objectives}\label{objectives}
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Analyze trends, seasonality, and source-country composition of
+  Vietnam's international arrivals
+\item
+  Compare forecasting models: Linear Regression, Random Forest, XGBoost,
+  SARIMA, Chronos-T5 foundation model, and the CIR\# stochastic
+  differential equation model
+\item
+  Evaluate the impact of external features (exchange rates, visa policy)
+  on forecast accuracy
+\item
+  Generate 12-month-ahead forecasts with confidence intervals
+\item
+  Document model assumptions, limitations, and boundary conditions
+\end{enumerate}
 
-\textbf{Analytical objectives:} - Analyze overall trends in
-international arrivals to Vietnam (2008-2026) - Identify top source
-countries and their changing rankings - Detect seasonal patterns in
-quarterly arrivals - Analyze correlations between source markets -
-Assess the impact of COVID-19 on Vietnam's tourism sector - Evaluate
-average annual growth rates, accounting for coverage gaps
-
-\textbf{Predictive objectives:} - Build machine learning models to
-predict quarterly arrivals - Compare Linear Regression, Random Forest,
-XGBoost, SARIMA, and Chronos-T5 - Tune hyperparameters to improve model
-accuracy - Forecast arrivals for the next 4 quarters with confidence
-intervals - Evaluate the CIR\# stochastic model (from academic
-literature) and explain why it does not fit this dataset
-
-\subsection{1.3 Scope and Data Sources}\label{scope-and-data-sources}
+\subsection{Scope}\label{scope}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Subject:} International tourist arrivals to Vietnam, by source
-  country and quarter (Q1-Q4)
+  \textbf{Subject:} Monthly international tourist arrivals to Vietnam by
+  source country
 \item
-  \textbf{Time period:} 2008-2026, noting that 2021 has no data
-  (COVID-19 impact)
+  \textbf{Period:} January 2008 -- May 2026 (no data for 2021 due to
+  COVID-19 border closures; only January--March 2020 available)
 \item
-  \textbf{Countries:} 32 individual countries (excluding regional
-  aggregates like ``Other Asian markets'')
+  \textbf{Countries:} 32 individual countries (regional aggregates
+  excluded)
 \item
-  \textbf{Data source:} Four HTML-Excel reports (\texttt{.xls}) from
-  Vietnam's General Statistics Office (GSO)
-\end{itemize}
-
-\subsection{1.4 Tools and Libraries}\label{tools-and-libraries}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Language:} Python 3
-\item
-  \textbf{Data processing:} pandas, numpy, lxml (HTML parsing)
-\item
-  \textbf{Visualization:} matplotlib, seaborn
-\item
-  \textbf{Modeling:} scikit-learn, xgboost, statsmodels (SARIMA),
-  chronos-forecasting (Chronos-T5)
-\item
-  \textbf{Environment:} Jupyter Notebook
-\item
-  \textbf{Version control:} Git, GitHub
+  \textbf{Tools:} Python 3, pandas, scikit-learn, XGBoost, statsmodels,
+  Chronos-T5, yfinance
 \end{itemize}
 
 \newpage
 
-\section{2. Data Collection}\label{data-collection}
+\section{Literature Review}\label{literature-review}
 
-\subsection{2.1 Data Sources}\label{data-sources}
+Tourism demand forecasting has been extensively studied. Song and Witt
+{[}5{]} provide a foundational treatment of econometric tourism demand
+modelling. A comprehensive review by Song et al.~{[}6{]}, covering 211
+papers, finds that no single method dominates all contexts; performance
+depends on data granularity, forecast horizon, and structural breaks.
 
-The data consists of 4 HTML-Excel report files, each containing
-international tourist arrivals for one quarter:
+For time-series methods, Hyndman and Athanasopoulos {[}7{]} present the
+standard reference for ARIMA-family models, including seasonal
+extensions (SARIMA). The Box--Jenkins methodology {[}8{]} remains the
+classical framework for identification, estimation, and diagnostic
+checking of ARIMA models.
 
-\begin{longtable}[]{@{}lll@{}}
-\toprule\noalign{}
-File & Quarter & Notes \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-quy1-cacnuoc.xls & Q1 & Starts from 2009 \\
-quy2-cacnuoc.xls & Q2 & Starts from 2009 \\
-quy3-cacnuoc.xls & Q3 & Starts from 2008 \\
-quy4-cacnuoc.xls & Q4 & Starts from 2008 \\
-\end{longtable}
+Ensemble machine learning methods have gained prominence. Random Forest
+{[}9{]} reduces variance through bagging of decorrelated trees. XGBoost
+{[}10{]} builds trees sequentially with gradient boosting and
+regularization, excelling at capturing nonlinear feature interactions
+but prone to overfitting on small datasets. The bias-variance tradeoff
+{[}11{]} explains why simpler models can outperform complex ones when
+sample sizes are limited.
 
-\subsection{2.2 Data Structure and
-Challenges}\label{data-structure-and-challenges}
+Foundation models represent a recent paradigm shift. Chronos {[}12{]},
+developed by Amazon, pre-trains Transformer-based models on millions of
+time series for zero-shot forecasting without task-specific training.
 
-The \texttt{.xls} files are not real Excel binaries --- they are HTML
-files with an \texttt{.xls} extension, a common technique for generating
-``Excel'' files from web applications. The HTML structure presents
+Stochastic differential equation (SDE) models have been applied to
+tourism. Orlando and Buffa {[}13, 14{]} proposed the CIR\# model,
+extending the Cox--Ingersoll--Ross process with ARIMA-filtered
+residuals, achieving MAPE of 1.18\% on Italian monthly tourism data (288
+observations). The model's success depends on data satisfying
+mean-reversion assumptions and having sufficient temporal granularity.
+
+For the Vietnamese context, the GSO publishes monthly international
+arrival statistics by country of origin {[}15{]}. The World Travel and
+Tourism Council {[}1{]} and the Vietnam National Authority of Tourism
+{[}2{]} provide supplementary macroeconomic and policy data.
+
+Missing data in tourism series is a well-known challenge. Little and
+Rubin {[}16{]} provide the foundational framework for statistical
+analysis with missing data. In tourism contexts, missing values often
+arise from countries not yet included in the reporting framework,
+distinct from true data missingness {[}6{]}.
+
+\newpage
+
+\section{Data Collection and Parsing}\label{data-collection-and-parsing}
+
+\subsection{Data Source}\label{data-source}
+
+The data consists of 12 HTML-Excel report files (\texttt{t1.xls} through
+\texttt{t12.xls}), one per calendar month, downloaded from the GSO
+website (\texttt{https://www.gso.gov.vn/}) in July 2025. Each file
+contains international tourist arrivals organized by source country,
+with columns for each year from 2008 or 2009 through 2026.
+
+\subsection{Parsing Challenges}\label{parsing-challenges}
+
+The \texttt{.xls} files are HTML documents with an \texttt{.xls}
+extension, not standard Excel binaries. The HTML structure presents
 several challenges:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Text nodes outside \texttt{\textless{}td\textgreater{}} tags:}
-  Numeric values appear as text between empty
+  \textbf{Text nodes outside \texttt{\textless{}td\textgreater{}} tags.}
+  Numeric values appear as text nodes between empty
   \texttt{\textless{}td\textgreater{}} elements rather than inside them.
-  Standard parsers like \texttt{pd.read\_html()} return all NaN values.
-  A custom \texttt{lxml}-based parser was built to extract data from
-  text nodes.
+  Standard parsers such as \texttt{pd.read\_html()} return all NaN
+  values. A custom \texttt{lxml}-based parser was constructed.
 \item
-  \textbf{Inconsistent year coverage:} Q3/Q4 files include 2008 data;
-  Q1/Q2 start from 2009. The year 2021 is absent from all files
-  (COVID-19 lockdown).
+  \textbf{Inconsistent year coverage.} Months t7 and t9--t12 include
+  2008 data; t1--t6 and t8 start from 2009. Coverage for early years
+  (2009--2011) is limited to 11--13 countries.
 \item
-  \textbf{Vietnamese number formatting:} Dots serve as thousands
-  separators (e.g., \texttt{104.520} = 104,520), not decimal points.
+  \textbf{Vietnamese number formatting.} Dots serve as thousands
+  separators (e.g., \texttt{33.379} equals 33,379).
 \item
-  \textbf{Regional aggregates mixed with countries:} The 2008 file
-  includes entries like ``Chau A'' (Asia), ``Chau Au'' (Europe), and
-  ``Other markets'' alongside individual countries. These were excluded
-  from analysis.
+  \textbf{Regional aggregates.} Entries such as ``Cac thi truong khac''
+  (Other markets) and ``Chau A'' (Asia) were excluded.
 \end{enumerate}
 
-\subsection{2.3 Data Parsing and
-Merging}\label{data-parsing-and-merging}
+\subsection{Parsing Verification}\label{parsing-verification}
 
-A custom HTML parser using \texttt{lxml} was built: - Parse the DOM tree
-and extract year labels from the header row (columns 2+) - For each data
-row, extract country name from \texttt{td{[}0{]}.tail} and values from
-\texttt{td{[}1:{]}.tail} - Convert Vietnamese-formatted numbers by
-removing dot separators - Merge all 4 files into a single DataFrame with
-columns: \texttt{country}, \texttt{year}, \texttt{quarter},
-\texttt{arrivals}
+The parser was verified against the known quarterly total: Hoa Ky (USA)
+Q1 2009 = January + February + March = 33,379 + 39,773 + 31,368 =
+104,520, matching the published quarterly figure exactly.
 
-\textbf{Verification:} ``USA'' for 2009 Q1 = 104,520 --- confirmed
-against the provided sample.
+\subsection{Parsed Dataset Summary}\label{parsed-dataset-summary}
 
-After parsing: \textbf{1,622 records}, \textbf{32 individual countries},
-years 2008-2026.
-
-\subsection{2.4 Country Coverage Issue}\label{country-coverage-issue}
-
-A critical finding is the uneven number of reporting countries per year:
-
-\begin{longtable}[]{@{}lll@{}}
+\begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-Year & Countries Reporting & Note \\
+Metric & Value \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-2008 & 29 & Q3/Q4 only (different file structure) \\
-2009-2011 & 11-12 & \textbf{Only Q1/Q2 files, severely limited} \\
-2012-2015 & 29-30 & Stable coverage \\
-2016-2026 & 29-35 & Near-complete coverage \\
+Total records & 4,692 \\
+Countries & 32 \\
+Date range & July 2008 -- May 2026 \\
+Missing year & 2021 (border closures) \\
+Incomplete year & 2020 (January--March only) \\
 \end{longtable}
 
-This means \textbf{aggregate totals for 2009-2011 are artificially low}
-because only 11-12 countries are reporting. The apparent ``growth'' from
-2.65M (2009) to 18M (2019) is partially driven by more countries being
-added to the dataset, not just organic growth.
+\subsection{Country Coverage Analysis}\label{country-coverage-analysis}
 
-To address this, this report uses \textbf{average annual growth rates}
-(which are per-country and less affected by coverage) alongside raw
-totals.
+Country coverage is highly uneven across the time period:
 
-\newpage
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Period & Countries per month & Note \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+2008 (Jul--Dec) & 30 & t7, t9--t12 only \\
+2009--2011 & 11--13 & Severely limited \\
+2012--2017 & 29--30 & Stable coverage \\
+2018--2019 & 31 & Slight expansion \\
+2020 (Jan--Mar) & 31 & Pre-COVID only \\
+2022--2026 & 29--31 & Post-COVID recovery \\
+\end{longtable}
 
-\section{3. Data Preprocessing}\label{data-preprocessing}
-
-\subsection{3.1 Cleaning}\label{cleaning}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Removed regional aggregates:} ``Chau A'', ``Chau Au'', ``Other
-  markets by continent'' entries were excluded. These are summary rows,
-  not individual countries.
-\item
-  \textbf{Removed ``Totals'' row:} Summary total per year-quarter.
-\item
-  \textbf{No duplicate records found.}
-\item
-  \textbf{Country names kept in Vietnamese} for the notebook; mapped to
-  English for this report.
-\end{itemize}
-
-\subsection{3.2 Handling Missing Values}\label{handling-missing-values}
-
-The 2021 gap (no data at all) was handled by simply excluding 2021 from
-the time series. For the feature grid, missing country-year-quarter
-combinations were filled with 0.
-
-\subsection{3.3 Feature Engineering}\label{feature-engineering}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Time features:} \texttt{quarter\_num} (1-4),
-  \texttt{time\_idx} (year + quarter/4)
-\item
-  \textbf{Lag features:} \texttt{lag\_1} (previous quarter),
-  \texttt{lag\_2}, \texttt{lag\_4} (same quarter last year)
-\item
-  \textbf{Rolling mean:} 4-quarter rolling average to smooth short-term
-  fluctuations
-\item
-  \textbf{External features:} Exchange rates (Yahoo Finance), visa
-  policy indicators (manually encoded from government sources)
-\end{itemize}
-
-\subsection{3.4 Train-Test Split}\label{train-test-split}
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Training set:} Data up to and including 2023
-\item
-  \textbf{Test set:} 2024 onward (2024 Q1 through 2026 Q2 = 10 quarters)
-\end{itemize}
+This coverage gap means that aggregate totals for 2009--2011 are
+artificially low. All trend analyses in this report use the period 2012
+onward, where coverage is stable at 29--31 countries.
 
 \newpage
 
-\section{4. Exploratory Data Analysis
-(EDA)}\label{exploratory-data-analysis-eda}
+\section{Data Preprocessing}\label{data-preprocessing}
 
-\subsection{4.1 Overall Trend with Coverage
+\subsection{Cleaning}\label{cleaning}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Removed regional aggregates:} Entries containing ``thi truong
+  khac'' (Other markets), ``Chau'' (continent prefixes), and ``Tong so''
+  (Totals) were excluded.
+\item
+  \textbf{Removed the ``Totals'' row} that appeared as a data row in
+  some files.
+\item
+  \textbf{Country names} kept in Vietnamese for analysis; English
+  translations used in this report.
+\item
+  \textbf{No duplicate records} were found.
+\end{itemize}
+
+\subsection{Handling Missing Values}\label{handling-missing-values}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{2021:} Excluded entirely. Vietnam's borders were closed;
+  reported arrivals were negligible (approximately 157,000--400,000
+  depending on methodology) {[}3{]}.
+\item
+  \textbf{2020:} Only January--March data available. April--December
+  excluded (border closures).
+\item
+  \textbf{Sparse countries:} Ba Lan (Poland, 29 months from 2024), Cong
+  hoa Sec (Czech Republic, 1 month in 2026), and An Do (India, 67 months
+  from 2018) have limited data. These are included in aggregate totals
+  where available but not used for per-country analysis.
+\item
+  \textbf{Country-year-month gaps:} For aggregate analysis, missing
+  country-months are treated as 0 arrivals. This is justified because
+  countries absent from the reporting framework in a given period had
+  negligible arrivals {[}16{]}.
+\end{itemize}
+
+\subsection{Train-Test Split}\label{train-test-split}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Training set:} January 2012 -- December 2019 + January 2022 --
+  December 2023 (120 months). Combines stable pre-COVID coverage (29--31
+  countries) with early post-COVID recovery data.
+\item
+  \textbf{Test set:} January 2024 -- December 2025 (24 months). Full
+  post-COVID recovery period.
+\item
+  \textbf{Excluded from training:} 2008--2011 (limited country
+  coverage), 2020--2021 (COVID gap: only January--March 2020 available,
+  2021 entirely absent).
+\item
+  \textbf{Forecast horizon:} January -- December 2026 (12 months ahead).
+\end{itemize}
+
+This yields 120 training observations and 24 test observations for
+monthly aggregate analysis, compared to 51 and 10 in the previous
+quarterly analysis. Including 2022--2023 in the training set provides
+the model with early recovery patterns, improving its ability to
+extrapolate the growth trajectory.
+
+\subsection{Feature Engineering}\label{feature-engineering}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule\noalign{}
+Feature & Description \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{year} & Calendar year \\
+\texttt{month} & Month (1--12) \\
+\texttt{time\_idx} & Year + (month\$-\$1)/12, continuous time index \\
+\texttt{lag\_1} & Previous month's total arrivals \\
+\texttt{lag\_12} & Same month in previous year \\
+\texttt{rolling\_mean\_12} & 12-month trailing average \\
+\texttt{exchange\_rate\_*} & VND spot rates vs.~8 currencies
+(optional) \\
+\texttt{visa\_*} & Visa policy indicators (optional) \\
+\end{longtable}
+
+Exchange rates were obtained from Yahoo Finance as end-of-month spot
+rates {[}17{]}. Visa policy indicators were manually encoded from
+Vietnamese government sources {[}18, 19{]}:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{visa\_evisa}: Binary, set to 1 from January 2017 (pilot e-visa
+  for 40 countries)
+\item
+  \texttt{visa\_evisa\_full}: Binary, set to 1 from August 2023
+  (universal 90-day e-visa)
+\item
+  \texttt{covid\_restrict}: Ordinal (0--1), encoding travel restriction
+  severity
+\end{itemize}
+
+\newpage
+
+\section{Exploratory Data Analysis}\label{exploratory-data-analysis}
+
+\subsection{Overall Trend with Coverage
 Context}\label{overall-trend-with-coverage-context}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_total_trend.png}
-\caption{Figure 1: Total arrivals by year with country count overlay}
+\caption{Figure 1: Total annual arrivals with country-count overlay.
+Note that 2009--2011 totals are deflated by limited coverage (11--13
+countries).}
 \end{figure}
 
-The bar chart (gray, secondary axis) shows the number of reporting
-countries per year. Key observations:
+The bar chart shows total annual arrivals (left axis) with the number of
+reporting countries overlaid (right axis, red line). Key observations:
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{2009-2011:} Only 11-12 countries report, making totals appear
-  artificially low (\textasciitilde2.6-4.0M)
+  \textbf{2009--2011:} Only 11--13 countries report, making totals
+  artificially low
 \item
-  \textbf{2012+:} Coverage stabilizes at 29-30 countries, enabling fair
-  comparison
+  \textbf{2012--2019:} Stable growth with 29--31 countries reporting;
+  arrivals grew from 6.8 million (2012) to 18.0 million (2019)
 \item
-  \textbf{2020:} Sharp COVID-19 drop to \textasciitilde3.7M despite full
-  coverage (30 countries)
+  \textbf{2020:} Only January--March data available; borders closed from
+  April
 \item
-  \textbf{2025:} Recovery to \textasciitilde17.6M with 29 countries ---
-  genuine growth
+  \textbf{2022--2025:} Strong post-COVID recovery, reaching 21.2 million
+  in 2025 {[}4{]}
 \end{itemize}
 
-\textbf{Important:} The ``growth'' from 2009 to 2012 should not be
-interpreted at face value --- it's largely a coverage artifact.
-
-\subsection{4.2 Average Annual Growth
-Rate}\label{average-annual-growth-rate}
-
-To compare countries fairly regardless of absolute volume, average
-annual growth rates were computed for 2012-2019 (pre-COVID, stable
-coverage):
-
-\begin{figure}
-\centering
-\includegraphics{output/eda_growth_rate.png}
-\caption{Figure 2: Top countries by average annual growth rate}
-\end{figure}
-
-Growth rates reflect \textbf{emerging markets} (Hong Kong, Spain, Italy,
-Germany, Philippines) rather than established markets. China and South
-Korea --- the two largest markets --- grew at more moderate rates from a
-high base.
-
-\subsection{4.3 Top Source Countries by
-Volume}\label{top-source-countries-by-volume}
+\subsection{Top Source Countries}\label{top-source-countries}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_top10_countries.png}
-\caption{Figure 3: Top 10 source countries (all years combined)}
+\caption{Figure 2: Top 10 source countries by cumulative arrivals
+(2008--2026).}
 \end{figure}
 
-China (41.7M cumulative) and South Korea (33.0M) dominate. However,
-these totals span all years including the coverage-limited 2009-2011
-period, so they slightly undercount for countries missing early data.
+China (cumulative 41.7 million) and South Korea (33.0 million) are the
+dominant source markets. These totals span all available years including
+the coverage-limited 2009--2011 period.
 
-\subsection{4.4 Seasonality}\label{seasonality}
+\subsection{Growth Rates (2012--2019)}\label{growth-rates-20122019}
+
+\begin{figure}
+\centering
+\includegraphics{output/eda_growth_rate.png}
+\caption{Figure 3: Average annual growth rate by country (2012--2019).}
+\end{figure}
+
+Growth rates reflect \textbf{emerging source markets} (Hong Kong, Spain,
+Italy, Philippines) rather than established high-volume markets. China
+and South Korea, the two largest sources, exhibited moderate growth from
+a high base.
+
+\subsection{Monthly Seasonality}\label{monthly-seasonality}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_seasonality.png}
-\caption{Figure 4: Average arrivals by quarter}
+\caption{Figure 4: Monthly seasonality pattern across all years and
+countries (2012--2019, 2022--2025).}
 \end{figure}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Q1} has the highest average arrivals (Tet holiday, New Year
-  tourism)
+  \textbf{January--February} has the highest arrivals, driven by the Tet
+  holiday (Lunar New Year) and winter tourism
 \item
-  \textbf{Q4} has the highest variance, suggesting year-end tourism
-  depends heavily on specific conditions
+  \textbf{June--August} shows a secondary peak (summer tourism)
+\item
+  \textbf{November--December} has the lowest arrivals on average
 \end{itemize}
 
-\subsection{4.5 Correlation Between Source
+\subsection{Correlation Between Source
 Markets}\label{correlation-between-source-markets}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_correlation.png}
-\caption{Figure 5: Correlation between top 5 source countries}
+\caption{Figure 5: Correlation matrix of top 5 source countries (monthly
+arrivals).}
 \end{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{China-Taiwan} correlation: 0.89 (shared geography, similar
-  travel patterns)
-\item
-  \textbf{USA} has low correlation with Asian markets (independent
-  dynamics, affected by USD/VND exchange rate)
-\end{itemize}
+China and Taiwan exhibit the highest correlation (approximately 0.89),
+reflecting shared geography and similar travel patterns. The USA shows
+lower correlation with Asian markets, indicating independent demand
+dynamics.
 
-\subsection{4.6 Country-Specific Trends}\label{country-specific-trends}
+\subsection{Country-Specific Trends}\label{country-specific-trends}
 
 \begin{figure}
 \centering
 \includegraphics{output/eda_country_trends.png}
-\caption{Figure 6: Trends for top 5 source countries}
+\caption{Figure 6: Monthly arrivals for top 5 source countries
+(2008--2026).}
 \end{figure}
 
 \begin{itemize}
@@ -462,298 +541,209 @@ Markets}\label{correlation-between-source-markets}
 \item
   \textbf{South Korea} recovered fastest post-COVID
 \item
-  \textbf{China} suffered the steepest drop and slowest recovery
+  \textbf{China} suffered the steepest decline and slowest recovery
 \item
-  \textbf{Japan} shows steady but slower growth
+  \textbf{Japan} shows steady but moderate growth throughout the period
 \end{itemize}
 
 \newpage
 
-\section{5. Model Building}\label{model-building}
+\section{Model Building}\label{model-building}
 
-This section describes each forecasting model applied to aggregate
-quarterly arrivals (all countries summed). Every model uses the same
-feature set: year, quarter number, time index, lag\_1 (previous
-quarter), lag\_4 (same quarter last year), and rolling\_mean\_4
-(4-quarter moving average).
+This section describes each forecasting model applied to
+\textbf{aggregate monthly arrivals} (summed across all countries). Every
+model uses the feature set described in Section 4.3. Models are
+evaluated on the test set (January 2024 -- December 2025, 24 months)
+using four metrics:
 
-Models are evaluated on the test set (2024 Q1 -- 2026 Q2, 10 quarters)
-using four metrics: - \textbf{MAE} (Mean Absolute Error): average
-absolute deviation from actual values - \textbf{RMSE} (Root Mean Squared
-Error): penalizes large errors more heavily - \textbf{MAPE} (Mean
-Absolute Percentage Error): scale-independent accuracy measure -
-\textbf{R²} (Coefficient of Determination): proportion of variance
-explained; 1.0 = perfect, 0 = predicting the mean, negative = worse than
-the mean
+\begin{itemize}
+\tightlist
+\item
+  \textbf{MAE} (Mean Absolute Error)
+\item
+  \textbf{RMSE} (Root Mean Squared Error)
+\item
+  \textbf{MAPE} (Mean Absolute Percentage Error)
+\item
+  \textbf{R\(^2\)} (Coefficient of Determination): Proportion of
+  variance explained relative to the training-set mean. Negative values
+  indicate performance worse than predicting the training-set mean,
+  which is expected when the test distribution (post-COVID recovery)
+  differs fundamentally from the training distribution (pre-COVID era)
+  {[}11{]}.
+\end{itemize}
 
-\subsection{5.1 Linear Regression}\label{linear-regression}
+\subsection{Linear Regression}\label{linear-regression}
 
-\textbf{Algorithm overview:}
-
-Linear Regression is the simplest supervised learning model. It assumes
-a linear relationship between the input features x and the target
-variable y:
+Linear Regression assumes a linear relationship between features
+\(\mathbf{x}\) and target \(y\):
 
 \[y = \mathbf{w}^T \mathbf{x} + b\]
 
-where \textbf{w} is the weight vector and \emph{b} is the bias term. The
-model finds \textbf{w} and \emph{b} by minimizing the sum of squared
-residuals (Ordinary Least Squares):
+The model minimizes the sum of squared residuals (Ordinary Least
+Squares):
 
 \[\min_{\mathbf{w}, b} \sum_{i=1}^{n} (y_i - \mathbf{w}^T \mathbf{x}_i - b)^2\]
 
-This has a closed-form solution, making it extremely fast to train.
+\textbf{Assumptions:} Linearity, independence of residuals,
+homoscedasticity, normally distributed errors. With 120 training samples
+and 6 features, the observation-to-parameter ratio (24:1) is adequate.
 
-\textbf{Why it works here:} Despite its simplicity, Linear Regression
-effectively captures the overall upward trend in Vietnam's tourism
-arrivals. The \texttt{time\_idx} feature (year + quarter/4) provides a
-strong linear signal. With only 51 training samples, the model's
-simplicity is actually an advantage --- it does not overfit.
+\textbf{Applicability:} The \texttt{time\_idx} feature provides a strong
+linear signal for the overall upward trend. With 120 training samples,
+the model's parsimony is an advantage over complex alternatives
+{[}11{]}.
 
-\textbf{Limitations:} Linear Regression cannot capture nonlinear
-patterns, seasonal cycles, or the COVID-19 structural break. It assumes
-the future is a linear extrapolation of the past.
+\textbf{Limitations:} Cannot capture nonlinear patterns, seasonal cycles
+beyond what month-encoded features provide, or structural breaks.
 
-\subsection{5.2 Random Forest
-Regression}\label{random-forest-regression}
+\subsection{Random Forest Regression}\label{random-forest-regression}
 
-\textbf{Algorithm overview:}
-
-Random Forest is an ensemble method that combines hundreds of decision
-trees. Each tree is trained on a random bootstrap sample of the data,
-and at each split node, only a random subset of features is considered.
-The final prediction is the average of all tree predictions:
+Random Forest {[}9{]} is an ensemble of \(T\) decision trees, each
+trained on a bootstrap sample with random feature subsampling:
 
 \[\hat{y} = \frac{1}{T} \sum_{t=1}^{T} h_t(\mathbf{x})\]
 
-where \(h_t\) is the \(t\)-th tree and \(T\) is the total number of
-trees.
+The averaging of decorrelated trees reduces variance while preserving
+nonlinear modeling capability (bagging).
 
-The key insight is that individual trees are high-variance (they
-overfit), but averaging many uncorrelated trees reduces variance while
-preserving the ability to capture nonlinear patterns. This is known as
-\textbf{bagging} (Bootstrap Aggregating).
+\textbf{Assumptions:} i.i.d. samples. Does not require stationarity or
+linearity. \textbf{Key hyperparameters:} \texttt{n\_estimators} = 200,
+\texttt{max\_depth} = 10 (to limit overfitting on 120 samples),
+\texttt{min\_samples\_split} = 2.
 
-\textbf{Key hyperparameters:} - \texttt{n\_estimators}: Number of trees
-(200 in this study) - \texttt{max\_depth}: Maximum depth of each tree
-(10 --- prevents overfitting on small data) -
-\texttt{min\_samples\_split}: Minimum samples required to split a node
+\textbf{Advantage over quarterly analysis:} With 120 training samples
+(vs.~51 quarterly), Random Forest can build more diverse trees and has
+better generalization potential.
 
-\textbf{Why it is challenging here:} With only 51 training samples,
-Random Forest has limited data to build diverse trees. The random
-subspace mechanism loses information when feature count is small.
-Overfitting is a real risk.
+\subsection{XGBoost Regressor}\label{xgboost-regressor}
 
-\subsection{5.3 XGBoost Regressor}\label{xgboost-regressor}
-
-\textbf{Algorithm overview:}
-
-XGBoost (Extreme Gradient Boosting) builds trees \textbf{sequentially}
-rather than in parallel. Each new tree focuses on correcting the errors
-of the previous ensemble. The prediction after \(K\) trees is:
+XGBoost {[}10{]} builds trees \textbf{sequentially}, with each tree
+correcting errors of the previous ensemble:
 
 \[\hat{y}_i = \sum_{k=1}^{K} f_k(\mathbf{x}_i)\]
 
-At each step \(k\), a new tree \(f_k\) is added to minimize a
-regularized objective:
+At each step, a new tree minimizes a regularized objective:
 
 \[\mathcal{L}^{(k)} = \sum_{i=1}^{n} \ell(y_i, \hat{y}_i^{(k-1)} + f_k(\mathbf{x}_i)) + \Omega(f_k)\]
 
-where \(\ell\) is the loss function (squared error for regression) and
-\(\Omega(f_k)\) penalizes tree complexity (number of leaves and leaf
-weights).
+where \(\ell\) is squared error and \(\Omega\) penalizes tree
+complexity.
 
-XGBoost uses \textbf{second-order Taylor expansion} of the loss function
-for faster and more accurate optimization, plus \textbf{column
-subsampling} (like Random Forest) to reduce overfitting.
+\textbf{Assumptions:} i.i.d. samples. Regularization is critical to
+prevent memorization of training noise {[}10{]}.
 
-\textbf{Key hyperparameters:} - \texttt{n\_estimators}: Number of
-boosting rounds (200) - \texttt{max\_depth}: Tree depth (6 --- deeper
-trees capture more interactions) - \texttt{learning\_rate}: Shrinkage
-factor applied to each tree (0.1 --- smaller values need more trees but
-generalize better) - \texttt{subsample}: Fraction of data used per tree
-(1.0 here) - \texttt{colsample\_bytree}: Fraction of features used per
-tree (1.0 here)
+\textbf{Key hyperparameters:} \texttt{n\_estimators} = 200,
+\texttt{max\_depth} = 6, \texttt{learning\_rate} = 0.1.
 
-\textbf{Why it struggles here:} XGBoost's sequential correction
-mechanism amplifies noise when the training set is small. With 51
-samples and 6 features, the model memorizes training patterns that do
-not generalize.
+\subsection{\texorpdfstring{SARIMA\((1,1,1)(1,1,1)_{12}\)}{SARIMA(1,1,1)(1,1,1)\_\{12\}}}\label{sarima111111_12}
 
-\subsection{5.4 SARIMA (Seasonal AutoRegressive Integrated Moving
-Average)}\label{sarima-seasonal-autoregressive-integrated-moving-average}
+SARIMA (Seasonal AutoRegressive Integrated Moving Average) {[}7, 8{]} is
+a classical statistical model decomposing a time series into
+autoregressive, differencing, moving-average, and seasonal components:
 
-\textbf{Algorithm overview:}
+\[\Phi_P(B^s)\,\phi_p(B)\,(1-B^s)^D\,(1-B)^d\, y_t = \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t\]
 
-SARIMA is a classical statistical model for time series forecasting. It
-decomposes the series into four components:
+where \(B\) is the backshift operator (\(B y_t = y_{t-1}\)), \(s = 12\)
+is the seasonal period, and \(\varepsilon_t\) is white noise.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{AR (AutoRegressive):} The current value depends on its own
-  past values
-\item
-  \textbf{I (Integrated):} Differencing to achieve stationarity
-  (removing trend)
-\item
-  \textbf{MA (Moving Average):} The current value depends on past
-  forecast errors
-\item
-  \textbf{S (Seasonal):} The same three components repeated at seasonal
-  lag \(s\) (here \(s=4\) for quarterly data)
-\end{enumerate}
+The model used here, SARIMA\((1,1,1)(1,1,1)_{12}\), applies first-order
+differencing at both regular and seasonal levels, with one
+autoregressive and one moving-average term at each level.
 
-The full SARIMA\((p,d,q)(P,D,Q)_s\) model is:
+\textbf{Assumptions:} Stationarity after differencing; white-noise
+residuals. The 2020--2021 data gap breaks seasonal continuity, as the
+model observes March 2020 followed directly by January 2022.
 
-\[\Phi_P(B^s)\phi_p(B)(1-B^s)^D(1-B)^d y_t = \Theta_Q(B^s)\theta_q(B)\varepsilon_t\]
+\textbf{Advantage of monthly data:} With \(s = 12\), the model captures
+finer seasonal patterns (e.g., Tet holiday in January/February, summer
+peak in July/August) that the quarterly model (\(s = 4\)) could not
+resolve.
 
-In this study: SARIMA\((1,1,1)(1,1,1)_4\) --- one autoregressive and one
-moving average term at both the regular and seasonal level, with
-first-order differencing at both levels.
+\subsection{Chronos-T5}\label{chronos-t5}
 
-\textbf{Key parameters:} - \((p,d,q) = (1,1,1)\): Non-seasonal AR order,
-differencing order, MA order - \((P,D,Q)_s = (1,1,1)_4\): Seasonal AR,
-differencing, MA orders with period 4
+Chronos {[}12{]} is a family of pretrained Transformer-based foundation
+models for time series. Unlike the other models, Chronos does not learn
+from the 120 training samples; it was pretrained on millions of time
+series from diverse domains. It operates by tokenizing time-series
+values and generating probabilistic forecasts via autoregressive
+sampling.
 
-\textbf{Why it fails here:} SARIMA assumes the time series is stationary
-after differencing. The 2021 data gap breaks the seasonal continuity ---
-the model sees 2020 Q4 followed directly by 2022 Q1, creating an
-artificial jump that distorts the estimated seasonal pattern.
-Additionally, SARIMA cannot model the strong post-COVID growth trend,
-which is a structural break rather than a continuation of pre-2020
-dynamics.
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Model & Parameters & Context window \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+chronos-t5-tiny & 8M & 512 tokens \\
+chronos-t5-small & 46M & 512 tokens \\
+chronos-t5-base & 200M & 512 tokens \\
+\end{longtable}
 
-\subsection{5.5 Chronos-T5 (Foundation Model for Time
-Series)}\label{chronos-t5-foundation-model-for-time-series}
+\textbf{Advantage of monthly data:} With 120 context points (vs.~55
+quarterly), the model has a denser signal for pattern recognition. The
+512-token context window is well within limits.
 
-\textbf{Algorithm overview:}
+\subsection{CIR\# Stochastic Differential Equation
+Model}\label{cir-stochastic-differential-equation-model}
 
-Chronos is a family of pretrained foundation models for time series
-developed by Amazon (Ansari et al., 2024). Unlike the other models in
-this study, Chronos does not learn from our 51 training samples --- it
-was pretrained on \textbf{millions of time series} from diverse domains
-(retail, finance, weather, web traffic, etc.) using a Transformer
-architecture (T5).
+The CIR\# model {[}13, 14{]} extends the Cox--Ingersoll--Ross SDE for
+tourism forecasting with disrupted data:
 
-Chronos works by \textbf{tokenizing} time series values into discrete
-bins and training an autoregressive language model to predict the next
-token. At inference time, it generates multiple possible futures via
-sampling, producing a \textbf{probabilistic forecast} (a distribution
-over possible outcomes, not just a point estimate).
+\[dr(t) = \kappa(\theta - r(t))\,dt + \sigma\sqrt{r(t)}\,dW(t)\]
 
-The key innovation is \textbf{zero-shot forecasting}: Chronos can
-predict any new time series without task-specific training. You simply
-pass the historical observations as context, and the model generates
-forecasts.
+Orlando and Buffa {[}13{]} report MAPE of 1.18\% on Italian monthly
+tourism data (288 observations), a 70\% error reduction over SARIMA and
+Holt--Winters. The CIR\# extension replaces Brownian motion with
+ARIMA-filtered residuals and partitions data into subsamples around
+structural breaks.
 
-Four model sizes were tested:
+\textbf{Evaluation on monthly Vietnam data:} With 120 training
+observations, CIR\# has sufficient data for MLE parameter estimation but
+faces three fundamental challenges: (1) Vietnam's tourism exhibits a
+strong upward trend that violates the mean-reversion assumption
+(\(\kappa(\theta - r(t))\) term); (2) the 80\% COVID drop followed by
+full recovery creates extreme log-return volatility amplified by the
+\(\sqrt{r}\) diffusion term; (3) the model is designed for stationary,
+mean-reverting processes {[}14{]}.
+
+\subsection{Model Comparison}\label{model-comparison}
+
+\begin{figure}
+\centering
+\includegraphics{output/model_comparison.png}
+\caption{Figure 7: Model performance comparison (MAE, MAPE, R\(^2\)).}
+\end{figure}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2258}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3548}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4194}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2258}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1613}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1935}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1935}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2258}}@{}}
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Model
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Parameters
+MAE
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
+RMSE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MAPE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+R\(^2\)
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-chronos-t5-tiny & 8M & Smallest, fastest \\
-chronos-t5-small & 46M & Small balanced \\
-chronos-t5-base & 200M & Best accuracy on this data \\
-chronos-t5-large & 710M & Largest, but overfit to pretraining
-distribution \\
-\end{longtable}
-
-\textbf{Why Base outperforms Large:} With only 55 quarterly data points
-as context, the larger model's stronger priors (learned from finance,
-weather, retail data) conflict with the tourism-specific pattern. The
-Base model is more flexible and less opinionated.
-
-\subsection{5.6 CIR\# --- Stochastic Differential Equation Model
-(Considered but Not
-Adopted)}\label{cir-stochastic-differential-equation-model-considered-but-not-adopted}
-
-The CIR\# (Cox-Ingersoll-Ross Sharp) model from Clements et al.~(2023)
-extends the classic CIR stochastic differential equation for tourism
-forecasting with disrupted data. It achieved MAPE 1.18\% on Italian
-monthly tourism data --- a 70\% error reduction vs SARIMA and
-Holt-Winters.
-
-\textbf{Algorithm overview:}
-
-The classic CIR process models mean-reverting stochastic dynamics:
-
-\[dr(t) = \kappa(\theta - r(t))dt + \sigma\sqrt{r(t)}dW(t)\]
-
-where \(\kappa\) is mean-reversion speed, \(\theta\) is the long-run
-mean, \(\sigma\) is volatility, and \(dW(t)\) is a Brownian motion
-increment.
-
-The CIR\# extension replaces Brownian motion with \textbf{ARIMA-filtered
-residuals}: instead of generating random noise, the model uses the
-actual forecast errors from an ARIMA model fitted to a rolling window.
-This gives ``exact trajectory'' fitted values rather than Monte Carlo
-averages. The data is also partitioned into subsamples to capture
-variance changes around structural breaks (e.g., COVID-19).
-
-\textbf{Why CIR\# does not fit this dataset:}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Insufficient observations:} Only 55 quarterly data points (vs
-  288 monthly in the Italian study). The rolling window of M=8 consumes
-  15\% of data.
-\item
-  \textbf{Mean-reversion assumption violated:} The CIR SDE pulls toward
-  a long-run mean \(\theta\). Vietnam's tourism has a strong upward
-  trend that contradicts mean-reversion.
-\item
-  \textbf{COVID shock magnitude:} An 80\% drop followed by full recovery
-  causes the \(\sqrt{r}\) volatility term to amplify noise in
-  log-returns, producing wild oscillations.
-\item
-  \textbf{Quarterly vs monthly granularity:} The original paper's
-  success relied on monthly data providing more observations per window
-  and better seasonal capture.
-\end{enumerate}
-
-CIR\# achieved MAPE \textasciitilde183\% on this data --- far worse than
-all other models. This is an honest negative result: \textbf{not every
-state-of-the-art model fits every dataset}. CIR\# is designed for
-stationary, mean-reverting processes (interest rates, short-term
-economic indicators), not for trending series with structural breaks.
-
-\subsection{5.7 Model Comparison}\label{model-comparison}
-
-\begin{figure}
-\centering
-\includegraphics{output/model_comparison.png}
-\caption{Figure 7: Model performance comparison}
-\end{figure}
-
-\begin{longtable}[]{@{}lllll@{}}
-\toprule\noalign{}
-Model & MAE & RMSE & MAPE & R² \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Linear Regression & 668,001 & 826,017 & 14.96\% & -0.11 \\
-Random Forest & 718,697 & 943,153 & 14.73\% & -0.44 \\
-Chronos-T5-Base & 760,788 & 970,698 & 15.42\% & -0.53 \\
-XGBoost & 983,132 & 1,396,363 & 21.32\% & -2.16 \\
-SARIMA & 2,191,581 & 2,369,273 & 47.23\% & -8.10 \\
+XGBoost & 112,072 & 138,597 & 7.47\% & 0.5663 \\
+Random Forest & 121,491 & 141,631 & 8.21\% & 0.5471 \\
+Linear Regression & 133,072 & 158,772 & 9.16\% & 0.4309 \\
+Chronos-T5-small & 170,625 & 214,069 & 10.77\% & \$-\$0.0345 \\
+CIR\# & 511,410 & 575,996 & 32.91\% & \$-\(6.4900 |
+| SARIMA\)(1,1,1)(1,1,1)\_\{12\}\$ \\
 \end{longtable}
 
 \textbf{Key observations:}
@@ -761,226 +751,320 @@ SARIMA & 2,191,581 & 2,369,273 & 47.23\% & -8.10 \\
 \begin{itemize}
 \tightlist
 \item
-  All R² values are \textbf{negative}, meaning every model performs
-  worse than predicting the mean. This is expected --- the post-COVID
-  surge is a structural break invisible to history-based models.
+  \textbf{XGBoost achieves the best performance} (MAPE = 7.47\%, R\(^2\)
+  = 0.57), followed closely by Random Forest (8.21\%) and Linear
+  Regression (9.16\%).
 \item
-  \textbf{Linear Regression} has the lowest MAE (668K) and best R²
-  (-0.11). Its linear trend captures the overall direction.
+  \textbf{Tree-based models now have positive R\(^2\) values}, a
+  dramatic improvement over the quarterly analysis where all R\(^2\)
+  were negative. This confirms that monthly data with 120 training
+  observations provides substantially more information than 51 quarterly
+  points.
 \item
-  \textbf{Chronos-T5-Base} has the lowest MAPE among ML models (15.42\%)
-  despite being zero-shot.
+  \textbf{Feature importance} (Random Forest): \texttt{lag\_1} dominates
+  at 84.8\%, followed by \texttt{lag\_12} (6.4\%) and
+  \texttt{rolling\_mean\_12} (5.0\%). The previous month's arrivals are
+  the strongest predictor.
 \item
-  \textbf{SARIMA} performs worst due to the 2021 gap breaking the
-  seasonal continuity.
+  \textbf{Chronos-T5-small} performs competitively (MAPE = 10.77\%) as a
+  zero-shot method but has negative R\(^2\), indicating it does not
+  fully capture the post-COVID growth trend.
 \item
-  \textbf{XGBoost overfits} with only 51 training samples.
+  \textbf{SARIMA performs worst} (MAPE = 47.77\%, R\(^2\) = \$-\$11.33).
+  The 2020--2021 data gap breaks seasonal continuity; the model
+  forecasts a mean-reverting pattern rather than the observed growth
+  trajectory.
+\item
+  \textbf{CIR\# fails} (MAPE = 32.91\%, R\(^2\) = \$-\$6.49) despite
+  having monthly data. The estimated \(\kappa = 0.109\) is positive
+  (mean-reverting), which conflicts with the upward-trending data. This
+  confirms the model's documented boundary condition {[}13, 14{]}.
 \end{itemize}
 
 \newpage
 
-\section{6. Model Optimization}\label{model-optimization}
+\section{Model Optimization and External
+Features}\label{model-optimization-and-external-features}
 
-\subsection{6.1 GridSearchCV for Random
-Forest}\label{gridsearchcv-for-random-forest}
+\subsection{Hyperparameter
+Optimization}\label{hyperparameter-optimization}
 
-Hyperparameters tuned: \texttt{n\_estimators} (100, 200, 300),
-\texttt{max\_depth} (5, 10, 15, None), \texttt{min\_samples\_split} (2,
-5, 10). 3-fold cross-validation.
+\textbf{Random Forest} was optimized via GridSearchCV (3-fold
+cross-validation):
 
-\subsection{6.2 RandomizedSearchCV for
-XGBoost}\label{randomizedsearchcv-for-xgboost}
+\begin{itemize}
+\tightlist
+\item
+  \texttt{n\_estimators}: \{100, 200, 300\}
+\item
+  \texttt{max\_depth}: \{5, 10, 15, None\}
+\item
+  \texttt{min\_samples\textbackslash{}\_split}: \{2, 5, 10\}
+\end{itemize}
 
-50 random combinations from: \texttt{n\_estimators} (100-500),
-\texttt{max\_depth} (3-9), \texttt{learning\_rate} (0.01-0.2),
-\texttt{subsample} (0.7-1.0), \texttt{colsample\_bytree} (0.7-1.0).
+\textbf{XGBoost} was optimized via RandomizedSearchCV (50 iterations):
 
-\textbf{Result:} Optimization provided marginal improvement for RF but
-\textbf{made XGBoost worse} --- overfitting on the small training set.
-This confirms that with 51 samples, simpler models are preferred.
+\begin{itemize}
+\tightlist
+\item
+  \texttt{n\textbackslash{}\_estimators}: 100--500
+\item
+  \texttt{max\textbackslash{}\_depth}: 3--9
+\item
+  \texttt{learning\textbackslash{}\_rate}: 0.01--0.2
+\item
+  \texttt{subsample}: 0.7--1.0
+\item
+  \texttt{colsample\textbackslash{}\_bytree}: 0.7--1.0
+\end{itemize}
 
-\subsection{6.3 External Features (Exchange Rates + Visa
-Policy)}\label{external-features-exchange-rates-visa-policy}
+\subsection{External Features}\label{external-features}
 
-Exchange rates (VND vs KRW, CNY, USD, JPY, TWD, MYR) were fetched from
-Yahoo Finance. Visa policy indicators were manually encoded: -
-\texttt{visa\_evisa}: E-visa available (2017+) -
-\texttt{visa\_evisa\_full}: E-visa for all countries, 90-day (2023 Q3+)
-- \texttt{covid\_restrict}: Travel restriction index (0-1)
+Exchange rates (VND vs.~KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were
+obtained from Yahoo Finance {[}17{]} as end-of-month spot rates. Visa
+policy indicators were encoded from Vietnamese government sources {[}18,
+19{]}.
 
-\textbf{Result:} External features improved LR slightly (MAE reduced
-\textasciitilde5\%) but made RF/XGB worse due to overfitting.
-\texttt{lag\_1} and \texttt{rolling\_mean\_4} remain the dominant
-features (\textasciitilde73\% importance). The post-COVID structural
-break remains the fundamental challenge.
+\textbf{Result:} External features provided marginal improvement for
+Linear Regression but degraded tree-based model performance due to
+overfitting. Feature importance analysis shows that \texttt{lag\_1} and
+\texttt{rolling\_mean\_12} remain the dominant features. The post-COVID
+structural break remains the fundamental challenge that external
+features alone cannot address.
 
 \newpage
 
-\section{7. Future Forecasting}\label{future-forecasting}
+\section{Forecasting and Evaluation}\label{forecasting-and-evaluation}
 
-\begin{figure}
-\centering
-\includegraphics{output/forecast_plot.png}
-\caption{Figure 8: SARIMA forecast for next 4 quarters}
-\end{figure}
-
-\begin{longtable}[]{@{}lll@{}}
-\toprule\noalign{}
-Quarter & Forecast & 95\% Confidence Interval \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-2026 Q3 & 4,157,874 & {[}2,764,158 --- 5,551,591{]} \\
-2026 Q4 & 4,156,459 & {[}2,435,914 --- 5,877,004{]} \\
-2027 Q1 & 4,129,710 & {[}2,167,419 --- 6,092,001{]} \\
-2027 Q2 & 4,129,570 & {[}1,962,482 --- 6,296,659{]} \\
-\end{longtable}
-
-\textbf{Note:} The very wide confidence intervals reflect fundamental
-uncertainty. SARIMA cannot capture the growth trend visible in recent
-quarters (6M+ in 2025-2026) and reverts toward the historical mean
-(\textasciitilde4M).
+\subsection{Predicted vs.~Actual (Test
+Set)}\label{predicted-vs.-actual-test-set}
 
 \begin{figure}
 \centering
 \includegraphics{output/pred_vs_actual.png}
-\caption{Figure 9: Predicted vs Actual (test set detail)}
+\caption{Figure 8: Predicted vs.~actual monthly arrivals for the test
+set (2024--2025).}
 \end{figure}
 
-\textbf{Per-quarter accuracy (best models):}
+XGBoost and Random Forest track the actual values most closely, while
+SARIMA and CIR\# diverge significantly. Chronos-T5-small provides
+competitive zero-shot predictions without any training on this dataset.
 
-\begin{longtable}[]{@{}lllll@{}}
+\subsection{12-Month Forecast (2026)}\label{month-forecast-2026}
+
+\begin{figure}
+\centering
+\includegraphics{output/forecast_plot.png}
+\caption{Figure 9: SARIMA 12-month forecast for 2026 with 95\%
+confidence interval.}
+\end{figure}
+
+\begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}
-Quarter & Actual & Best Model & Prediction & Error \\
+Month & Forecast & 95\% CI Lower & 95\% CI Upper \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-2024 Q2 & 3,893,572 & Chronos & 3,602,994 & -7.5\% \\
-2024 Q3 & 3,656,240 & XGBoost & 3,686,331 & +0.8\% \\
-2024 Q4 & 4,428,526 & LR & 4,030,040 & -9.0\% \\
-2025 Q1 & 5,408,927 & LR & 4,288,777 & -20.7\% \\
-2026 Q1 & 6,058,711 & LR & 4,708,762 & -22.3\% \\
+Jan 2026 & 633,903 & 121,322 & 1,146,483 \\
+Feb 2026 & 676,032 & \$-\$83,685 & 1,435,750 \\
+Mar 2026 & 607,735 & \$-\$326,054 & 1,541,524 \\
+Apr 2026 & 649,047 & \$-\$434,436 & 1,732,532 \\
+May 2026 & 607,630 & \$-\$606,144 & 1,821,405 \\
+Jun 2026 & 597,289 & \$-\$734,454 & 1,929,033 \\
+Jul 2026 & 689,660 & \$-\$750,295 & 2,129,616 \\
+Aug 2026 & 829,177 & \$-\$711,451 & 2,369,806 \\
+Sep 2026 & 775,281 & \$-\$859,818 & 2,410,381 \\
+Oct 2026 & 808,583 & \$-\$915,825 & 2,532,992 \\
+Nov 2026 & 921,835 & \$-\$887,477 & 2,731,148 \\
+Dec 2026 & 961,391 & \$-\$929,016 & 2,851,799 \\
 \end{longtable}
 
-Models perform well on ``normal'' quarters (Q2-Q3) but severely
-underestimate the surge quarters (Q1 of 2025-2026). This is the
-\textbf{post-COVID structural break} problem.
+The wide confidence intervals (some extending below zero) reflect
+fundamental uncertainty. SARIMA, having been trained on pre-COVID data,
+forecasts a mean-reverting pattern centered around 600,000--900,000
+monthly arrivals, well below the observed 2025 levels (1.5--2.0 million
+per month). This underscores the limitation of classical time-series
+models in the presence of structural breaks.
 
 \newpage
 
-\section{8. Conclusion}\label{conclusion}
+\section{Conclusion}\label{conclusion}
 
-\subsection{8.1 Key Findings}\label{key-findings}
+\subsection{Key Findings}\label{key-findings}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Coverage bias is significant:} Only 11-12 countries reported
-  during 2009-2011 vs 30+ from 2012. Raw aggregate totals are
-  misleading; growth rates should be used for fair comparison.
+  \textbf{Monthly data significantly improves analysis.} With 120
+  training observations (vs.~51 quarterly), machine learning models have
+  nearly triple the data for learning patterns. SARIMA with \(s = 12\)
+  resolves finer seasonal structure (Tet holiday, summer peaks) that
+  \(s = 4\) could not capture.
 \item
-  \textbf{China and South Korea dominate} the tourism market, but
-  emerging markets (Hong Kong, Spain, Italy, Philippines) grew fastest
-  during 2012-2019.
+  \textbf{Coverage bias persists.} Only 11--13 countries reported
+  monthly data during 2009--2011, compared to 29--31 from 2012 onward.
+  Aggregate trend analyses should use 2012 as the starting point.
 \item
-  \textbf{Strong seasonality:} Q1 consistently has the highest arrivals
-  (Tet holiday effect).
+  \textbf{China and South Korea dominate} the tourism market, accounting
+  for the largest cumulative arrivals. Emerging markets (Hong Kong,
+  Spain, Italy, Philippines) grew fastest during 2012--2019.
 \item
-  \textbf{Linear Regression is surprisingly effective} with only 51
-  training samples, achieving the lowest MAE (668K) and best R² (-0.11).
-  More complex models overfit.
+  \textbf{Strong seasonality:} January--February consistently has the
+  highest arrivals (Tet holiday + winter tourism), with a secondary
+  summer peak in June--August.
 \item
-  \textbf{No model predicts the post-COVID surge well.} All R² values
-  are negative. The structural break is invisible to history-based
-  models.
+  \textbf{Post-COVID structural break} remains the dominant challenge.
+  All models produce negative R\(^2\) values because the test
+  distribution (2024--2025 recovery) differs fundamentally from the
+  training distribution (2012--2019 + 2022--2023).
 \item
-  \textbf{CIR\# (state-of-the-art SDE model) fails on this data} due to
-  insufficient observations, mean-reversion assumption violation, and
-  quarterly granularity. This is a valuable negative finding.
+  \textbf{CIR\# fails on trending data.} Despite having monthly data as
+  recommended by Orlando and Buffa {[}13{]}, the model's mean-reversion
+  assumption is violated by Vietnam's upward-trending tourism
+  trajectory. This constitutes a documented boundary condition for the
+  model {[}13, 14{]}.
 \item
-  \textbf{External features (exchange rates, visa policy) provide
-  marginal improvement} for LR but not for tree-based models with
-  limited data.
+  \textbf{External features provide marginal improvement} for Linear
+  Regression but not for tree-based models, which overfit on the
+  additional dimensions.
 \end{enumerate}
 
-\subsection{8.2 Limitations}\label{limitations}
+\subsection{Limitations}\label{limitations}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{Small training set} (51 quarterly observations after removing
-  2021)
+  \textbf{COVID gap (2020--2021):} Excluding 20 months breaks
+  time-series continuity for SARIMA and reduces the training set.
 \item
-  \textbf{2021 gap} breaks time-series continuity
+  \textbf{Limited training set (120 months):} While substantially better
+  than 51 quarterly points, this still constrains model complexity
+  compared to the 288 monthly observations used in the Italian CIR\#
+  study {[}13{]}.
 \item
-  \textbf{Missing external features:} GDP, flight capacity, Google
-  Trends, oil prices
+  \textbf{Missing external features:} Source-country GDP, flight
+  capacity, Google Trends search volume, and oil prices were not
+  included.
 \item
-  \textbf{Country coverage inconsistency} (2009-2011 only 11-12
-  countries)
+  \textbf{Coverage inconsistency (2009--2011):} Only 11--13 countries
+  per month limits reliability of aggregate statistics for early years.
+\item
+  \textbf{Formal diagnostics not performed:} Residual normality tests,
+  stationarity tests (ADF, KPSS), and heteroscedasticity tests would
+  strengthen the analysis.
 \end{enumerate}
 
-\subsection{8.3 Future Directions}\label{future-directions}
+\subsection{Future Directions}\label{future-directions}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{Monthly data} to increase sample size and improve seasonal
-  capture
+  \textbf{Source-country GDP and flight capacity} as leading indicators
 \item
-  \textbf{External leading indicators:} Source-country GDP, exchange
-  rates, Google Trends search volume, flight route capacity
+  \textbf{Google Trends search volume} for destination queries
 \item
-  \textbf{Per-country models} instead of aggregate (different recovery
-  trajectories)
+  \textbf{Regime-switching models} that explicitly handle pre-COVID,
+  during-COVID, and post-COVID transitions
 \item
-  \textbf{Ensemble methods} combining LR (trend) with Chronos (pattern
-  recognition)
+  \textbf{Per-country models} (different countries exhibit different
+  recovery trajectories)
 \item
-  \textbf{Regime-switching models} that explicitly handle the pre-COVID
-  / during-COVID / post-COVID transitions
+  \textbf{Ensemble methods} combining Linear Regression (trend) with
+  Chronos (pattern recognition)
 \item
-  \textbf{Interactive dashboard} for real-time tourism monitoring and
-  forecasting
+  \textbf{Formal residual diagnostics} and stationarity testing
 \end{enumerate}
 
 \newpage
 
 \section{References}\label{references}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Clements, A.E., et al.~(2024). ``Forecasting disrupted tourism demand:
-  the CIR\# model.'' \emph{Tourism Review}, 79(2), 445-470.
-\item
-  Clements, A.E., et al.~(2023). ``The CIR\# model for time series
-  forecasting.'' \emph{Technological and Economic Development of
-  Economy}, 29(5), 1403-1427.
-\item
-  Ansari, A.F., et al.~(2024). ``Chronos: Learning the Language of Time
-  Series.'' \emph{arXiv:2403.07815}.
-\item
-  Chen, T. \& Guestrin, C. (2016). ``XGBoost: A Scalable Tree Boosting
-  System.'' \emph{KDD '16}.
-\item
-  Scikit-learn documentation: https://scikit-learn.org/
-\item
-  XGBoost documentation: https://xgboost.readthedocs.io/
-\item
-  Statsmodels SARIMA: https://www.statsmodels.org/
-\item
-  Chronos (Amazon):
-  https://github.com/amazon-science/chronos-forecasting
-\item
-  Yahoo Finance (exchange rate data): https://finance.yahoo.com/
-\item
-  Vietnam General Statistics Office (GSO): https://www.gso.gov.vn/
-\end{enumerate}
+{[}1{]} World Travel and Tourism Council, ``Economic Impact Research:
+Vietnam,'' WTTC, 2024. {[}Online{]}. Available:
+https://wttc.org/research/economic-impact
+
+{[}2{]} Vietnam National Authority of Tourism, ``International tourist
+arrivals to Vietnam 2019,'' VNAT, 2020. Cited in: B-Company, ``Vietnam
+Tourism Briefing,'' Jan.~2025.
+
+{[}3{]} H. T. Thi, ``Vietnam Tourism Industry During Covid-19
+Pandemic,'' 2022. See also: General Statistics Office of Vietnam,
+``Socio-economic situation report 2020,'' GSO, Hanoi, 2021.
+
+{[}4{]} VietnamNet and General Statistics Office of Vietnam, ``Vietnam
+achieved 21.2 million international arrivals in 2025,'' VietnamNet,
+Jan.~2026. {[}Online{]}. Available: https://vietnamnet.vn/
+
+{[}5{]} H. Song and S. F. Witt, \emph{Tourism Demand Modelling and
+Forecasting: Modern Econometric Approaches}. Routledge, 2012.
+
+{[}6{]} H. Song, G. Li, and Z. Cao, ``Tourism demand modelling and
+forecasting --- A review of recent research,'' \emph{Tourism
+Management}, vol.~74, pp.~217--232, 2019.
+
+{[}7{]} R. J. Hyndman and G. Athanasopoulos, \emph{Forecasting:
+Principles and Practice}, 3rd ed.~OTexts, 2021. {[}Online{]}. Available:
+https://otexts.com/fpp3/
+
+{[}8{]} G. E. P. Box, G. M. Jenkins, G. C. Reinsel, and G. M. Ljung,
+\emph{Time Series Analysis: Forecasting and Control}, 5th ed.~Wiley,
+2016.
+
+{[}9{]} L. Breiman, ``Random Forests,'' \emph{Machine Learning},
+vol.~45, no. 1, pp.~5--32, 2001.
+
+{[}10{]} T. Chen and C. Guestrin, ``XGBoost: A Scalable Tree Boosting
+System,'' in \emph{Proc. 22nd ACM SIGKDD Int. Conf. Knowledge Discovery
+and Data Mining}, 2016, pp.~785--794.
+
+{[}11{]} T. Hastie, R. Tibshirani, and J. Friedman, \emph{The Elements
+of Statistical Learning}, 2nd ed.~Springer, 2009.
+
+{[}12{]} A. F. Ansari et al., ``Chronos: Learning the Language of Time
+Series,'' \emph{Trans. Mach. Learn. Res.}, 2024. {[}Online{]}.
+Available: https://arxiv.org/abs/2403.07815
+
+{[}13{]} G. Orlando and M. Buffa, ``Improved tourism demand forecasting
+with CIR\# model: the case of disrupted data patterns in Italy,''
+\emph{Tourism Review}, vol.~79, no. 2, pp.~445--470, 2023, doi:
+10.1108/TR-04-2023-0194.
+
+{[}14{]} G. Orlando and M. Buffa, ``The CIR\# model for time series
+forecasting,'' \emph{Technological and Economic Development of Economy},
+vol.~29, no. 5, pp.~1403--1427, 2023.
+
+{[}15{]} General Statistics Office of Vietnam, ``Quarterly and monthly
+international arrival statistics by country,'' GSO, Hanoi, 2008--2026.
+{[}Online{]}. Available: https://www.gso.gov.vn/
+
+{[}16{]} R. J. A. Little and D. B. Rubin, \emph{Statistical Analysis
+with Missing Data}, 2nd ed.~Wiley, 2002.
+
+{[}17{]} Yahoo Finance, ``Historical exchange rates,'' Yahoo, 2025.
+{[}Online{]}. Available: https://finance.yahoo.com/
+
+{[}18{]} Vietnam Immigration Department, ``Pilot e-visa system for
+foreign visitors,'' effective Feb.~1, 2017, initially for 40 countries.
+
+{[}19{]} Vietnam National Assembly, ``Resolution on extension and
+amendment of e-visa policy,'' approved Jun.~24, 2023, effective Aug.~15,
+2023.
+
+{[}20{]} Scikit-learn developers, ``Scikit-learn: Machine Learning in
+Python,'' 2025. {[}Online{]}. Available: https://scikit-learn.org/
+
+{[}21{]} T. Chen et al., ``XGBoost Documentation,'' 2025. {[}Online{]}.
+Available: https://xgboost.readthedocs.io/
+
+{[}22{]} Statsmodels developers, ``Statsmodels: Statistical Modeling and
+Econometrics in Python,'' 2025. {[}Online{]}. Available:
+https://www.statsmodels.org/
+
+{[}23{]} Amazon Science, ``Chronos Forecasting,'' GitHub, 2024.
+{[}Online{]}. Available:
+https://github.com/amazon-science/chronos-forecasting
 
 \end{document}

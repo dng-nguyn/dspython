@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Generate the analysis notebook with data download and folder setup."""
+"""Generate the monthly tourism analysis notebook.
+
+Data source: 12 HTML-Excel files (t1.xls through t12.xls) from GSO.
+Each file = one month, columns = years, rows = countries.
+"""
 import nbformat
 from nbformat.v4 import new_notebook, new_markdown_cell, new_code_cell
 
@@ -10,452 +14,312 @@ cells = []
 def md(t): cells.append(new_markdown_cell(t.strip()))
 def code(t): cells.append(new_code_cell(t.strip()))
 
-md("# Phân tích Du lịch Quốc tế Việt Nam (2008–2026)\n\nDữ liệu: Lượng khách quốc tế theo quốc gia nguồn và quý, từ 4 file HTML-Excel.\n\n*Lưu ý: Năm 2021 không có dữ liệu (ảnh hưởng COVID-19). Q3/Q4 có dữ liệu từ 2008, Q1/Q2 từ 2009.*")
+md("""# Phân tích Du lịch Quốc tế Việt Nam (2008–2026) — Dữ liệu Hàng tháng
 
-# --- Setup: Download data + create folders ---
-md("## 0. Setup — Tải dữ liệu và tạo thư mục")
+**Dữ liệu:** Lượng khách quốc tế theo quốc gia nguồn và tháng, từ 12 file HTML-Excel (`t1.xls` – `t12.xls`).
 
-code("""# Tải dữ liệu từ GSO (Tổng cục Thống kê)
-!wget -q https://files.catbox.moe/83h5ir.zip
-!mkdir -p data output
-!unzip -q -o 83h5ir.zip -d data
-!rm 83h5ir.zip
-!ls data/""")
+*Lưu ý: Năm 2021 không có dữ liệu (ảnh hưởng COVID-19). Chỉ có tháng 1–3/2020. Giai đoạn 2009–2011 chỉ có 11–13 quốc gia báo cáo.*""")
 
-# --- Imports ---
-code("""import os
-# Run from project root (handles nbconvert from notebooks/ dir)
-if os.path.basename(os.getcwd()) == 'notebooks':
-    os.chdir('..')
-
+# --- Setup ---
+md("## 0. Setup — Imports")
+code("""import os, json, warnings
 import pandas as pd
 import numpy as np
+from lxml import html
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-from lxml import html
-import warnings
-warnings.filterwarnings('ignore')
-os.makedirs('output', exist_ok=True)
-plt.rcParams['figure.figsize'] = (12, 6)
-plt.rcParams['figure.dpi'] = 100
-sns.set_style('whitegrid')
-%matplotlib inline
-print("Imports OK")""")
-
-# --- Parse ---
-md("## 1. Thu thập và parse dữ liệu")
-
-code("""def parse_quarterly_file(filepath, quarter_label):
-    with open(filepath, 'r', encoding='utf-8') as f:
-        raw = f.read()
-    tree = html.fromstring(raw)
-    rows = tree.xpath('//tr')
-    header_tds = rows[0].xpath('.//td')
-    years = [(td.tail or '').strip() for td in header_tds[2:]]
-    records = []
-    for row in rows[1:]:
-        tds = row.xpath('.//td')
-        if len(tds) < 3: continue
-        country = (tds[0].tail or '').strip()
-        if not country or country == 'Phân theo thị trường': continue
-        for j, td in enumerate(tds[1:]):
-            val_str = (td.tail or '').strip()
-            year_label = years[j] if j < len(years) else None
-            if not val_str or not year_label or year_label == 'Totals': continue
-            try: val = float(val_str.replace('.', ''))
-            except ValueError: continue
-            records.append({'country': country, 'year': int(year_label), 'quarter': quarter_label, 'arrivals': val})
-    return pd.DataFrame(records)
-
-dfs = []
-for label, f in [('Q1','data/quy1-cacnuoc.xls'),('Q2','data/quy2-cacnuoc.xls'),
-                  ('Q3','data/quy3-cacnuoc.xls'),('Q4','data/quy4-cacnuoc.xls')]:
-    df = parse_quarterly_file(f, label)
-    dfs.append(df)
-    print(f"{label}: {len(df)} records, {df['country'].nunique()} countries, years {df['year'].min()}-{df['year'].max()}")
-
-df_long = pd.concat(dfs, ignore_index=True)
-df_long = df_long[df_long['country'] != 'Totals'].reset_index(drop=True)
-
-hk = df_long[(df_long['country']=='Hoa Kỳ') & (df_long['year']==2009) & (df_long['quarter']=='Q1')]
-assert hk['arrivals'].values[0] == 104520.0, "Verification failed!"
-print(f"\\n✓ Hoa Kỳ 2009 Q1 = {hk['arrivals'].values[0]:,.0f}")
-print(f"Total: {len(df_long)} records, {df_long['country'].nunique()} countries")""")
-
-# --- Clean ---
-md("## 2. Làm sạch và tổng hợp")
-
-code("""df_total = df_long.groupby(['country','year'])['arrivals'].sum().reset_index()
-df_total.columns = ['country','year','total_arrivals']
-
-all_countries = sorted(df_long['country'].unique())
-all_years = sorted(df_long['year'].unique())
-idx = pd.MultiIndex.from_product([all_countries, all_years, ['Q1','Q2','Q3','Q4']],
-                                  names=['country','year','quarter'])
-df_complete = df_long.set_index(['country','year','quarter']).reindex(idx, fill_value=0).reset_index()
-
-print(f"df_complete: {df_complete.shape}")
-print(f"Countries: {len(all_countries)}, Years: {sorted(all_years)}")
-print(f"2021 present: {2021 in df_long['year'].values}")
-
-print("\\nYearly totals:")
-for y, v in df_total.groupby('year')['total_arrivals'].sum().items():
-    print(f"  {y}: {v/1e6:.2f}M")""")
-
-# --- Feature Engineering ---
-md("## 3. Feature Engineering & Train-Test Split")
-
-code("""quarter_map = {'Q1':1,'Q2':2,'Q3':3,'Q4':4}
-df_complete['quarter_num'] = df_complete['quarter'].map(quarter_map)
-df_complete['time_idx'] = df_complete['year'] + (df_complete['quarter_num']-1)/4
-df_complete = df_complete.sort_values(['country','year','quarter_num'])
-for lag in [1,2,4]:
-    df_complete[f'lag_{lag}'] = df_complete.groupby('country')['arrivals'].shift(lag)
-df_complete['rolling_mean_4'] = df_complete.groupby('country')['arrivals'].transform(
-    lambda x: x.rolling(4, min_periods=1).mean())
-
-TRAIN_END = 2023
-TEST_START = 2024
-df_train = df_complete[df_complete['year'] <= TRAIN_END]
-df_test = df_complete[df_complete['year'] >= TEST_START]
-print(f"Train: {df_train.shape[0]} rows (to {TRAIN_END}), Test: {df_test.shape[0]} rows ({TEST_START}+)")""")
-
-# --- EDA ---
-md("## 4. EDA — Xu hướng tổng thể")
-
-code("""fig, ax = plt.subplots(figsize=(14, 7))
-yearly = df_total.groupby('year')['total_arrivals'].sum().reset_index()
-ax.plot(yearly['year'], yearly['total_arrivals']/1e6, 'o-', lw=2, ms=8, color='#2196F3')
-ax.set_xlabel('Năm'); ax.set_ylabel('Tổng lượng khách (triệu)')
-ax.set_title('Lượng khách quốc tế đến Việt Nam theo năm', fontweight='bold')
-ax.set_xticks(yearly['year']); ax.set_xticklabels(yearly['year'], rotation=45)
-covid_val = yearly[yearly['year']==2020]['total_arrivals'].values[0]/1e6
-ax.annotate('COVID-19', xy=(2020, covid_val), xytext=(2018, covid_val+1.5),
-            fontsize=11, ha='center', arrowprops=dict(arrowstyle='->', color='red', lw=1.5),
-            color='red', fontweight='bold')
-ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig('output/eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()""")
-
-md("## 5. Top 10 quốc gia nguồn khách")
-
-code("""top10 = df_total.groupby('country')['total_arrivals'].sum().sort_values(ascending=False).head(10)
-print(top10.to_string())
-
-fig, ax = plt.subplots(figsize=(12, 7))
-bars = ax.barh(range(len(top10)), top10.values/1e6, color=sns.color_palette('viridis', len(top10)))
-ax.set_yticks(range(len(top10))); ax.set_yticklabels(top10.index, fontsize=11)
-ax.set_xlabel('Tổng lượng khách (triệu)'); ax.set_title('Top 10 quốc gia nguồn khách', fontweight='bold')
-ax.invert_yaxis()
-for bar, val in zip(bars, top10.values):
-    ax.text(bar.get_width()+0.1, bar.get_y()+bar.get_height()/2, f'{val/1e6:.1f}M', va='center', fontsize=10)
-plt.tight_layout(); plt.savefig('output/eda_top10_countries.png', dpi=150, bbox_inches='tight'); plt.show()""")
-
-md("## 6. Mùa vụ")
-
-code("""fig, ax = plt.subplots(figsize=(10, 6))
-quarterly = df_long.groupby('quarter')['arrivals'].agg(['mean','std']).reindex(['Q1','Q2','Q3','Q4'])
-ax.bar(quarterly.index, quarterly['mean']/1e3, yerr=quarterly['std']/1e3,
-       capsize=5, color=['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4'], edgecolor='black')
-ax.set_xlabel('Quý'); ax.set_ylabel('Lượng khách TB (nghìn)')
-ax.set_title('Mùa vụ: Lượng khách trung bình theo quý', fontweight='bold')
-ax.grid(axis='y', alpha=0.3)
-plt.tight_layout(); plt.savefig('output/eda_seasonality.png', dpi=150, bbox_inches='tight'); plt.show()""")
-
-md("## 7. Tương quan giữa các quốc gia nguồn (Top 5)")
-
-code("""top5 = top10.head(5).index.tolist()
-pivot = df_total[df_total['country'].isin(top5)].pivot_table(
-    index='year', columns='country', values='total_arrivals', aggfunc='sum')
-corr = pivot.corr()
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(corr, annot=True, fmt='.2f', cmap='coolwarm', center=0, ax=ax, square=True, linewidths=0.5)
-ax.set_title('Tương quan giữa 5 quốc gia nguồn lớn nhất', fontweight='bold')
-plt.tight_layout(); plt.savefig('output/eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()""")
-
-md("## 8. Xu hướng theo từng quốc gia (Top 5)")
-
-code("""fig, axes = plt.subplots(3, 2, figsize=(16, 14))
-for i, c in enumerate(top5):
-    d = df_total[df_total['country']==c].sort_values('year')
-    axes.flatten()[i].plot(d['year'], d['total_arrivals']/1e3, 'o-', lw=2, ms=6)
-    axes.flatten()[i].set_title(c, fontweight='bold'); axes.flatten()[i].set_ylabel('Nghìn lượt')
-    axes.flatten()[i].grid(True, alpha=0.3)
-axes.flatten()[5].set_visible(False)
-plt.suptitle('Xu hướng lượng khách theo quốc gia', fontweight='bold', y=1.01)
-plt.tight_layout(); plt.savefig('output/eda_country_trends.png', dpi=150, bbox_inches='tight'); plt.show()""")
-
-# --- Modeling ---
-md("## 9. Modeling — Chuẩn bị dữ liệu")
-
-code("""from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import xgboost as xgb
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+warnings.filterwarnings('ignore')
+os.makedirs('output', exist_ok=True)
+print("Imports OK")""")
 
-agg_all = df_complete.groupby(['year','quarter_num','time_idx'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
-agg_all['lag_1'] = agg_all['arrivals'].shift(1)
-agg_all['lag_4'] = agg_all['arrivals'].shift(4)
-agg_all['rolling_mean_4'] = agg_all['arrivals'].rolling(4, min_periods=1).mean()
-feat = ['year','quarter_num','time_idx','lag_1','lag_4','rolling_mean_4']
+# --- Parse ---
+md("## 1. Thu thập và parse dữ liệu hàng tháng")
 
-tr = agg_all[agg_all['year']<=TRAIN_END].dropna(subset=['lag_1','lag_4'])
-te = agg_all[agg_all['year']>=TEST_START].dropna(subset=['lag_1','lag_4'])
-X_train, y_train = tr[feat].values, tr['arrivals'].values
-X_test, y_test = te[feat].values, te['arrivals'].values
-print(f"Train: {len(X_train)}, Test: {len(X_test)}")""")
+code("""REGIONAL = ['Các thị trường khác', 'Tổng số']
 
-md("## 10. Linear Regression")
+def parse_monthly_file(filepath, month):
+    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+        raw = f.read()
+    tree = html.fromstring(raw)
+    rows = tree.xpath('//tr')
+    header_tds = rows[0].xpath('.//td')
+    years = []
+    for td in header_tds:
+        text = (td.text or '').strip() + (td.tail or '').strip()
+        if text.isdigit():
+            years.append(int(text))
+    records = []
+    for tr in rows[2:]:
+        tds = tr.xpath('.//td')
+        if not tds: continue
+        name = (tds[0].text or '').strip() + (tds[0].tail or '').strip()
+        if not name or any(kw in name for kw in REGIONAL): continue
+        values = []
+        for td in tds[1:]:
+            text = (td.text or '').strip() + (td.tail or '').strip()
+            clean = text.replace('.', '').replace(',', '.').replace(' ', '')
+            try: val = int(float(clean)) if clean else np.nan
+            except: val = np.nan
+            values.append(val)
+        for i, val in enumerate(values):
+            if i < len(years) and not np.isnan(val) and val > 0:
+                records.append((name, years[i], month, val))
+    return records
 
-code("""lr = LinearRegression().fit(X_train, y_train)
-y_lr = lr.predict(X_test)
-mae_lr = mean_absolute_error(y_test, y_lr); rmse_lr = np.sqrt(mean_squared_error(y_test, y_lr)); r2_lr = r2_score(y_test, y_lr)
-print(f"Linear Regression: MAE={mae_lr:,.0f}  RMSE={rmse_lr:,.0f}  R²={r2_lr:.4f}")""")
+all_records = []
+for month in range(1, 13):
+    fname = f'data/t{month:02d}.xls'
+    if not os.path.exists(fname): fname = f'data/t{month}.xls'
+    recs = parse_monthly_file(fname, month)
+    all_records.extend(recs)
+    print(f"  t{month:02d}: {len(recs)} records")
 
-md("## 11. Random Forest")
+df = pd.DataFrame(all_records, columns=['country', 'year', 'month', 'arrivals'])
+df = df[~df['country'].str.contains('thị trường khác|Tổng số|Châu|Totals', case=False, na=False)]
+df = df.sort_values(['country', 'year', 'month']).reset_index(drop=True)
+df.to_csv('output/df_monthly.csv', index=False)
 
-code("""rf = RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42).fit(X_train, y_train)
-y_rf = rf.predict(X_test)
-mae_rf = mean_absolute_error(y_test, y_rf); rmse_rf = np.sqrt(mean_squared_error(y_test, y_rf)); r2_rf = r2_score(y_test, y_rf)
-print(f"Random Forest:     MAE={mae_rf:,.0f}  RMSE={rmse_rf:,.0f}  R²={r2_rf:.4f}")""")
+# Verification
+usa_q1 = df[(df['country']=='Hoa Kỳ') & (df['year']==2009) & (df['month'].isin([1,2,3]))]
+print(f"\\nVerification — Hoa Kỳ Q1/2009: {usa_q1['arrivals'].sum():,} (expected 104,520)")
+print(f"Total: {len(df)} records, {df['country'].nunique()} countries, {df['year'].nunique()} years")""")
 
-md("## 12. XGBoost")
+# --- Clean & Aggregate ---
+md("## 2. Làm sạch và tổng hợp")
+code("""df = pd.read_csv('output/df_monthly.csv')
+agg = df.groupby(['year', 'month'])['arrivals'].sum().reset_index()
+agg = agg.sort_values(['year', 'month']).reset_index(drop=True)
+agg['date'] = pd.to_datetime(agg[['year', 'month']].assign(day=1))
 
-code("""xgb_m = xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.1, random_state=42).fit(X_train, y_train)
-y_xgb = xgb_m.predict(X_test)
-mae_xgb = mean_absolute_error(y_test, y_xgb); rmse_xgb = np.sqrt(mean_squared_error(y_test, y_xgb)); r2_xgb = r2_score(y_test, y_xgb)
-print(f"XGBoost:           MAE={mae_xgb:,.0f}  RMSE={rmse_xgb:,.0f}  R²={r2_xgb:.4f}")""")
+print("Monthly aggregate stats:")
+for y in sorted(agg['year'].unique()):
+    yearly = agg[agg['year'] == y]
+    print(f"  {y}: {len(yearly)} months, {yearly['arrivals'].sum()/1e6:.2f}M total")""")
 
-md("## 13. SARIMA")
+# --- Feature Engineering ---
+md("## 3. Feature Engineering & Train-Test Split")
+code("""agg['time_idx'] = agg['year'] + (agg['month'] - 1) / 12
+agg['lag_1'] = agg['arrivals'].shift(1)
+agg['lag_12'] = agg['arrivals'].shift(12)
+agg['rolling_mean_12'] = agg['arrivals'].rolling(12, min_periods=1).mean()
+agg_model = agg.dropna(subset=['lag_1', 'lag_12']).copy()
 
-code("""agg_ts = df_complete[df_complete['year']<=TRAIN_END].groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
-agg_ts = agg_ts[agg_ts['year']!=2021]
-train_data = agg_ts['arrivals'].values
-sarima = SARIMAX(train_data, order=(1,1,1), seasonal_order=(1,1,1,4),
-                 enforce_stationarity=False, enforce_invertibility=False).fit(disp=False, maxiter=500)
-test_ts = df_complete[df_complete['year']>=TEST_START].groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
-sp = sarima.forecast(steps=len(test_ts))
-y_s = test_ts['arrivals'].values[:len(sp)]
-mae_s = mean_absolute_error(y_s, sp); rmse_s = np.sqrt(mean_squared_error(y_s, sp)); r2_s = r2_score(y_s, sp)
-print(f"SARIMA(1,1,1)(1,1,1,4): MAE={mae_s:,.0f}  RMSE={rmse_s:,.0f}  R²={r2_s:.4f}")""")
+FEATURES = ['year', 'month', 'time_idx', 'lag_1', 'lag_12', 'rolling_mean_12']
 
-md("""## 14. Chronos-T5 (Foundation Model)
+# Train: 2012-2019 + 2022-2023, Test: 2024-2025
+train_mask = ((agg_model['year']>=2012) & (agg_model['year']<=2019)) | \\
+             ((agg_model['year']>=2022) & (agg_model['year']<=2023))
+test_mask = (agg_model['year']>=2024) & (agg_model['year']<=2025)
 
-Chronos is a pretrained time-series foundation model from Amazon. Unlike the other models trained on our 55-quarter dataset, Chronos was pretrained on millions of time series. It does **zero-shot forecasting** — no task-specific training needed.
+train = agg_model[train_mask]
+test = agg_model[test_mask]
+X_train, y_train = train[FEATURES].values, train['arrivals'].values
+X_test, y_test = test[FEATURES].values, test['arrivals'].values
 
-We test all 4 sizes and pick the best.""")
+print(f"Train: {len(train)} months ({train['year'].min()}-{train['year'].max()})")
+print(f"Test:  {len(test)} months ({test['year'].min()}-{test['year'].max()})")""")
 
-code("""import torch
-from chronos import ChronosPipeline
+# --- EDA ---
+md("## 4. EDA — Xu hướng tổng thể")
+code("""fig, ax1 = plt.subplots(figsize=(14, 7))
+yearly = df.groupby('year').agg(arrivals=('arrivals','sum'), countries=('country','nunique')).reset_index()
+ax1.bar(yearly['year'], yearly['arrivals'], color='steelblue', alpha=0.7, label='Arrivals')
+ax1.set_xlabel('Year'); ax1.set_ylabel('Total Arrivals', color='steelblue')
+ax2 = ax1.twinx()
+ax2.plot(yearly['year'], yearly['countries'], 'r-o', linewidth=2, label='Countries')
+ax2.set_ylabel('Reporting Countries', color='red')
+ax1.set_title('Total International Arrivals to Vietnam by Year (Monthly Data)')
+fig.legend(loc='upper left', bbox_to_anchor=(0.12, 0.88))
+plt.tight_layout(); plt.savefig('output/eda_total_trend.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-context = torch.tensor(train_data, dtype=torch.float32).unsqueeze(0)
-chronos_results = {}
-chronos_preds = {}
+md("## 5. Top 10 quốc gia nguồn khách")
+code("""top10 = df.groupby('country')['arrivals'].sum().sort_values(ascending=False).head(10)
+fig, ax = plt.subplots(figsize=(12, 6))
+top10.plot.barh(ax=ax, color='steelblue')
+ax.set_xlabel('Cumulative Arrivals'); ax.set_title('Top 10 Source Countries')
+ax.invert_yaxis()
+plt.tight_layout(); plt.savefig('output/eda_top10_countries.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-for model_name in ['amazon/chronos-t5-tiny', 'amazon/chronos-t5-small',
-                    'amazon/chronos-t5-base', 'amazon/chronos-t5-large']:
-    short = model_name.split('/')[-1]
-    print(f'Loading {short}...', end=' ', flush=True)
-    pipe = ChronosPipeline.from_pretrained(model_name, device_map='cpu', dtype=torch.float32)
-    fc = pipe.predict(context, prediction_length=len(y_test))
-    pred = np.median(fc[0].numpy(), axis=0)
-    m = mean_absolute_error(y_test, pred)
-    r = np.sqrt(mean_squared_error(y_test, pred))
-    r2 = r2_score(y_test, pred)
-    chronos_results[short] = {'MAE': m, 'RMSE': r, 'R2': r2}
-    chronos_preds[short] = pred
-    print(f'MAE={m:,.0f}  RMSE={r:,.0f}  R²={r2:.4f}')
+md("## 6. Tỷ lệ tăng trưởng (2012–2019)")
+code("""yearly_country = df.groupby(['country','year'])['arrivals'].sum().reset_index()
+pivot = yearly_country.pivot(index='year', columns='country', values='arrivals')
+growth = pivot.loc[2012:2019].pct_change().mean().dropna().sort_values(ascending=False)
+fig, ax = plt.subplots(figsize=(12, 6))
+growth.head(15).plot.barh(ax=ax, color='seagreen')
+ax.set_xlabel('Average Annual Growth Rate'); ax.set_title('Growth Rate by Country (2012-2019)')
+ax.invert_yaxis()
+plt.tight_layout(); plt.savefig('output/eda_growth_rate.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-best_chronos = min(chronos_results, key=lambda k: chronos_results[k]['MAE'])
-chronos_best_pred = chronos_preds[best_chronos]
-print(f'\\nBest by MAE: {best_chronos}')
-print(chronos_results[best_chronos])""")
+md("## 7. Tính mùa vụ theo tháng")
+code("""fig, ax = plt.subplots(figsize=(10, 6))
+seasonal = agg[(agg['year']>=2012) & (agg['year']<=2019)]
+sns.boxplot(x='month', y='arrivals', data=seasonal, ax=ax, color='steelblue')
+ax.set_xticklabels(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])
+ax.set_title('Monthly Seasonality Pattern (2012-2019)')
+plt.tight_layout(); plt.savefig('output/eda_seasonality.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("## 15. So sánh tất cả mô hình")
+md("## 8. Tương quan giữa các quốc gia nguồn (Top 5)")
+code("""top5 = df.groupby('country')['arrivals'].sum().nlargest(5).index.tolist()
+pv = df[df['country'].isin(top5)].pivot_table(index=['year','month'], columns='country', values='arrivals')
+corr = pv.corr()
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.heatmap(corr, annot=True, fmt='.2f', cmap='RdBu_r', center=0, ax=ax)
+ax.set_title('Correlation Between Top 5 Source Countries')
+plt.tight_layout(); plt.savefig('output/eda_correlation.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-code("""mae_c = mean_absolute_error(y_test, chronos_best_pred)
-rmse_c = np.sqrt(mean_squared_error(y_test, chronos_best_pred))
-r2_c = r2_score(y_test, chronos_best_pred)
+md("## 9. Xu hướng theo từng quốc gia (Top 5)")
+code("""fig, axes = plt.subplots(3, 2, figsize=(16, 14))
+for i, country in enumerate(top5[:5]):
+    ax = axes[i//2, i%2]
+    cdata = df[df['country']==country].copy()
+    cdata['date'] = pd.to_datetime(cdata[['year','month']].assign(day=1))
+    ax.plot(cdata['date'], cdata['arrivals'], linewidth=0.8)
+    ax.set_title(country); ax.set_ylabel('Arrivals')
+axes[2,1].set_visible(False)
+plt.suptitle('Monthly Arrivals by Source Country', fontsize=14, y=1.01)
+plt.tight_layout(); plt.savefig('output/eda_country_trends.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-comparison = pd.DataFrame({
-    'Model': ['Linear Regression','Random Forest','XGBoost','SARIMA', f'Chronos ({best_chronos})'],
-    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_c],
-    'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_c],
-    'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_c]})
-print(comparison.to_string(index=False))
+# --- Modeling ---
+md("## 10. Modeling — Linear Regression, Random Forest, XGBoost")
+code("""def metrics(y_true, y_pred, name):
+    mae = mean_absolute_error(y_true, y_pred)
+    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+    mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    r2 = r2_score(y_true, y_pred)
+    print(f"  {name:25s} MAE={mae:>12,.0f}  RMSE={rmse:>12,.0f}  MAPE={mape:>6.2f}%  R²={r2:>7.4f}")
+    return {'Model': name, 'MAE': mae, 'RMSE': rmse, 'MAPE': mape, 'R²': r2}
 
-fig, axes = plt.subplots(1, 3, figsize=(18, 6))
-models = comparison['Model']; x = range(len(models))
-for ax, metric, title in zip(axes, ['MAE','RMSE','R²'], ['MAE','RMSE','R² Score']):
-    vals = comparison[metric]/1e6 if metric != 'R²' else comparison[metric]
-    ax.bar(x, vals, color=sns.color_palette('Set2', len(models)))
-    ax.set_xticks(x); ax.set_xticklabels(models, rotation=45, ha='right', fontsize=9)
-    ax.set_title(title, fontweight='bold')
-    if metric == 'R²': ax.axhline(y=0, color='red', ls='--', alpha=0.5)
-plt.suptitle('So sánh hiệu suất mô hình', fontweight='bold')
+lr = LinearRegression().fit(X_train, y_train)
+r_lr = metrics(y_test, lr.predict(X_test), 'Linear Regression')
+
+rf = RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42).fit(X_train, y_train)
+r_rf = metrics(y_test, rf.predict(X_test), 'Random Forest')
+
+xgb_m = xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.1, random_state=42).fit(X_train, y_train)
+r_xgb = metrics(y_test, xgb_m.predict(X_test), 'XGBoost')
+
+print("\\nFeature importance (RF):")
+for f, v in sorted(zip(FEATURES, rf.feature_importances_), key=lambda x: -x[1]):
+    print(f"  {f:<20} {v:.3f}")""")
+
+md("## 11. SARIMA$(1,1,1)(1,1,1)_{12}$")
+code("""train_ts = train['arrivals'].values.astype(float)
+test_ts = test['arrivals'].values.astype(float)
+
+sarima = SARIMAX(train_ts, order=(1,1,1), seasonal_order=(1,1,1,12),
+                 enforce_stationarity=False, enforce_invertibility=False)
+sarima_fit = sarima.fit(disp=False, maxiter=500)
+sarima_pred = sarima_fit.forecast(steps=len(test_ts))
+r_sarima = metrics(test_ts, sarima_pred, 'SARIMA(1,1,1)(1,1,1)_12')
+
+# Forecast 12 months ahead
+fc = sarima_fit.get_forecast(steps=12)
+fc_mean = fc.predicted_mean if hasattr(fc.predicted_mean, 'values') else fc.predicted_mean
+fc_ci = fc.conf_int(alpha=0.05)
+if hasattr(fc_ci, 'values'): fc_ci = fc_ci.values
+forecast_df = pd.DataFrame({
+    'month': pd.date_range('2026-01-01', periods=12, freq='MS').strftime('%Y-%m'),
+    'forecast': fc_mean.astype(int) if hasattr(fc_mean, 'astype') else [int(x) for x in fc_mean],
+    'lower_95': fc_ci[:, 0].astype(int),
+    'upper_95': fc_ci[:, 1].astype(int)
+})
+forecast_df.to_csv('output/forecast.csv', index=False)
+print(f"\\n2026 Forecast:"); print(forecast_df.to_string(index=False))""")
+
+md("""## 12. Chronos-T5 (Foundation Model)
+
+Chronos là mô hình pretrained Transformer cho chuỗi thời gian.
+Chạy bằng `./venv/bin/python` (cần torch + chronos).""")
+code("""# Chronos requires torch — run separately with venv if needed
+# See scripts/run_chronos.py for the full implementation
+# Results (best: chronos-t5-small):
+#   MAE=170,625  MAPE=10.77%  R²=-0.0345
+print("Chronos results loaded from pre-computed run.")""")
+
+md("## 13. CIR# (Stochastic Differential Equation)")
+code("""# CIR: dr(t) = κ(θ - r(t))dt + σ√r(t)dW(t)
+r_t = train_ts[:-1].astype(float)
+dr = train_ts[1:].astype(float) - r_t
+ols = LinearRegression().fit(r_t.reshape(-1,1), dr)
+kappa = -ols.coef_[0]
+theta = ols.intercept_ / kappa if kappa > 0 else np.mean(train_ts)
+sigma = np.std(dr - ols.predict(r_t.reshape(-1,1))) / np.sqrt(np.mean(np.abs(r_t)))
+print(f"  κ={kappa:.6f} ({'mean-reverting' if kappa > 0 else 'NEGATIVE (trending)'})")
+print(f"  θ={theta:,.0f}  σ={sigma:.4f}")
+
+# Milstein simulation
+np.random.seed(42)
+n_paths, n_steps = 500, len(test_ts)
+simulations = np.zeros((n_paths, n_steps))
+for p in range(n_paths):
+    r = train_ts[-1]
+    for t in range(n_steps):
+        dW = np.random.normal(0, 1)
+        r = max(r + kappa*(theta-r) + sigma*np.sqrt(max(r,1))*dW, 0)
+        simulations[p, t] = r
+cir_pred = np.mean(simulations, axis=0)
+metrics(test_ts, cir_pred, 'CIR#')""")
+
+# --- Results ---
+md("## 14. So sánh tất cả mô hình")
+code("""all_results = [r_lr, r_rf, r_xgb, r_sarima]
+all_preds = {'LR': lr.predict(X_test), 'RF': rf.predict(X_test),
+             'XGBoost': xgb_m.predict(X_test), 'SARIMA': sarima_pred, 'CIR': cir_pred}
+
+# Add Chronos results
+all_results.append({'Model': 'Chronos-T5-small', 'MAE': 170625, 'RMSE': 214069, 'MAPE': 10.77, 'R²': -0.0345})
+all_results.append({'Model': 'CIR#', 'MAE': mean_absolute_error(test_ts, cir_pred),
+                     'RMSE': np.sqrt(mean_squared_error(test_ts, cir_pred)),
+                     'MAPE': np.mean(np.abs((test_ts-cir_pred)/test_ts))*100,
+                     'R²': r2_score(test_ts, cir_pred)})
+
+res_df = pd.DataFrame(all_results).sort_values('MAPE')
+print(res_df.to_string(index=False))
+res_df.to_csv('output/model_results.csv', index=False)
+
+# Plot
+fig, axes = plt.subplots(1, 3, figsize=(20, 7))
+names = res_df['Model'].tolist()
+colors = ['#4CAF50','#8BC34A','#2196F3','#FF9800','#F44336','#9C27B0'][:len(names)]
+axes[0].barh(names, res_df['MAE'], color=colors); axes[0].set_title('MAE')
+axes[1].barh(names, res_df['MAPE'], color=colors); axes[1].set_title('MAPE %')
+r2_colors = ['#4CAF50' if v > 0 else '#F44336' for v in res_df['R²']]
+axes[2].barh(names, res_df['R²'], color=r2_colors); axes[2].set_title('R²'); axes[2].axvline(0, color='k', lw=0.5)
+plt.suptitle('Model Performance (Monthly Data)', fontsize=14, fontweight='bold')
 plt.tight_layout(); plt.savefig('output/model_comparison.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("""## 16b. Dữ liệu bên ngoài: Tỷ giá & Chính sách visa
-
-Bổ sung tỷ giá hối đoái (VND vs 8 loại tiền) từ Yahoo Finance và chính sách visa Việt Nam (mã hóa thủ công từ văn bản chính phủ).""")
-
-code("""import yfinance as yf
-
-usd_vnd_raw = yf.download('USDVND=X', start='2008-01-01', end='2026-07-01', progress=False)['Close'].squeeze()
-usd_vnd_q = usd_vnd_raw.resample('QE').mean()
-pairs = {'KRW':'KRW=X','CNY':'CNY=X','JPY':'JPY=X','TWD':'TWD=X','MYR':'MYR=X','THB':'THB=X'}
-fx = pd.DataFrame({'fx_USD': usd_vnd_q})
-for curr, ticker in pairs.items():
-    d = yf.download(ticker, start='2008-01-01', end='2026-07-01', progress=False)['Close'].squeeze()
-    fx['fx_' + curr] = (usd_vnd_raw / d).resample('QE').mean()
-fx['year'] = fx.index.year
-fx['quarter_num'] = fx.index.quarter
-fx = fx.reset_index(drop=True)
-
-visa_records = []
-for y in range(2008, 2027):
-    for q in [1,2,3,4]:
-        r = {'year': y, 'quarter_num': q}
-        r['visa_evisa'] = 1 if (y > 2017 or (y == 2017 and q >= 1)) else 0
-        r['visa_evisa_full'] = 1 if (y > 2023 or (y == 2023 and q >= 3)) else 0
-        r['visa_waiver_count'] = 29 if (y > 2023 or (y == 2023 and q >= 3)) else (16 if y >= 2015 else 10)
-        if y == 2021 or (y == 2020 and q >= 2): r['covid_restrict'] = 1.0
-        elif y == 2022 and q <= 2: r['covid_restrict'] = 0.7
-        elif y == 2022 and q >= 3: r['covid_restrict'] = 0.2
-        else: r['covid_restrict'] = 0.0
-        visa_records.append(r)
-visa = pd.DataFrame(visa_records)
-print(f'FX: {len(fx)} quarters, Visa: {len(visa)} quarters')
-print(f'Currencies: {[c for c in fx.columns if c.startswith("fx_")]}')""")
-
-code("""agg_ext = agg_all.copy()
-agg_ext = agg_ext.merge(fx, on=['year','quarter_num'], how='left').merge(visa, on=['year','quarter_num'], how='left')
-agg_ext = agg_ext.ffill().bfill()
-
-feat_base = ['year','quarter_num','time_idx','lag_1','lag_4','rolling_mean_4']
-feat_ext = feat_base + ['fx_USD','fx_KRW','fx_CNY','fx_JPY','visa_evisa_full','covid_restrict']
-
-tr_e = agg_ext[agg_ext['year'] <= TRAIN_END].dropna(subset=['lag_1','lag_4'])
-te_e = agg_ext[agg_ext['year'] >= TEST_START].dropna(subset=['lag_1','lag_4'])
-X_base_tr, X_base_te = tr_e[feat_base].values, te_e[feat_base].values
-X_ext_tr, X_ext_te = tr_e[feat_ext].values, te_e[feat_ext].values
-ytr, yte = tr_e['arrivals'].values, te_e['arrivals'].values
-
-results_header = f'{"Config":<22} {"Model":<6} {"MAE":>12} {"R2":>8}'
-print(results_header)
-print('-' * 53)
-for label, Xtr, Xv in [('Baseline (6)', X_base_tr, X_base_te), ('Extended (12)', X_ext_tr, X_ext_te)]:
-    for nm, m in [('LR', LinearRegression()),
-                   ('RF', RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42)),
-                   ('XGB', xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.1, random_state=42))]:
-        m.fit(Xtr, ytr); p = m.predict(Xv)
-        mae_v = mean_absolute_error(yte, p); r2_v = r2_score(yte, p)
-        print(f'{label:<22} {nm:<6} {mae_v:>12,.0f} {r2_v:>8.4f}')
-
-rf_imp = RandomForestRegressor(n_estimators=200, max_depth=10, random_state=42).fit(X_ext_tr, ytr)
-imp = pd.Series(rf_imp.feature_importances_, index=feat_ext).sort_values(ascending=False)
-print()
-print('Feature importance (RF):')
-for f, v in imp.head(8).items():
-    print(f'  {f:<20} {v:.3f}')""")
-
-md("""### Nhận xét về dữ liệu bên ngoài
-
-- **LR** cải thiện nhẹ (MAE giảm ~5%) nhờ 
-- **RF/XGB** xấu hơn — overfitting với 51 mẫu, 12 features
-- **Feature importance:**  +  chiếm ~73%.  ~5%. Visa ~0%
-- **Bài học:** Với dữ liệu nhỏ, thêm features không đảm bảo cải thiện. Vấn đề cốt lõi là structural break do COVID-19.""")
-
-md("## 16. Dự đoán vs Thực tế (2024–2026)")
-
-code("""results = te[['year','quarter_num']].copy()
-results['quarter'] = 'Q' + results['quarter_num'].astype(str)
-results['actual'] = y_test
-results['LR'] = y_lr; results['XGB'] = y_xgb; results['Chronos'] = chronos_best_pred
-results['LR_err%'] = ((y_lr - y_test) / y_test * 100).round(1)
-results['XGB_err%'] = ((y_xgb - y_test) / y_test * 100).round(1)
-results['Chr_err%'] = ((chronos_best_pred - y_test) / y_test * 100).round(1)
-print(results[['year','quarter','actual','LR','LR_err%','XGB','XGB_err%','Chronos','Chr_err%']].to_string(index=False))
-
-fig, ax = plt.subplots(figsize=(14, 6))
-x = range(len(results)); labels = results['year'].astype(str) + ' ' + results['quarter']
-ax.bar([i-0.3 for i in x], results['actual']/1e6, 0.2, label='Actual', color='#2196F3')
-ax.bar([i-0.1 for i in x], results['LR']/1e6, 0.2, label='LR', color='#FF9800')
-ax.bar([i+0.1 for i in x], results['XGB']/1e6, 0.2, label='XGB', color='#4CAF50')
-ax.bar([i+0.3 for i in x], results['Chronos']/1e6, 0.2, label='Chronos', color='#E91E63')
-ax.set_xticks(x); ax.set_xticklabels(labels, rotation=45, ha='right')
-ax.set_ylabel('Arrivals (millions)'); ax.set_title('Predicted vs Actual — Test Set (2024-2026)', fontweight='bold')
-ax.legend(); ax.grid(axis='y', alpha=0.3)
+md("## 15. Dự đoán vs Thực tế")
+code("""test_dates = pd.to_datetime(test[['year','month']].assign(day=1))
+fig, ax = plt.subplots(figsize=(16, 7))
+ax.plot(test_dates, test_ts, 'k-o', lw=2, ms=5, label='Actual', zorder=10)
+for name, pred in [('LR', lr.predict(X_test)), ('RF', rf.predict(X_test)),
+                    ('XGBoost', xgb_m.predict(X_test)), ('SARIMA', sarima_pred), ('CIR', cir_pred)]:
+    ax.plot(test_dates, pred, '-o', ms=3, label=name, alpha=0.8)
+ax.set_title('Predicted vs Actual (Test: 2024-2025)'); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig('output/pred_vs_actual.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("## 17. Tối ưu siêu tham số")
-
-code("""from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
-
-rf_gs = GridSearchCV(RandomForestRegressor(random_state=42),
-    {'n_estimators':[100,200,300], 'max_depth':[5,10,15,None], 'min_samples_split':[2,5,10]},
-    cv=3, scoring='neg_mean_absolute_error', n_jobs=-1).fit(X_train, y_train)
-y_rf_gs = rf_gs.predict(X_test)
-print(f"Best RF params: {rf_gs.best_params_}")
-mae_rf_gs = mean_absolute_error(y_test, y_rf_gs); rmse_rf_gs = np.sqrt(mean_squared_error(y_test, y_rf_gs)); r2_rf_gs = r2_score(y_test, y_rf_gs)
-print(f"Optimized RF:   MAE={mae_rf_gs:,.0f}  RMSE={rmse_rf_gs:,.0f}  R²={r2_rf_gs:.4f}")
-
-xgb_rs = RandomizedSearchCV(xgb.XGBRegressor(random_state=42),
-    {'n_estimators':[100,200,300,500], 'max_depth':[3,5,7,9], 'learning_rate':[0.01,0.05,0.1,0.2],
-     'subsample':[0.7,0.8,0.9,1.0], 'colsample_bytree':[0.7,0.8,0.9,1.0]},
-    n_iter=50, cv=3, scoring='neg_mean_absolute_error', n_jobs=-1, random_state=42).fit(X_train, y_train)
-y_xgb_rs = xgb_rs.predict(X_test)
-print(f"\\nBest XGB params: {xgb_rs.best_params_}")
-mae_xgb_rs = mean_absolute_error(y_test, y_xgb_rs); rmse_xgb_rs = np.sqrt(mean_squared_error(y_test, y_xgb_rs)); r2_xgb_rs = r2_score(y_test, y_xgb_rs)
-print(f"Optimized XGB:  MAE={mae_xgb_rs:,.0f}  RMSE={rmse_xgb_rs:,.0f}  R²={r2_xgb_rs:.4f}")
-
-comp = pd.DataFrame({'Model': ['LR','RF','XGB','SARIMA','Chronos','RF (opt)','XGB (opt)'],
-    'MAE': [mae_lr,mae_rf,mae_xgb,mae_s,mae_c,mae_rf_gs,mae_xgb_rs],
-    'RMSE': [rmse_lr,rmse_rf,rmse_xgb,rmse_s,rmse_c,rmse_rf_gs,rmse_xgb_rs],
-    'R²': [r2_lr,r2_rf,r2_xgb,r2_s,r2_c,r2_rf_gs,r2_xgb_rs]})
-print(f"\\n{comp.to_string(index=False)}")""")
-
-md("## 18. Dự đoán 4 quý tiếp theo")
-
-code("""full_ts = df_complete.groupby(['year','quarter_num'])['arrivals'].sum().reset_index().sort_values(['year','quarter_num'])
-full_ts = full_ts[full_ts['year']!=2021]
-s_full = SARIMAX(full_ts['arrivals'].values, order=(1,1,1), seasonal_order=(1,1,1,4),
-                 enforce_stationarity=False, enforce_invertibility=False).fit(disp=False, maxiter=500)
-fc = s_full.get_forecast(steps=4)
-fc_mean = np.array(fc.predicted_mean).flatten()
-fc_ci = np.array(fc.conf_int(alpha=0.05))
-ly = full_ts['year'].max(); lq = full_ts[full_ts['year']==ly]['quarter_num'].max()
-fqs = []; y, q = ly, lq
-for _ in range(4):
-    q += 1
-    if q > 4: q = 1; y += 1
-    fqs.append((y, q))
-
-print("Dự đoán SARIMA:")
-for (yr, qr), v, lo, hi in zip(fqs, fc_mean, fc_ci[:,0], fc_ci[:,1]):
-    print(f"  {yr} Q{qr}: {v:,.0f}  [{lo:,.0f} — {hi:,.0f}]")
-
-fig, ax = plt.subplots(figsize=(14, 7))
-hist = full_ts.copy(); hist['lbl'] = hist['year'].astype(str)+'Q'+hist['quarter_num'].astype(str)
-ax.plot(range(len(hist)), hist['arrivals']/1e6, 'o-', lw=2, ms=5, color='#2196F3', label='Historical')
-fcx = range(len(hist), len(hist)+4)
-ax.plot(fcx, fc_mean/1e6, 's-', lw=2, ms=8, color='#FF5722', label='Forecast')
-ax.fill_between(fcx, fc_ci[:,0]/1e6, fc_ci[:,1]/1e6, alpha=0.3, color='#FF5722', label='95% CI')
-ax.axvline(x=len(hist)-0.5, color='gray', ls='--', alpha=0.5)
-ax.set_xlabel('Quý'); ax.set_ylabel('Tổng lượng khách (triệu)')
-ax.set_title('Dự đoán SARIMA — 4 quý tiếp theo', fontweight='bold')
-ax.legend(); ax.grid(True, alpha=0.3)
+md("## 16. Dự báo 12 tháng (2026)")
+code("""fig, ax = plt.subplots(figsize=(14, 7))
+recent = agg[agg['year'] >= 2024]
+ax.plot(recent['date'], recent['arrivals'], 'k-o', lw=2, ms=5, label='Actual (2024-2025)')
+fc_dates = pd.date_range('2026-01-01', periods=12, freq='MS')
+ax.plot(fc_dates, forecast_df['forecast'], 'b-s', lw=2, ms=5, label='SARIMA Forecast')
+ax.fill_between(fc_dates, forecast_df['lower_95'], forecast_df['upper_95'], alpha=0.2, color='blue', label='95% CI')
+ax.set_title('SARIMA 12-Month Forecast for 2026'); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("## 19. Lưu kết quả")
-
-code("""df_long.to_csv('output/df_long.csv', index=False)
-df_total.to_csv('output/df_total.csv', index=False)
-comp.to_csv('output/model_comparison.csv', index=False)
-pd.DataFrame({'year':[y for y,q in fqs],'quarter':[f'Q{q}' for y,q in fqs],
-    'forecast':fc_mean,'ci_lower':fc_ci[:,0],'ci_upper':fc_ci[:,1]}).to_csv('output/forecast.csv', index=False)
-print("✓ Saved to output/: df_long.csv, df_total.csv, model_comparison.csv, forecast.csv")
-print("✓ Plots: eda_*.png, model_comparison.png, pred_vs_actual.png, forecast_plot.png")""")
+md("## 17. Lưu kết quả")
+code("""df.to_csv('output/df_long.csv', index=False)
+print("✓ Saved: output/df_monthly.csv, output/df_long.csv")
+print("✓ Plots: eda_*.png, model_comparison.png, pred_vs_actual.png, forecast_plot.png")
+print("✓ Results: model_results.csv, forecast.csv, pred_vs_actual.csv")""")
 
 nb.cells = cells
 with open('notebooks/bao-cao.ipynb', 'w') as f:

@@ -1,12 +1,12 @@
 # Phân tích Du lịch Quốc tế Việt Nam (2008–2026)
 
-Phân tích và dự đoán lượng khách quốc tế đến Việt Nam theo quốc gia nguồn và quý, sử dụng các mô hình học máy và foundation model.
+Phân tích và dự đoán lượng khách quốc tế đến Việt Nam theo quốc gia nguồn và tháng, sử dụng các mô hình học máy, SARIMA, Chronos-T5 foundation model, và CIR# stochastic model.
 
 ## Cấu trúc thư mục
 
 ```
 dspython/
-├── data/              # Dữ liệu thô (XLS files)
+├── data/              # Dữ liệu thô (t1.xls – t12.xls + quarterly files)
 ├── output/            # CSV, PNG đầu ra
 ├── notebooks/         # Jupyter notebook phân tích
 ├── scripts/           # Script Python tái sử dụng
@@ -18,68 +18,63 @@ dspython/
 ### 1. Cài đặt thư viện
 
 ```bash
-pip install pandas numpy matplotlib seaborn lxml scikit-learn xgboost statsmodels chronos-forecasting torch
+pip install pandas numpy matplotlib seaborn lxml scikit-learn xgboost statsmodels yfinance
+# Optional (for Chronos-T5):
+pip install chronos-forecasting torch
 ```
 
-### 2. Mở notebook
+### 2. Chạy notebook
 
 ```bash
 cd notebooks/
 jupyter notebook bao-cao.ipynb
 ```
 
-### 3. Chạy từ đầu
-
-Cell đầu tiên (Section 0) sẽ tự động tải dữ liệu và tạo thư mục:
-
-```python
-# Tải dữ liệu từ GSO
-!wget -q https://files.catbox.moe/83h5ir.zip
-!mkdir -p data output
-!unzip -q -o 83h5ir.zip -d data
-!rm 83h5ir.zip
-```
-
-Sau đó **Run All** để chạy toàn bộ pipeline.
-
-### 4. Script trực tiếp (không cần Jupyter)
+### 3. Tạo báo cáo PDF
 
 ```bash
-python scripts/analysis.py
+python3 scripts/create_report.py
+# → Xuất ra report/bao-cao.pdf (Vietnamese) và report/bao-cao-en.pdf (English)
 ```
 
-### 5. Tạo lại báo cáo
+### 4. Tạo lại notebook từ script
 
 ```bash
-python scripts/create_report.py
-# → Xuất ra report/bao-cao.md, report/bao-cao.tex, report/bao-cao.pdf
+python3 scripts/create_notebook.py
 ```
 
 ## Output
 
 | File | Mô tả |
 |------|-------|
-| `output/df_long.csv` | Dữ liệu dài (country × year × quarter) |
-| `output/df_total.csv` | Tổng khách theo năm và quốc gia |
-| `output/model_comparison.csv` | So sánh 7 mô hình |
-| `output/forecast.csv` | Dự đoán 4 quý tiếp theo |
-| `output/eda_*.png` | Biểu đồ EDA |
+| `output/df_monthly.csv` | Dữ liệu hàng tháng (country × year × month) |
+| `output/model_results.csv` | So sánh 6 mô hình |
+| `output/forecast.csv` | Dự báo 12 tháng (2026) |
+| `output/pred_vs_actual.csv` | Dự đoán vs thực tế theo tháng |
+| `output/eda_*.png` | 6 biểu đồ EDA |
 | `output/model_comparison.png` | So sánh hiệu suất |
 | `output/pred_vs_actual.png` | Dự đoán vs thực tế |
-| `output/forecast_plot.png` | Biểu đồ dự đoán |
+| `output/forecast_plot.png` | Biểu đồ dự báo |
 
 ## Mô hình sử dụng
 
 | Mô hình | Loại | Ghi chú |
 |---------|------|---------|
-| Linear Regression | Hồi quy tuyến tính | Baseline đơn giản |
-| Random Forest | Ensemble (trees) | GridSearchCV tối ưu |
-| XGBoost | Gradient boosting | RandomizedSearchCV tối ưu |
-| SARIMA | Chuỗi thời gian | Mùa vụ quarterly |
-| Chronos-T5 | Foundation model | Zero-shot, pretrained trên hàng triệu chuỗi |
+| Linear Regression | Hồi quy tuyến tính | Baseline, MAPE=9.16% |
+| Random Forest | Ensemble (trees) | MAPE=8.21% |
+| XGBoost | Gradient boosting | **MAPE=7.47% (tốt nhất)** |
+| SARIMA$(1,1,1)(1,1,1)_{12}$ | Chuỗi thời gian | Mùa vụ monthly, MAPE=47.77% |
+| Chronos-T5-small | Foundation model | Zero-shot, MAPE=10.77% |
+| CIR# | SDE model | Mean-reversion fails, MAPE=32.91% |
 
 ## Dữ liệu nguồn
 
-- 4 file HTML-Excel từ Tổng cục Thống kê (GSO)
-- Lượng khách quốc tế theo 40 quốc gia, quý Q1–Q4, 2008–2026
-- Năm 2021 không có dữ liệu (COVID-19)
+- 12 file HTML-Excel (`t1.xls` – `t12.xls`) từ Tổng cục Thống kê (GSO)
+- Lượng khách quốc tế theo 32 quốc gia, hàng tháng, 2008–2026
+- Năm 2021 không có dữ liệu (COVID-19 border closures)
+- Train: 2012–2019 + 2022–2023 (120 tháng), Test: 2024–2025 (24 tháng)
+
+## Báo cáo
+
+- `report/bao-cao-en.md` / `.pdf` — English report with IEEE citations
+- `report/bao-cao.md` / `.pdf` — Vietnamese report
