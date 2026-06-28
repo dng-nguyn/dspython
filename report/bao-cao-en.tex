@@ -101,7 +101,7 @@ Arrivals Using Monthly Data}
 \makeatother
 \subtitle{Data Analysis with Python --- Final Report}
 \author{Nguyen Dinh Cap (dng-nguyn)}
-\date{July 2025}
+\date{June 2026}
 
 \begin{document}
 \maketitle
@@ -225,7 +225,7 @@ developed by Amazon, pre-trains Transformer-based models on millions of
 time series for zero-shot forecasting without task-specific training.
 
 Stochastic differential equation (SDE) models have been applied to
-tourism. Orlando and Buffa {[}13, 14{]} proposed the CIR\# model,
+tourism. Orlando and Bufalo {[}13, 14{]} proposed the CIR\# model,
 extending the Cox--Ingersoll--Ross process with ARIMA-filtered
 residuals, achieving MAPE of 1.18\% on Italian monthly tourism data (288
 observations). The model's success depends on data satisfying
@@ -250,7 +250,7 @@ distinct from true data missingness {[}6{]}.
 
 The data consists of 12 HTML-Excel report files (\texttt{t1.xls} through
 \texttt{t12.xls}), one per calendar month, downloaded from the GSO
-website (\texttt{https://www.gso.gov.vn/}) in July 2025. Each file
+website (\texttt{https://www.gso.gov.vn/}) in June 2026. Each file
 contains international tourist arrivals organized by source country,
 with columns for each year from 2008 or 2009 through 2026.
 
@@ -352,12 +352,13 @@ onward, where coverage is stable at 29--31 countries.
 \begin{itemize}
 \tightlist
 \item
-  \textbf{2021:} Excluded entirely. Vietnam's borders were closed;
-  reported arrivals were negligible (approximately 157,000--400,000
-  depending on methodology) {[}3{]}.
-\item
-  \textbf{2020:} Only January--March data available. April--December
-  excluded (border closures).
+  \textbf{2020--2021 COVID closure:} For aggregate monthly analysis,
+  April 2020--December 2021 are zero-imputed (arrivals = 0) to preserve
+  calendar continuity. Vietnam's borders were effectively closed during
+  this period; reported arrivals were negligible (approximately
+  157,000--400,000 depending on methodology) {[}3{]}. A binary
+  \texttt{covid\_closed} exogenous variable (1 for these months, 0
+  otherwise) is added to signal the structural break to SARIMAX.
 \item
   \textbf{Sparse countries:} Ba Lan (Poland, 29 months from 2024), Cong
   hoa Sec (Czech Republic, 1 month in 2026), and An Do (India, 67 months
@@ -375,31 +376,38 @@ onward, where coverage is stable at 29--31 countries.
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Training set:} January 2012 -- December 2019 + January 2022 --
-  December 2023 (120 months). Combines stable pre-COVID coverage (29--31
-  countries) with early post-COVID recovery data.
+  \textbf{Training set:} January 2012 -- December 2023 (144 months,
+  continuous). Includes zero-imputed COVID closure months (April
+  2020--December 2021) with \texttt{covid\_closed\ =\ 1}, providing the
+  model with a complete calendar and the structural break signal.
 \item
   \textbf{Test set:} January 2024 -- December 2025 (24 months). Full
   post-COVID recovery period.
 \item
-  \textbf{Excluded from training:} 2008--2011 (limited country
-  coverage), 2020--2021 (COVID gap: only January--March 2020 available,
-  2021 entirely absent).
+  \textbf{Excluded from training:} 2008--2011 (limited country coverage
+  to 11--13 countries).
 \item
   \textbf{Forecast horizon:} January -- December 2026 (12 months ahead).
 \end{itemize}
 
-This yields 120 training observations and 24 test observations for
+This yields 144 training observations and 24 test observations for
 monthly aggregate analysis, compared to 51 and 10 in the previous
-quarterly analysis. Including 2022--2023 in the training set provides
-the model with early recovery patterns, improving its ability to
-extrapolate the growth trajectory.
+quarterly analysis. The continuous calendar ensures that lag features
+(\texttt{lag\_1}, \texttt{lag\_12}) bridge the COVID gap correctly:
+\texttt{lag\_1} for January 2022 is December 2021 (= 0), not December
+2019.
 
 \subsection{Feature Engineering}\label{feature-engineering}
 
-\begin{longtable}[]{@{}ll@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.4091}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5909}}@{}}
 \toprule\noalign{}
-Feature & Description \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Feature
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
@@ -410,13 +418,17 @@ Feature & Description \\
 \texttt{lag\_1} & Previous month's total arrivals \\
 \texttt{lag\_12} & Same month in previous year \\
 \texttt{rolling\_mean\_12} & 12-month trailing average \\
-\texttt{exchange\_rate\_*} & VND spot rates vs.~8 currencies
-(optional) \\
+\texttt{covid\_closed} & Binary indicator (1 for April 2020--December
+2021, 0 otherwise) \\
+\texttt{exchange\_rate\_*} & VND spot rates vs.~8 currencies (optional,
+lagged by 1 month) \\
 \texttt{visa\_*} & Visa policy indicators (optional) \\
 \end{longtable}
 
 Exchange rates were obtained from Yahoo Finance as end-of-month spot
-rates {[}17{]}. Visa policy indicators were manually encoded from
+rates {[}17{]}. When used as features, exchange rates are lagged by one
+month to avoid data leakage, as current-month rates are not available at
+forecast time. Visa policy indicators were manually encoded from
 Vietnamese government sources {[}18, 19{]}:
 
 \begin{itemize}
@@ -442,9 +454,8 @@ Context}\label{overall-trend-with-coverage-context}
 \begin{figure}
 \centering
 \includegraphics{output/eda_total_trend.png}
-\caption{Figure 1: Total annual arrivals with country-count overlay.
-Note that 2009--2011 totals are deflated by limited coverage (11--13
-countries).}
+\caption{Total annual arrivals with country-count overlay. Note that
+2009--2011 totals are deflated by limited coverage (11--13 countries).}
 \end{figure}
 
 The bar chart shows total annual arrivals (left axis) with the number of
@@ -471,8 +482,7 @@ reporting countries overlaid (right axis, red line). Key observations:
 \begin{figure}
 \centering
 \includegraphics{output/eda_top10_countries.png}
-\caption{Figure 2: Top 10 source countries by cumulative arrivals
-(2008--2026).}
+\caption{Top 10 source countries by cumulative arrivals (2008--2026).}
 \end{figure}
 
 China (cumulative 41.7 million) and South Korea (33.0 million) are the
@@ -484,7 +494,7 @@ the coverage-limited 2009--2011 period.
 \begin{figure}
 \centering
 \includegraphics{output/eda_growth_rate.png}
-\caption{Figure 3: Average annual growth rate by country (2012--2019).}
+\caption{Average annual growth rate by country (2012--2019).}
 \end{figure}
 
 Growth rates reflect \textbf{emerging source markets} (Hong Kong, Spain,
@@ -497,8 +507,8 @@ a high base.
 \begin{figure}
 \centering
 \includegraphics{output/eda_seasonality.png}
-\caption{Figure 4: Monthly seasonality pattern across all years and
-countries (2012--2019, 2022--2025).}
+\caption{Monthly seasonality pattern across all years and countries
+(2012--2019, 2022--2025).}
 \end{figure}
 
 \begin{itemize}
@@ -518,7 +528,7 @@ Markets}\label{correlation-between-source-markets}
 \begin{figure}
 \centering
 \includegraphics{output/eda_correlation.png}
-\caption{Figure 5: Correlation matrix of top 5 source countries (monthly
+\caption{Correlation matrix of top 5 source countries (monthly
 arrivals).}
 \end{figure}
 
@@ -532,8 +542,7 @@ dynamics.
 \begin{figure}
 \centering
 \includegraphics{output/eda_country_trends.png}
-\caption{Figure 6: Monthly arrivals for top 5 source countries
-(2008--2026).}
+\caption{Monthly arrivals for top 5 source countries (2008--2026).}
 \end{figure}
 
 \begin{itemize}
@@ -636,24 +645,32 @@ prevent memorization of training noise {[}10{]}.
 \textbf{Key hyperparameters:} \texttt{n\_estimators} = 200,
 \texttt{max\_depth} = 6, \texttt{learning\_rate} = 0.1.
 
-\subsection{\texorpdfstring{SARIMA\((1,1,1)(1,1,1)_{12}\)}{SARIMA(1,1,1)(1,1,1)\_\{12\}}}\label{sarima111111_12}
+\subsection{\texorpdfstring{SARIMAX\((1,1,1)(1,1,1)_{12}\)}{SARIMAX(1,1,1)(1,1,1)\_\{12\}}}\label{sarimax111111_12}
 
-SARIMA (Seasonal AutoRegressive Integrated Moving Average) {[}7, 8{]} is
-a classical statistical model decomposing a time series into
-autoregressive, differencing, moving-average, and seasonal components:
+SARIMAX (Seasonal AutoRegressive Integrated Moving Average with
+eXogenous variables) {[}7, 8{]} is a classical statistical model
+decomposing a time series into autoregressive, differencing,
+moving-average, and seasonal components, augmented with exogenous
+regressors:
 
-\[\Phi_P(B^s)\,\phi_p(B)\,(1-B^s)^D\,(1-B)^d\, y_t = \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t\]
+\[\Phi_P(B^s)\,\phi_p(B)\,(1-B^s)^D\,(1-B)^d\, y_t = \sum_{j} \beta_j x_{j,t} + \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t\]
 
 where \(B\) is the backshift operator (\(B y_t = y_{t-1}\)), \(s = 12\)
-is the seasonal period, and \(\varepsilon_t\) is white noise.
+is the seasonal period, \(x_{j,t}\) are exogenous variables, and
+\(\varepsilon_t\) is white noise.
 
-The model used here, SARIMA\((1,1,1)(1,1,1)_{12}\), applies first-order
+The model used here, SARIMAX\((1,1,1)(1,1,1)_{12}\), applies first-order
 differencing at both regular and seasonal levels, with one
-autoregressive and one moving-average term at each level.
+autoregressive and one moving-average term at each level. A binary
+\texttt{covid\_closed} exogenous variable (1 for April 2020--December
+2021, 0 otherwise) signals the structural break caused by border
+closures, allowing the model to learn the level shift without
+discontinuity in the calendar.
 
 \textbf{Assumptions:} Stationarity after differencing; white-noise
-residuals. The 2020--2021 data gap breaks seasonal continuity, as the
-model observes March 2020 followed directly by January 2022.
+residuals. The COVID closure period (April 2020--December 2021) is
+zero-imputed with \texttt{covid\_closed\ =\ 1}, preserving calendar
+continuity so that lag features bridge the gap correctly.
 
 \textbf{Advantage of monthly data:} With \(s = 12\), the model captures
 finer seasonal patterns (e.g., Tet holiday in January/February, summer
@@ -693,7 +710,7 @@ tourism forecasting with disrupted data:
 
 \[dr(t) = \kappa(\theta - r(t))\,dt + \sigma\sqrt{r(t)}\,dW(t)\]
 
-Orlando and Buffa {[}13{]} report MAPE of 1.18\% on Italian monthly
+Orlando and Bufalo {[}13{]} report MAPE of 1.18\% on Italian monthly
 tourism data (288 observations), a 70\% error reduction over SARIMA and
 Holt--Winters. The CIR\# extension replaces Brownian motion with
 ARIMA-filtered residuals and partitions data into subsamples around
@@ -713,7 +730,7 @@ mean-reverting processes {[}14{]}.
 \begin{figure}
 \centering
 \includegraphics{output/model_comparison.png}
-\caption{Figure 7: Model performance comparison (MAE, MAPE, R\(^2\)).}
+\caption{Model performance comparison (MAE, MAPE, R\(^2\)).}
 \end{figure}
 
 \begin{longtable}[]{@{}
@@ -738,12 +755,12 @@ R\(^2\)
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-XGBoost & 112,072 & 138,597 & 7.47\% & 0.5663 \\
-Random Forest & 121,491 & 141,631 & 8.21\% & 0.5471 \\
-Linear Regression & 133,072 & 158,772 & 9.16\% & 0.4309 \\
-Chronos-T5-small & 170,625 & 214,069 & 10.77\% & \$-\$0.0345 \\
-CIR\# & 511,410 & 575,996 & 32.91\% & \$-\(6.4900 |
-| SARIMA\)(1,1,1)(1,1,1)\_\{12\}\$ \\
+Chronos-T5-small & 170,625 & 214,069 & 10.77\% & \$-\(0.0345 |
+| Linear Regression | 275,526 | 340,495 | 19.79\% | 0.2439 |
+| Random Forest | 290,287 | 334,896 | 19.80\% | 0.2685 |
+| XGBoost | 313,159 | 369,109 | 19.88\% | 0.1114 |
+| SARIMAX\)(1,1,1)(1,1,1)\_\{12\}\$ \\
+CIR\# & 489,200 & 573,449 & 28.54\% & \$-\$1.1447 \\
 \end{longtable}
 
 \textbf{Key observations:}
@@ -751,32 +768,34 @@ CIR\# & 511,410 & 575,996 & 32.91\% & \$-\(6.4900 |
 \begin{itemize}
 \tightlist
 \item
-  \textbf{XGBoost achieves the best performance} (MAPE = 7.47\%, R\(^2\)
-  = 0.57), followed closely by Random Forest (8.21\%) and Linear
-  Regression (9.16\%).
+  \textbf{Chronos-T5-small achieves the best MAPE} (10.77\%) as a
+  zero-shot foundation model, demonstrating strong zero-shot
+  generalization without any training on this dataset.
 \item
-  \textbf{Tree-based models now have positive R\(^2\) values}, a
-  dramatic improvement over the quarterly analysis where all R\(^2\)
-  were negative. This confirms that monthly data with 120 training
-  observations provides substantially more information than 51 quarterly
-  points.
+  \textbf{Linear Regression, Random Forest, and XGBoost} perform
+  similarly (MAPE \(\approx\) 19.8\%), with Random Forest achieving the
+  highest R\(^2\) (0.27). These models benefit from the \texttt{lag\_1}
+  feature but are limited by the structural break between training
+  (2012--2019 + 2022--2023) and test (2024--2025) distributions.
 \item
   \textbf{Feature importance} (Random Forest): \texttt{lag\_1} dominates
-  at 84.8\%, followed by \texttt{lag\_12} (6.4\%) and
-  \texttt{rolling\_mean\_12} (5.0\%). The previous month's arrivals are
-  the strongest predictor.
+  at 69.8\%, followed by \texttt{lag\_12} (11.3\%) and
+  \texttt{time\_idx} (8.7\%). The previous month's arrivals are the
+  strongest predictor. The dominance of \texttt{lag\_1} means the
+  tree-based models function primarily as naive one-step-ahead
+  forecasters. This works well on the 24-month test set (where each
+  month's actual lag is available) but would degrade significantly in
+  multi-step-ahead forecasting scenarios where lag values must be
+  recursively predicted. The test-set MAPE therefore represents an upper
+  bound on one-step-ahead accuracy, not true forecasting capability.
 \item
-  \textbf{Chronos-T5-small} performs competitively (MAPE = 10.77\%) as a
-  zero-shot method but has negative R\(^2\), indicating it does not
-  fully capture the post-COVID growth trend.
+  \textbf{SARIMAX} (MAPE = 21.66\%, R\(^2\) = \$-\$0.03) with the
+  \texttt{covid\_closed} exogenous variable performs better than the
+  original SARIMA without exogenous variables, but still struggles to
+  extrapolate the post-COVID growth trend.
 \item
-  \textbf{SARIMA performs worst} (MAPE = 47.77\%, R\(^2\) = \$-\$11.33).
-  The 2020--2021 data gap breaks seasonal continuity; the model
-  forecasts a mean-reverting pattern rather than the observed growth
-  trajectory.
-\item
-  \textbf{CIR\# fails} (MAPE = 32.91\%, R\(^2\) = \$-\$6.49) despite
-  having monthly data. The estimated \(\kappa = 0.109\) is positive
+  \textbf{CIR\# fails} (MAPE = 28.54\%, R\(^2\) = \$-\$1.14) despite
+  having monthly data. The estimated \(\kappa = 0.225\) is positive
   (mean-reverting), which conflicts with the upward-trending data. This
   confirms the model's documented boundary condition {[}13, 14{]}.
 \end{itemize}
@@ -842,12 +861,12 @@ Set)}\label{predicted-vs.-actual-test-set}
 \begin{figure}
 \centering
 \includegraphics{output/pred_vs_actual.png}
-\caption{Figure 8: Predicted vs.~actual monthly arrivals for the test
-set (2024--2025).}
+\caption{Predicted vs.~actual monthly arrivals for the test set
+(2024--2025).}
 \end{figure}
 
 XGBoost and Random Forest track the actual values most closely, while
-SARIMA and CIR\# diverge significantly. Chronos-T5-small provides
+SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides
 competitive zero-shot predictions without any training on this dataset.
 
 \subsection{12-Month Forecast (2026)}\label{month-forecast-2026}
@@ -855,8 +874,8 @@ competitive zero-shot predictions without any training on this dataset.
 \begin{figure}
 \centering
 \includegraphics{output/forecast_plot.png}
-\caption{Figure 9: SARIMA 12-month forecast for 2026 with 95\%
-confidence interval.}
+\caption{SARIMAX 12-month forecast for 2026 with 95\% confidence
+interval.}
 \end{figure}
 
 \begin{longtable}[]{@{}llll@{}}
@@ -866,26 +885,92 @@ Month & Forecast & 95\% CI Lower & 95\% CI Upper \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Jan 2026 & 633,903 & 121,322 & 1,146,483 \\
-Feb 2026 & 676,032 & \$-\$83,685 & 1,435,750 \\
-Mar 2026 & 607,735 & \$-\$326,054 & 1,541,524 \\
-Apr 2026 & 649,047 & \$-\$434,436 & 1,732,532 \\
-May 2026 & 607,630 & \$-\$606,144 & 1,821,405 \\
-Jun 2026 & 597,289 & \$-\$734,454 & 1,929,033 \\
-Jul 2026 & 689,660 & \$-\$750,295 & 2,129,616 \\
-Aug 2026 & 829,177 & \$-\$711,451 & 2,369,806 \\
-Sep 2026 & 775,281 & \$-\$859,818 & 2,410,381 \\
-Oct 2026 & 808,583 & \$-\$915,825 & 2,532,992 \\
-Nov 2026 & 921,835 & \$-\$887,477 & 2,731,148 \\
-Dec 2026 & 961,391 & \$-\$929,016 & 2,851,799 \\
+Jan 2026 & 1,558,157 & 743,110 & 2,373,205 \\
+Feb 2026 & 1,548,631 & 524,976 & 2,572,285 \\
+Mar 2026 & 1,409,524 & 158,421 & 2,660,628 \\
+Apr 2026 & 1,461,912 & 43,534 & 2,880,290 \\
+May 2026 & 1,402,826 & 0 & 2,982,026 \\
+Jun 2026 & 1,363,119 & 0 & 3,082,894 \\
+Jul 2026 & 1,423,628 & 0 & 3,275,842 \\
+Aug 2026 & 1,501,787 & 0 & 3,476,374 \\
+Sep 2026 & 1,429,359 & 0 & 3,519,748 \\
+Oct 2026 & 1,453,412 & 0 & 3,653,234 \\
+Nov 2026 & 1,505,489 & 0 & 3,809,689 \\
+Dec 2026 & 1,605,797 & 0 & 4,009,780 \\
 \end{longtable}
 
-The wide confidence intervals (some extending below zero) reflect
-fundamental uncertainty. SARIMA, having been trained on pre-COVID data,
-forecasts a mean-reverting pattern centered around 600,000--900,000
-monthly arrivals, well below the observed 2025 levels (1.5--2.0 million
-per month). This underscores the limitation of classical time-series
-models in the presence of structural breaks.
+All lower confidence bounds are non-negative, clipped to zero where the
+model's uncertainty would otherwise produce impossible negative
+arrivals.
+
+The confidence intervals are clipped to zero at the lower bound, since
+tourist arrivals cannot be negative. SARIMAX, trained on data including
+the COVID closure period with a \texttt{covid\_closed} exogenous
+variable, forecasts a pattern that accounts for the structural break.
+However, the model still tends toward mean-reversion and produces wide
+uncertainty bands, reflecting the fundamental challenge of extrapolating
+a growth trend from a model designed for stationary processes.
+
+\subsection{Per-Country Forecasts
+(2026)}\label{per-country-forecasts-2026}
+
+SARIMAX models were also fitted to the top 5 source countries
+individually, each with the same \((1,1,1)(1,1,1)_{12}\) specification
+and \texttt{covid\_closed} exogenous variable.
+
+\begin{figure}
+\centering
+\includegraphics{output/country_forecasts_plot.png}
+\caption{SARIMAX 12-month forecasts for top 5 source countries (2026).}
+\end{figure}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1273}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2182}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0909}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Month
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Hàn Quốc
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trung Quốc
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Campuchia
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Nhật Bản
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Nga
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Jan 2026 & 406,033 & 225,944 & 79,694 & 58,328 & 30,915 \\
+Feb 2026 & 425,290 & 243,241 & 71,998 & 73,671 & 0 \\
+Mar 2026 & 406,926 & 237,041 & 66,775 & 63,948 & 1,635 \\
+Apr 2026 & 436,806 & 266,077 & 69,734 & 63,759 & 33,858 \\
+May 2026 & 432,141 & 256,206 & 66,298 & 62,497 & 35,968 \\
+Jun 2026 & 440,612 & 235,861 & 64,801 & 62,218 & 27,508 \\
+Jul 2026 & 441,553 & 240,007 & 62,298 & 64,854 & 27,994 \\
+Aug 2026 & 483,539 & 240,881 & 63,978 & 75,912 & 28,229 \\
+Sep 2026 & 451,197 & 228,056 & 64,054 & 75,121 & 28,193 \\
+Oct 2026 & 455,982 & 238,553 & 68,781 & 70,844 & 28,071 \\
+Nov 2026 & 458,589 & 252,875 & 71,295 & 73,937 & 30,572 \\
+Dec 2026 & 479,518 & 253,037 & 77,163 & 75,748 & 26,281 \\
+\textbf{Total} & \textbf{5,318,186} & \textbf{2,917,779} &
+\textbf{826,869} & \textbf{820,837} & \textbf{299,222} \\
+\end{longtable}
+
+The top 5 countries account for 57.6\% of the total 2026 aggregate
+forecast (10.2M of 17.7M). Hàn Quốc is projected to remain the largest
+source market, followed by Trung Quốc. Russia (Nga) shows the highest
+forecast uncertainty, with the model producing a clipped zero lower
+bound for February reflecting seasonal volatility in a market with lower
+baseline volumes.
 
 \newpage
 
@@ -896,9 +981,9 @@ models in the presence of structural breaks.
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{Monthly data significantly improves analysis.} With 120
+  \textbf{Monthly data significantly improves analysis.} With 144
   training observations (vs.~51 quarterly), machine learning models have
-  nearly triple the data for learning patterns. SARIMA with \(s = 12\)
+  nearly triple the data for learning patterns. SARIMAX with \(s = 12\)
   resolves finer seasonal structure (Tet holiday, summer peaks) that
   \(s = 4\) could not capture.
 \item
@@ -915,12 +1000,13 @@ models in the presence of structural breaks.
   summer peak in June--August.
 \item
   \textbf{Post-COVID structural break} remains the dominant challenge.
-  All models produce negative R\(^2\) values because the test
-  distribution (2024--2025 recovery) differs fundamentally from the
-  training distribution (2012--2019 + 2022--2023).
+  Three models (XGBoost, Random Forest, Linear Regression) achieve
+  positive R\(^2\) values, while SARIMAX, Chronos, and CIR\# remain
+  negative because the test distribution (2024--2025 recovery) differs
+  fundamentally from the training distribution (2012--2023).
 \item
   \textbf{CIR\# fails on trending data.} Despite having monthly data as
-  recommended by Orlando and Buffa {[}13{]}, the model's mean-reversion
+  recommended by Orlando and Bufalo {[}13{]}, the model's mean-reversion
   assumption is violated by Vietnam's upward-trending tourism
   trajectory. This constitutes a documented boundary condition for the
   model {[}13, 14{]}.
@@ -936,10 +1022,13 @@ models in the presence of structural breaks.
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{COVID gap (2020--2021):} Excluding 20 months breaks
-  time-series continuity for SARIMA and reduces the training set.
+  \textbf{COVID gap (2020--2021):} Zero-imputation of the COVID closure
+  period preserves calendar continuity; the \texttt{covid\_closed}
+  exogenous variable signals the structural break to SARIMAX. However,
+  the zero-filled months still represent a departure from the true
+  data-generating process.
 \item
-  \textbf{Limited training set (120 months):} While substantially better
+  \textbf{Limited training set (144 months):} While substantially better
   than 51 quarterly points, this still constrains model complexity
   compared to the 288 monthly observations used in the Italian CIR\#
   study {[}13{]}.
@@ -1027,12 +1116,12 @@ of Statistical Learning}, 2nd ed.~Springer, 2009.
 Series,'' \emph{Trans. Mach. Learn. Res.}, 2024. {[}Online{]}.
 Available: https://arxiv.org/abs/2403.07815
 
-{[}13{]} G. Orlando and M. Buffa, ``Improved tourism demand forecasting
+{[}13{]} G. Orlando and M. Bufalo, ``Improved tourism demand forecasting
 with CIR\# model: the case of disrupted data patterns in Italy,''
 \emph{Tourism Review}, vol.~79, no. 2, pp.~445--470, 2023, doi:
 10.1108/TR-04-2023-0194.
 
-{[}14{]} G. Orlando and M. Buffa, ``The CIR\# model for time series
+{[}14{]} G. Orlando and M. Bufalo, ``The CIR\# model for time series
 forecasting,'' \emph{Technological and Economic Development of Economy},
 vol.~29, no. 5, pp.~1403--1427, 2023.
 

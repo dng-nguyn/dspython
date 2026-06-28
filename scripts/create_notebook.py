@@ -42,47 +42,65 @@ print("Imports OK")""")
 # --- Parse ---
 md("## 1. Thu thập và parse dữ liệu hàng tháng")
 
-code("""REGIONAL = ['Các thị trường khác', 'Tổng số']
+code("""REGIONAL = ['Các thị trường khác', 'Tổng số', 'Totals']
+REGIONAL_PREFIXES = ['Châu']
 
-def parse_monthly_file(filepath, month):
-    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
-        raw = f.read()
-    tree = html.fromstring(raw)
-    rows = tree.xpath('//tr')
-    header_tds = rows[0].xpath('.//td')
-    years = []
-    for td in header_tds:
-        text = (td.text or '').strip() + (td.tail or '').strip()
-        if text.isdigit():
-            years.append(int(text))
-    records = []
-    for tr in rows[2:]:
-        tds = tr.xpath('.//td')
-        if not tds: continue
-        name = (tds[0].text or '').strip() + (tds[0].tail or '').strip()
-        if not name or any(kw in name for kw in REGIONAL): continue
-        values = []
-        for td in tds[1:]:
-            text = (td.text or '').strip() + (td.tail or '').strip()
-            clean = text.replace('.', '').replace(',', '.').replace(' ', '')
-            try: val = int(float(clean)) if clean else np.nan
-            except: val = np.nan
-            values.append(val)
-        for i, val in enumerate(values):
-            if i < len(years) and not np.isnan(val) and val > 0:
-                records.append((name, years[i], month, val))
-    return records
+def parse_text_nodes(tr):
+    texts = []
+    for child in tr:
+        if child.text and child.text.strip():
+            texts.append(child.text.strip())
+        if child.tail and child.tail.strip():
+            texts.append(child.tail.strip())
+    return texts
 
-all_records = []
-for month in range(1, 13):
-    fname = f'data/t{month:02d}.xls'
-    if not os.path.exists(fname): fname = f'data/t{month}.xls'
-    recs = parse_monthly_file(fname, month)
-    all_records.extend(recs)
-    print(f"  t{month:02d}: {len(recs)} records")
+all_dfs = []
+for m in range(1, 13):
+    path = f'data/t{m}.xls'
+    if not os.path.exists(path):
+        continue
+    with open(path, 'r', encoding='utf-8') as f:
+        tree = html.parse(f)
+    trs = tree.xpath('.//tr')
+    year_cols = {}
+    for tr in trs:
+        texts = parse_text_nodes(tr)
+        if not texts:
+            continue
+        if 'Năm' in texts:
+            year_start = texts.index('Năm') + 1
+            year_cols = {}
+            yi = 0
+            for i in range(year_start, len(texts)):
+                if texts[i].isdigit() and len(texts[i]) == 4:
+                    year_cols[yi] = int(texts[i])
+                    yi += 1
+            continue
+        if not year_cols:
+            continue
+        country = None
+        data_start = 0
+        for i, t in enumerate(texts):
+            if t and not t.replace('.', '').replace(',', '').isdigit():
+                country = t
+                data_start = i + 1
+                break
+        if not country:
+            continue
+        if any(r in country for r in REGIONAL):
+            continue
+        if any(country.startswith(p) for p in REGIONAL_PREFIXES):
+            continue
+        nums = []
+        for t in texts[data_start:]:
+            cleaned = t.replace('.', '').replace(',', '').strip()
+            if cleaned.isdigit():
+                nums.append(int(cleaned))
+        for (yi, year), val in zip(year_cols.items(), nums[:len(year_cols)]):
+            if val > 0:
+                all_dfs.append({'country': country, 'year': year, 'month': m, 'arrivals': val})
 
-df = pd.DataFrame(all_records, columns=['country', 'year', 'month', 'arrivals'])
-df = df[~df['country'].str.contains('thị trường khác|Tổng số|Châu|Totals', case=False, na=False)]
+df = pd.DataFrame(all_dfs)
 df = df.sort_values(['country', 'year', 'month']).reset_index(drop=True)
 df.to_csv('output/df_monthly.csv', index=False)
 
@@ -95,13 +113,28 @@ print(f"Total: {len(df)} records, {df['country'].nunique()} countries, {df['year
 md("## 2. Làm sạch và tổng hợp")
 code("""df = pd.read_csv('output/df_monthly.csv')
 agg = df.groupby(['year', 'month'])['arrivals'].sum().reset_index()
+
+# Zero-impute ONLY the COVID gap (Apr 2020 – Dec 2021)
+# Border closures meant arrivals were effectively 0
+covid_ym = pd.MultiIndex.from_product(
+    [range(2020, 2022), range(1, 13)],
+    names=['year', 'month']
+).to_frame(index=False)
+# Remove Jan-Mar 2020 (already have data)
+covid_gap = covid_ym[~((covid_ym['year'] == 2020) & (covid_ym['month'] <= 3))]
+covid_gap['arrivals'] = 0
+agg = pd.concat([agg, covid_gap], ignore_index=True)
 agg = agg.sort_values(['year', 'month']).reset_index(drop=True)
 agg['date'] = pd.to_datetime(agg[['year', 'month']].assign(day=1))
+
+# COVID closure indicator
+agg['covid_closed'] = (((agg['year'] == 2020) & (agg['month'] >= 4)) | (agg['year'] == 2021)).astype(int)
 
 print("Monthly aggregate stats:")
 for y in sorted(agg['year'].unique()):
     yearly = agg[agg['year'] == y]
-    print(f"  {y}: {len(yearly)} months, {yearly['arrivals'].sum()/1e6:.2f}M total")""")
+    print(f"  {y}: {len(yearly)} months, {yearly['arrivals'].sum()/1e6:.2f}M total")
+print(f"  COVID-closed months (arrivals=0): {agg['covid_closed'].sum()}")""")
 
 # --- Feature Engineering ---
 md("## 3. Feature Engineering & Train-Test Split")
@@ -111,11 +144,10 @@ agg['lag_12'] = agg['arrivals'].shift(12)
 agg['rolling_mean_12'] = agg['arrivals'].rolling(12, min_periods=1).mean()
 agg_model = agg.dropna(subset=['lag_1', 'lag_12']).copy()
 
-FEATURES = ['year', 'month', 'time_idx', 'lag_1', 'lag_12', 'rolling_mean_12']
+FEATURES = ['year', 'month', 'time_idx', 'lag_1', 'lag_12', 'rolling_mean_12', 'covid_closed']
 
-# Train: 2012-2019 + 2022-2023, Test: 2024-2025
-train_mask = ((agg_model['year']>=2012) & (agg_model['year']<=2019)) | \\
-             ((agg_model['year']>=2022) & (agg_model['year']<=2023))
+# Train: 2012-2023 (continuous, includes zero-imputed COVID months), Test: 2024-2025
+train_mask = (agg_model['year']>=2012) & (agg_model['year']<=2023)
 test_mask = (agg_model['year']>=2024) & (agg_model['year']<=2025)
 
 train = agg_model[train_mask]
@@ -123,8 +155,13 @@ test = agg_model[test_mask]
 X_train, y_train = train[FEATURES].values, train['arrivals'].values
 X_test, y_test = test[FEATURES].values, test['arrivals'].values
 
+# For SARIMAX: extract covid_closed arrays
+train_covid = train['covid_closed'].values
+test_covid = test['covid_closed'].values
+
 print(f"Train: {len(train)} months ({train['year'].min()}-{train['year'].max()})")
-print(f"Test:  {len(test)} months ({test['year'].min()}-{test['year'].max()})")""")
+print(f"Test:  {len(test)} months ({test['year'].min()}-{test['year'].max()})")
+print(f"  COVID-closed months in training: {train['covid_closed'].sum()}")""")
 
 # --- EDA ---
 md("## 4. EDA — Xu hướng tổng thể")
@@ -209,26 +246,34 @@ print("\\nFeature importance (RF):")
 for f, v in sorted(zip(FEATURES, rf.feature_importances_), key=lambda x: -x[1]):
     print(f"  {f:<20} {v:.3f}")""")
 
-md("## 11. SARIMA$(1,1,1)(1,1,1)_{12}$")
+md("## 11. SARIMAX$(1,1,1)(1,1,1)_{12}$ with covid_closed exogenous variable")
 code("""train_ts = train['arrivals'].values.astype(float)
 test_ts = test['arrivals'].values.astype(float)
 
-sarima = SARIMAX(train_ts, order=(1,1,1), seasonal_order=(1,1,1,12),
-                 enforce_stationarity=False, enforce_invertibility=False)
-sarima_fit = sarima.fit(disp=False, maxiter=500)
-sarima_pred = sarima_fit.forecast(steps=len(test_ts))
-r_sarima = metrics(test_ts, sarima_pred, 'SARIMA(1,1,1)(1,1,1)_12')
+exog_train_covid = train['covid_closed'].values.reshape(-1, 1)
+exog_test_covid = test['covid_closed'].values.reshape(-1, 1)
 
-# Forecast 12 months ahead
-fc = sarima_fit.get_forecast(steps=12)
+sarimax = SARIMAX(train_ts, order=(1,1,1), seasonal_order=(1,1,1,12),
+                  exog=exog_train_covid,
+                  enforce_stationarity=False, enforce_invertibility=False)
+sarimax_fit = sarimax.fit(disp=False, maxiter=500)
+sarima_pred = sarimax_fit.forecast(steps=len(test_ts), exog=exog_test_covid)
+r_sarima = metrics(test_ts, sarima_pred, 'SARIMAX(1,1,1)(1,1,1)_12')
+
+# Forecast 12 months ahead (no COVID restrictions in 2026)
+exog_2026 = np.zeros((12, 1))
+fc = sarimax_fit.get_forecast(steps=12, exog=exog_2026)
 fc_mean = fc.predicted_mean if hasattr(fc.predicted_mean, 'values') else fc.predicted_mean
 fc_ci = fc.conf_int(alpha=0.05)
 if hasattr(fc_ci, 'values'): fc_ci = fc_ci.values
+
+# Clip lower bound to 0 (arrivals cannot be negative)
+lower_clipped = np.clip(fc_ci[:, 0], 0, None)
 forecast_df = pd.DataFrame({
     'month': pd.date_range('2026-01-01', periods=12, freq='MS').strftime('%Y-%m'),
-    'forecast': fc_mean.astype(int) if hasattr(fc_mean, 'astype') else [int(x) for x in fc_mean],
-    'lower_95': fc_ci[:, 0].astype(int),
-    'upper_95': fc_ci[:, 1].astype(int)
+    'forecast': np.floor(fc_mean).astype(int) if hasattr(fc_mean, 'astype') else [int(np.floor(x)) for x in fc_mean],
+    'lower_95': np.floor(lower_clipped).astype(int),
+    'upper_95': np.floor(fc_ci[:, 1]).astype(int)
 })
 forecast_df.to_csv('output/forecast.csv', index=False)
 print(f"\\n2026 Forecast:"); print(forecast_df.to_string(index=False))""")
@@ -271,7 +316,7 @@ metrics(test_ts, cir_pred, 'CIR#')""")
 md("## 14. So sánh tất cả mô hình")
 code("""all_results = [r_lr, r_rf, r_xgb, r_sarima]
 all_preds = {'LR': lr.predict(X_test), 'RF': rf.predict(X_test),
-             'XGBoost': xgb_m.predict(X_test), 'SARIMA': sarima_pred, 'CIR': cir_pred}
+             'XGBoost': xgb_m.predict(X_test), 'SARIMAX': sarima_pred, 'CIR': cir_pred}
 
 # Add Chronos results
 all_results.append({'Model': 'Chronos-T5-small', 'MAE': 170625, 'RMSE': 214069, 'MAPE': 10.77, 'R²': -0.0345})
@@ -300,7 +345,7 @@ code("""test_dates = pd.to_datetime(test[['year','month']].assign(day=1))
 fig, ax = plt.subplots(figsize=(16, 7))
 ax.plot(test_dates, test_ts, 'k-o', lw=2, ms=5, label='Actual', zorder=10)
 for name, pred in [('LR', lr.predict(X_test)), ('RF', rf.predict(X_test)),
-                    ('XGBoost', xgb_m.predict(X_test)), ('SARIMA', sarima_pred), ('CIR', cir_pred)]:
+                    ('XGBoost', xgb_m.predict(X_test)), ('SARIMAX', sarima_pred), ('CIR', cir_pred)]:
     ax.plot(test_dates, pred, '-o', ms=3, label=name, alpha=0.8)
 ax.set_title('Predicted vs Actual (Test: 2024-2025)'); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig('output/pred_vs_actual.png', dpi=150, bbox_inches='tight'); plt.show()""")
@@ -310,16 +355,76 @@ code("""fig, ax = plt.subplots(figsize=(14, 7))
 recent = agg[agg['year'] >= 2024]
 ax.plot(recent['date'], recent['arrivals'], 'k-o', lw=2, ms=5, label='Actual (2024-2025)')
 fc_dates = pd.date_range('2026-01-01', periods=12, freq='MS')
-ax.plot(fc_dates, forecast_df['forecast'], 'b-s', lw=2, ms=5, label='SARIMA Forecast')
+ax.plot(fc_dates, forecast_df['forecast'], 'b-s', lw=2, ms=5, label='SARIMAX Forecast')
 ax.fill_between(fc_dates, forecast_df['lower_95'], forecast_df['upper_95'], alpha=0.2, color='blue', label='95% CI')
-ax.set_title('SARIMA 12-Month Forecast for 2026'); ax.legend(); ax.grid(alpha=0.3)
+ax.set_title('SARIMAX 12-Month Forecast for 2026'); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
 
-md("## 17. Lưu kết quả")
+md("## 17. Dự báo theo quốc gia nguồn hàng đầu (2026)")
+code("""os.makedirs('output/countries', exist_ok=True)
+top5_countries = df.groupby('country')['arrivals'].sum().nlargest(5).index.tolist()
+all_fc = []
+for country in top5_countries:
+    cdf = df[df['country'] == country][['year', 'month', 'arrivals']].copy()
+    cagg = cdf.groupby(['year', 'month'])['arrivals'].sum().reset_index()
+    covid_ym = pd.MultiIndex.from_product([range(2020, 2022), range(1, 13)], names=['year', 'month']).to_frame(index=False)
+    covid_gap = covid_ym[~((covid_ym['year'] == 2020) & (covid_ym['month'] <= 3))]
+    covid_gap['arrivals'] = 0
+    cagg = pd.concat([cagg, covid_gap], ignore_index=True).sort_values(['year', 'month']).reset_index(drop=True)
+    cagg['covid_closed'] = (((cagg['year'] == 2020) & (cagg['month'] >= 4)) | (cagg['year'] == 2021)).astype(int)
+    ctrain = cagg[(cagg['year'] >= 2012) & (cagg['year'] <= 2023)]
+    try:
+        model = SARIMAX(ctrain['arrivals'].values.astype(float), order=(1,1,1), seasonal_order=(1,1,1,12),
+                        exog=ctrain['covid_closed'].values.reshape(-1, 1),
+                        enforce_stationarity=False, enforce_invertibility=False)
+        fit = model.fit(disp=False, maxiter=500)
+        exog_fc = np.zeros((12, 1))
+        fc = fit.get_forecast(steps=12, exog=exog_fc)
+        fc_mean, fc_ci = fc.predicted_mean, fc.conf_int(alpha=0.05)
+        if hasattr(fc_mean, 'values'): fc_mean = fc_mean.values
+        if hasattr(fc_ci, 'values'): fc_ci = fc_ci.values
+        lower = np.clip(fc_ci[:, 0], 0, None)
+        fc_df = pd.DataFrame({'country': country, 'month': pd.date_range('2026-01-01', periods=12, freq='MS').strftime('%Y-%m'),
+                              'forecast': np.floor(fc_mean).astype(int), 'lower_95': np.floor(lower).astype(int),
+                              'upper_95': np.floor(fc_ci[:, 1]).astype(int)})
+        fc_df['forecast'] = fc_df['forecast'].clip(lower=0)
+        all_fc.append(fc_df)
+        recent = cagg[(cagg['year'] >= 2023)]
+        dates_recent = pd.to_datetime(recent[['year', 'month']].assign(day=1))
+        dates_fc = pd.to_datetime(fc_df['month'])
+        fig, ax = plt.subplots(figsize=(12, 5))
+        ax.plot(dates_recent, recent['arrivals'], 'k-o', lw=1.5, ms=4, label='Actual')
+        ax.plot(dates_fc, fc_df['forecast'], 'b-s', lw=2, ms=5, label='Forecast')
+        ax.fill_between(dates_fc, fc_df['lower_95'], fc_df['upper_95'], alpha=0.2, color='blue', label='95% CI')
+        ax.set_title(f'{country} — 12-Month Forecast for 2026'); ax.legend(); ax.grid(alpha=0.3)
+        plt.tight_layout(); plt.savefig(f'output/countries/{country.replace(chr(32), chr(95))}_forecast.png', dpi=150, bbox_inches='tight'); plt.show()
+        print(f"  ✓ {country}: {fc_df['forecast'].sum():,}")
+    except Exception as e:
+        print(f"  ✗ {country}: {e}")
+fc_country = pd.concat(all_fc, ignore_index=True)
+fc_country.to_csv('output/country_forecasts.csv', index=False)
+fig, axes = plt.subplots(3, 2, figsize=(16, 16))
+for i, country in enumerate(top5_countries):
+    ax = axes[i // 2, i % 2]
+    cfc = fc_country[fc_country['country'] == country]
+    cdf_agg = df[df['country'] == country].groupby(['year', 'month'])['arrivals'].sum().reset_index()
+    recent = cdf_agg[cdf_agg['year'] >= 2023]
+    dates_r = pd.to_datetime(recent[['year', 'month']].assign(day=1))
+    dates_f = pd.to_datetime(cfc['month'])
+    ax.plot(dates_r, recent['arrivals'], 'k-o', lw=1.5, ms=4, label='Actual')
+    ax.plot(dates_f, cfc['forecast'], 'b-s', lw=2, ms=5, label='Forecast')
+    ax.fill_between(dates_f, cfc['lower_95'], cfc['upper_95'], alpha=0.2, color='blue')
+    ax.set_title(country); ax.legend(fontsize=9); ax.grid(alpha=0.3)
+axes[2, 1].set_visible(False)
+plt.suptitle('SARIMAX Forecasts — Top 5 Source Countries (2026)', fontsize=14, fontweight='bold', y=1.01)
+plt.tight_layout(); plt.savefig('output/country_forecasts_plot.png', dpi=150, bbox_inches='tight'); plt.show()
+print(f"\\nTop 5 total 2026 forecast: {fc_country['forecast'].sum():,}")""")
+
+md("## 18. Lưu kết quả")
 code("""df.to_csv('output/df_long.csv', index=False)
 print("✓ Saved: output/df_monthly.csv, output/df_long.csv")
 print("✓ Plots: eda_*.png, model_comparison.png, pred_vs_actual.png, forecast_plot.png")
-print("✓ Results: model_results.csv, forecast.csv, pred_vs_actual.csv")""")
+print("✓ Results: model_results.csv, forecast.csv, pred_vs_actual.csv, country_forecasts.csv")""")
 
 nb.cells = cells
 with open('notebooks/bao-cao.ipynb', 'w') as f:

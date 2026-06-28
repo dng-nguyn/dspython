@@ -1,6 +1,6 @@
 # Phân tích Du lịch Quốc tế Việt Nam (2008–2026)
 
-Phân tích và dự đoán lượng khách quốc tế đến Việt Nam theo quốc gia nguồn và tháng, sử dụng các mô hình học máy, SARIMA, Chronos-T5 foundation model, và CIR# stochastic model.
+Phân tích và dự đoán lượng khách quốc tế đến Việt Nam theo quốc gia nguồn và tháng, sử dụng các mô hình học máy, SARIMAX, Chronos-T5 foundation model, và CIR# stochastic model.
 
 ## Cấu trúc thư mục
 
@@ -63,7 +63,7 @@ python3 scripts/create_notebook.py
 | Linear Regression | Hồi quy tuyến tính | Baseline, MAPE=9.16% |
 | Random Forest | Ensemble (trees) | MAPE=8.21% |
 | XGBoost | Gradient boosting | **MAPE=7.47% (tốt nhất)** |
-| SARIMA$(1,1,1)(1,1,1)_{12}$ | Chuỗi thời gian | Mùa vụ monthly, MAPE=47.77% |
+| SARIMAX$(1,1,1)(1,1,1)_{12}$ | Chuỗi thời gian + exogenous | Mùa vụ monthly + covid_closed, MAPE=47.77% |
 | Chronos-T5-small | Foundation model | Zero-shot, MAPE=10.77% |
 | CIR# | SDE model | Mean-reversion fails, MAPE=32.91% |
 
@@ -71,8 +71,8 @@ python3 scripts/create_notebook.py
 
 - 12 file HTML-Excel (`t1.xls` – `t12.xls`) từ Tổng cục Thống kê (GSO)
 - Lượng khách quốc tế theo 32 quốc gia, hàng tháng, 2008–2026
-- Năm 2021 không có dữ liệu (COVID-19 border closures)
-- Train: 2012–2019 + 2022–2023 (120 tháng), Test: 2024–2025 (24 tháng)
+- Năm 2021 không có dữ liệu (COVID-19 border closures), được điền 0 cho phân tích tổng hợp
+- Train: 2012–2023 (144 tháng, liên tục), Test: 2024–2025 (24 tháng)
 
 ## Báo cáo
 
