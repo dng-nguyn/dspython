@@ -309,12 +309,18 @@ Chỉ số & Giá trị \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Tổng số bản ghi & 4.692 \\
-Số quốc gia & 32 \\
-Phạm vi ngày & Tháng 7 năm 2008 -- Tháng 5 năm 2026 \\
-Năm khuyết thiếu & 2021 (đóng cửa biên giới) \\
-Năm không đầy đủ & 2020 (chỉ có từ tháng 1 đến tháng 3) \\
 \end{longtable}
+
+Tổng số bản ghi \textbar{} 4.692 \textbar{}
+
+Số quốc gia \textbar{} 32 \textbar{}
+
+Phạm vi ngày \textbar{} Tháng 7 năm 2008 -- Tháng 5 năm 2026 \textbar{}
+
+Năm khuyết thiếu \textbar{} 2021 (đóng cửa biên giới) \textbar{}
+
+Năm không đầy đủ \textbar{} 2020 (chỉ có từ tháng 1 đến tháng 3)
+\textbar{}
 
 \subsection{Phân tích độ bao phủ theo quốc
 gia}\label{phuxe2n-tuxedch-ux111ux1ed9-bao-phux1ee7-theo-quux1ed1c-gia}
@@ -329,13 +335,22 @@ Giai đoạn & Số quốc gia mỗi tháng & Ghi chú \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-2008 (Tháng 7--Tháng 12) & 30 & Chỉ các tháng t7, t9--t12 \\
-2009--2011 & 11--13 & Bị giới hạn nghiêm trọng \\
-2012--2017 & 29--30 & Bao phủ ổn định \\
-2018--2019 & 31 & Mở rộng nhẹ \\
-2020 (Tháng 1--Tháng 3) & 31 & Chỉ trước COVID \\
-2022--2026 & 29--31 & Phục hồi sau COVID \\
 \end{longtable}
+
+2008 (Tháng 7--Tháng 12) \textbar{} 30 \textbar{} Chỉ các tháng t7,
+t9--t12 \textbar{}
+
+2009--2011 \textbar{} 11--13 \textbar{} Bị giới hạn nghiêm trọng
+\textbar{}
+
+2012--2017 \textbar{} 29--30 \textbar{} Bao phủ ổn định \textbar{}
+
+2018--2019 \textbar{} 31 \textbar{} Mở rộng nhẹ \textbar{}
+
+2020 (Tháng 1--Tháng 3) \textbar{} 31 \textbar{} Chỉ trước COVID
+\textbar{}
+
+2022--2026 \textbar{} 29--31 \textbar{} Phục hồi sau COVID \textbar{}
 
 Khoảng trống bao phủ này có nghĩa là tổng số liệu tổng hợp cho giai đoạn
 2009--2011 thấp hơn thực tế một cách nhân tạo. Tất cả các phân tích xu
@@ -422,32 +437,37 @@ phải tháng 12 năm 2019.
 
 \subsection{Tạo đặc trưng}\label{tux1ea1o-ux111ux1eb7c-trux1b0ng}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.4091}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5909}}@{}}
+\begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Đặc trưng
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Mô tả
-\end{minipage} \\
+Đặc trưng & Mô tả \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{year} & Năm dương lịch \\
-\texttt{month} & Tháng (1--12) \\
-\texttt{time\_idx} & Năm + (tháng\$-\$1)/12, chỉ số thời gian liên
-tục \\
-\texttt{lag\_1} & Tổng lượt khách của tháng trước \\
-\texttt{lag\_12} & Cùng tháng của năm trước \\
-\texttt{rolling\_mean\_12} & Trung bình trượt 12 tháng qua \\
-\texttt{covid\_closed} & Chỉ báo nhị phân (1 cho tháng 4 năm 2020--tháng
-12 năm 2021, 0 cho các tháng khác) \\
-\texttt{exchange\_rate\_*} & Tỷ giá giao ngay VND so với 8 loại tiền tệ
-(tùy chọn, trễ 1 tháng) \\
-\texttt{visa\_*} & Các chỉ số chính sách thị thực (tùy chọn) \\
 \end{longtable}
+
+\texttt{year} \textbar{} Năm dương lịch \textbar{}
+
+\texttt{month} \textbar{} Tháng (1--12) \textbar{}
+
+\texttt{time\_idx} \textbar{} Năm + (tháng\$-\$1)/12, chỉ số thời gian
+liên tục \textbar{}
+
+\texttt{lag\_1} \textbar{} Tổng lượt khách của tháng trước \textbar{}
+
+\texttt{lag\_12} \textbar{} Cùng tháng của năm trước \textbar{}
+
+\texttt{rolling\_mean\_12} \textbar{} Trung bình trượt 12 tháng qua
+\textbar{}
+
+\texttt{covid\_closed} \textbar{} Chỉ báo nhị phân (1 cho tháng 4 năm
+2020--tháng 12 năm 2021, 0 cho các tháng khác) \textbar{}
+
+\texttt{exchange\_rate\_*} \textbar{} Tỷ giá giao ngay VND so với 8 loại
+tiền tệ (tùy chọn, trễ 1 tháng) \textbar{}
+
+\texttt{visa\_*} \textbar{} Các chỉ số chính sách thị thực (tùy chọn)
+\textbar{}
 
 Tỷ giá hối đoái được thu thập từ Yahoo Finance dưới dạng tỷ giá giao
 ngay cuối tháng {[}17{]}. Khi được sử dụng làm đặc trưng, tỷ giá được
@@ -724,10 +744,13 @@ Mô hình & Tham số & Cửa sổ ngữ cảnh \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-chronos-t5-tiny & 8M & 512 tokens \\
-chronos-t5-small & 46M & 512 tokens \\
-chronos-t5-base & 200M & 512 tokens \\
 \end{longtable}
+
+chronos-t5-tiny \textbar{} 8M \textbar{} 512 tokens \textbar{}
+
+chronos-t5-small \textbar{} 46M \textbar{} 512 tokens \textbar{}
+
+chronos-t5-base \textbar{} 200M \textbar{} 512 tokens \textbar{}
 
 \textbf{Lợi thế của dữ liệu hàng tháng:} Với 120 điểm ngữ cảnh (so với
 55 điểm theo quý), mô hình có tín hiệu dày đặc hơn để nhận dạng mẫu. Cửa
@@ -772,13 +795,25 @@ Mô hình & MAE & RMSE & MAPE & R² \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Chronos-T5-small & 170.625 & 214.069 & 10,77\% & −0,03 \\
-Linear Regression & 275.526 & 340.495 & 19,79\% & 0,24 \\
-Random Forest & 290.287 & 334.896 & 19,80\% & 0,27 \\
-XGBoost & 313.159 & 369.109 & 19,88\% & 0,11 \\
-SARIMAX (log) & 402.014 & 512.715 & 26,87\% & −0,71 \\
-CIR\# & 489.200 & 573.449 & 28,54\% & −1,14 \\
 \end{longtable}
+
+Chronos-T5-small \textbar{} 170.625 \textbar{} 214.069 \textbar{}
+10,77\% \textbar{} −0,03 \textbar{}
+
+Linear Regression \textbar{} 275.526 \textbar{} 340.495 \textbar{}
+19,79\% \textbar{} 0,24 \textbar{}
+
+Random Forest \textbar{} 290.287 \textbar{} 334.896 \textbar{} 19,80\%
+\textbar{} 0,27 \textbar{}
+
+XGBoost \textbar{} 313.159 \textbar{} 369.109 \textbar{} 19,88\%
+\textbar{} 0,11 \textbar{}
+
+SARIMAX (log) \textbar{} 402.014 \textbar{} 512.715 \textbar{} 26,87\%
+\textbar{} −0,71 \textbar{}
+
+CIR\# \textbar{} 489.200 \textbar{} 573.449 \textbar{} 28,54\%
+\textbar{} −1,14 \textbar{}
 
 \emph{Lưu ý: Các chỉ số chính xác được điền từ đầu ra của mô hình
 (model\_results.csv).}
@@ -928,19 +963,43 @@ Tháng & Dự báo & KTC 95\% Dưới & KTC 95\% Trên \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Tháng 1/2026 & 1.538.229 & 940.658 & 2.515.418 \\
-Tháng 2/2026 & 1.334.457 & 700.080 & 2.543.676 \\
-Tháng 3/2026 & 1.077.130 & 491.657 & 2.359.791 \\
-Tháng 4/2026 & 1.164.874 & 475.096 & 2.856.116 \\
-Tháng 5/2026 & 1.074.181 & 395.703 & 2.915.977 \\
-Tháng 6/2026 & 1.400.343 & 470.662 & 4.166.384 \\
-Tháng 7/2026 & 1.546.696 & 477.592 & 5.009.008 \\
-Tháng 8/2026 & 1.713.283 & 488.855 & 6.004.510 \\
-Tháng 9/2026 & 1.586.391 & 420.225 & 5.988.773 \\
-Tháng 10/2026 & 1.601.608 & 395.427 & 6.487.018 \\
-Tháng 11/2026 & 1.436.842 & 331.758 & 6.222.945 \\
-Tháng 12/2026 & 1.854.630 & 401.648 & 8.563.820 \\
 \end{longtable}
+
+Tháng 1/2026 \textbar{} 1.538.229 \textbar{} 940.658 \textbar{}
+2.515.418 \textbar{}
+
+Tháng 2/2026 \textbar{} 1.334.457 \textbar{} 700.080 \textbar{}
+2.543.676 \textbar{}
+
+Tháng 3/2026 \textbar{} 1.077.130 \textbar{} 491.657 \textbar{}
+2.359.791 \textbar{}
+
+Tháng 4/2026 \textbar{} 1.164.874 \textbar{} 475.096 \textbar{}
+2.856.116 \textbar{}
+
+Tháng 5/2026 \textbar{} 1.074.181 \textbar{} 395.703 \textbar{}
+2.915.977 \textbar{}
+
+Tháng 6/2026 \textbar{} 1.400.343 \textbar{} 470.662 \textbar{}
+4.166.384 \textbar{}
+
+Tháng 7/2026 \textbar{} 1.546.696 \textbar{} 477.592 \textbar{}
+5.009.008 \textbar{}
+
+Tháng 8/2026 \textbar{} 1.713.283 \textbar{} 488.855 \textbar{}
+6.004.510 \textbar{}
+
+Tháng 9/2026 \textbar{} 1.586.391 \textbar{} 420.225 \textbar{}
+5.988.773 \textbar{}
+
+Tháng 10/2026 \textbar{} 1.601.608 \textbar{} 395.427 \textbar{}
+6.487.018 \textbar{}
+
+Tháng 11/2026 \textbar{} 1.436.842 \textbar{} 331.758 \textbar{}
+6.222.945 \textbar{}
+
+Tháng 12/2026 \textbar{} 1.854.630 \textbar{} 401.648 \textbar{}
+8.563.820 \textbar{}
 
 Để ngăn chặn dự báo các lượt khách đến âm không thể có về mặt vật lý và
 ổn định phương sai, biến mục tiêu đã được biến đổi log (\(\log(y+1)\))
@@ -949,7 +1008,10 @@ trước khi điều chỉnh SARIMAX. Các dự báo và khoảng tin cậy kế
 nhiên giới hạn các cận dưới khoảng tin cậy ở mức 0 mà không cần cắt thủ
 công tùy ý. Cách tiếp cận này tạo ra các khoảng tin cậy rộng hơn so với
 mô hình thang đo gốc, phản ánh sự không đối xứng vốn có trong các quy
-trình nhân. \#\# Dự báo theo quốc gia nguồn (2026)
+trình nhân.
+
+\subsection{Dự báo theo quốc gia nguồn
+(2026)}\label{dux1ef1-buxe1o-theo-quux1ed1c-gia-nguux1ed3n-2026}
 
 \begin{figure}
 \centering
@@ -961,33 +1023,54 @@ vi mô hình hiển thị sự bất đồng giữa LR, RF, XGBoost và SARIMAX.
 Các mô hình tập hợp (trung bình của Hồi quy tuyến tính, Random Forest,
 XGBoost và SARIMAX) được điều chỉnh cho 5 quốc gia nguồn hàng đầu. Các
 mô hình cây sử dụng dự báo đệ quy để tạo dự đoán trước 12 tháng; SARIMAX
-sử dụng cấu trúc tự hồi quy trực tiếp. \textbar{} Tháng \textbar{} Hàn
-Quốc \textbar{} Trung Quốc \textbar{} Campuchia \textbar{} Nhật Bản
-\textbar{} Nga \textbar{}
-\textbar-------\textbar----------\textbar------------\textbar-----------\textbar----------\textbar-----\textbar{}
-\textbar{} Tháng 1/2026 \textbar{} 389.721 \textbar{} 212.894 \textbar{}
-32.843 \textbar{} 60.466 \textbar{} 14.745 \textbar{} \textbar{} Tháng
-2/2026 \textbar{} 407.507 \textbar{} 230.786 \textbar{} 31.082
-\textbar{} 60.571 \textbar{} 15.503 \textbar{} \textbar{} Tháng 3/2026
-\textbar{} 363.183 \textbar{} 226.083 \textbar{} 31.519 \textbar{}
-62.357 \textbar{} 14.771 \textbar{} \textbar{} Tháng 4/2026 \textbar{}
-350.430 \textbar{} 227.242 \textbar{} 30.196 \textbar{} 59.207
-\textbar{} 13.652 \textbar{} \textbar{} Tháng 5/2026 \textbar{} 354.600
-\textbar{} 245.202 \textbar{} 29.337 \textbar{} 60.160 \textbar{} 13.218
-\textbar{} \textbar{} Tháng 6/2026 \textbar{} 363.588 \textbar{} 252.661
-\textbar{} 28.884 \textbar{} 58.926 \textbar{} 12.304 \textbar{}
-\textbar{} Tháng 7/2026 \textbar{} 371.555 \textbar{} 265.062 \textbar{}
-30.280 \textbar{} 60.739 \textbar{} 11.455 \textbar{} \textbar{} Tháng
-8/2026 \textbar{} 420.453 \textbar{} 277.285 \textbar{} 29.165
-\textbar{} 75.738 \textbar{} 11.884 \textbar{} \textbar{} Tháng 9/2026
-\textbar{} 400.238 \textbar{} 269.141 \textbar{} 32.144 \textbar{}
-78.329 \textbar{} 12.094 \textbar{} \textbar{} Tháng 10/2026 \textbar{}
-406.438 \textbar{} 271.010 \textbar{} 32.529 \textbar{} 64.637
-\textbar{} 12.410 \textbar{} \textbar{} Tháng 11/2026 \textbar{} 411.074
-\textbar{} 288.898 \textbar{} 34.186 \textbar{} 66.296 \textbar{} 14.932
-\textbar{} \textbar{} Tháng 12/2026 \textbar{} 429.562 \textbar{}
-309.729 \textbar{} 34.750 \textbar{} 70.569 \textbar{} 15.117 \textbar{}
-\textbar{} \textbf{Tổng} \textbar{} \textbf{4.668.349} \textbar{}
+sử dụng cấu trúc tự hồi quy trực tiếp.
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+Tháng & Hàn Quốc & Trung Quốc & Campuchia & Nhật Bản & Nga \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\end{longtable}
+
+Tháng 1/2026 \textbar{} 389.721 \textbar{} 212.894 \textbar{} 32.843
+\textbar{} 60.466 \textbar{} 14.745 \textbar{}
+
+Tháng 2/2026 \textbar{} 407.507 \textbar{} 230.786 \textbar{} 31.082
+\textbar{} 60.571 \textbar{} 15.503 \textbar{}
+
+Tháng 3/2026 \textbar{} 363.183 \textbar{} 226.083 \textbar{} 31.519
+\textbar{} 62.357 \textbar{} 14.771 \textbar{}
+
+Tháng 4/2026 \textbar{} 350.430 \textbar{} 227.242 \textbar{} 30.196
+\textbar{} 59.207 \textbar{} 13.652 \textbar{}
+
+Tháng 5/2026 \textbar{} 354.600 \textbar{} 245.202 \textbar{} 29.337
+\textbar{} 60.160 \textbar{} 13.218 \textbar{}
+
+Tháng 6/2026 \textbar{} 363.588 \textbar{} 252.661 \textbar{} 28.884
+\textbar{} 58.926 \textbar{} 12.304 \textbar{}
+
+Tháng 7/2026 \textbar{} 371.555 \textbar{} 265.062 \textbar{} 30.280
+\textbar{} 60.739 \textbar{} 11.455 \textbar{}
+
+Tháng 8/2026 \textbar{} 420.453 \textbar{} 277.285 \textbar{} 29.165
+\textbar{} 75.738 \textbar{} 11.884 \textbar{}
+
+Tháng 9/2026 \textbar{} 400.238 \textbar{} 269.141 \textbar{} 32.144
+\textbar{} 78.329 \textbar{} 12.094 \textbar{}
+
+Tháng 10/2026 \textbar{} 406.438 \textbar{} 271.010 \textbar{} 32.529
+\textbar{} 64.637 \textbar{} 12.410 \textbar{}
+
+Tháng 11/2026 \textbar{} 411.074 \textbar{} 288.898 \textbar{} 34.186
+\textbar{} 66.296 \textbar{} 14.932 \textbar{}
+
+Tháng 12/2026 \textbar{} 429.562 \textbar{} 309.729 \textbar{} 34.750
+\textbar{} 70.569 \textbar{} 15.117 \textbar{}
+
+\textbf{Tổng} \textbar{} \textbf{4.668.349} \textbar{}
 \textbf{3.075.993} \textbar{} \textbf{376.915} \textbar{}
 \textbf{777.995} \textbar{} \textbf{162.085} \textbar{}
 
@@ -1024,41 +1107,50 @@ Tháng & Thực tế & Dự báo & Sai số \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Tháng 1/2026 & 1.641.403 & 1.169.591 & −28,7\% \\
-Tháng 2/2026 & 2.124.123 & 1.225.010 & −42,3\% \\
-Tháng 3/2026 & 1.540.586 & 1.077.132 & −30,1\% \\
-Tháng 4/2026 & 1.601.269 & 1.164.874 & −27,3\% \\
-Tháng 5/2026 & 1.553.853 & 1.074.181 & −30,8\% \\
-\textbf{MAPE} & & & \textbf{34,7\%} \\
 \end{longtable}
+
+Tháng 1/2026 \textbar{} 1.641.403 \textbar{} 1.169.591 \textbar{}
+−28,7\% \textbar{}
+
+Tháng 2/2026 \textbar{} 2.124.123 \textbar{} 1.225.010 \textbar{}
+−42,3\% \textbar{}
+
+Tháng 3/2026 \textbar{} 1.540.586 \textbar{} 1.077.132 \textbar{}
+−30,1\% \textbar{}
+
+Tháng 4/2026 \textbar{} 1.601.269 \textbar{} 1.164.874 \textbar{}
+−27,3\% \textbar{}
+
+Tháng 5/2026 \textbar{} 1.553.853 \textbar{} 1.074.181 \textbar{}
+−30,8\% \textbar{}
+
+\textbf{MAPE} \textbar{} \textbar{} \textbar{} \textbf{34,7\%}
+\textbar{}
 
 \textbf{Kiểm chứng theo quốc gia:}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2400}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3600}}@{}}
+\begin{longtable}[]{@{}lll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Quốc gia
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MAPE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Ghi chú
-\end{minipage} \\
+Quốc gia & MAPE & Ghi chú \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Hàn Quốc & 8,3\% & Phù hợp tốt nhất; mô hình nắm bắt mẫu mùa vụ tốt \\
-Trung Quốc & 48,1\% & Đánh giá thấp nhất quán; tăng trưởng cấu trúc từ
-2024 không được nắm bắt \\
-Nhật Bản & 25,9\% & Ngoại lệ tháng 2/2026 (844K so với
-\textasciitilde67K thông thường) có thể là bất thường dữ liệu nguồn \\
-Campuchia & 50,3\% & Thay đổi chế độ biên giới: miễn thị thực + đường
-bay mới + du lịch y tế; tháng 1/2026 đạt 223K (gấp 3 lần tháng
-12/2025) \\
 \end{longtable}
+
+Hàn Quốc \textbar{} 8,3\% \textbar{} Phù hợp tốt nhất; mô hình nắm bắt
+mẫu mùa vụ tốt \textbar{}
+
+Trung Quốc \textbar{} 48,1\% \textbar{} Đánh giá thấp nhất quán; tăng
+trưởng cấu trúc từ 2024 không được nắm bắt \textbar{}
+
+Nhật Bản \textbar{} 25,9\% \textbar{} Ngoại lệ tháng 2/2026 (844K so với
+\textasciitilde67K thông thường) có thể là bất thường dữ liệu nguồn
+\textbar{}
+
+Campuchia \textbar{} 50,3\% \textbar{} Thay đổi chế độ biên giới: miễn
+thị thực + đường bay mới + du lịch y tế; tháng 1/2026 đạt 223K (gấp 3
+lần tháng 12/2025) \textbar{}
 
 MAPE tổng hợp là 34,0\% xác nhận rằng mô hình SARIMAX đánh giá thấp nhất
 quán sự tăng tốc tăng trưởng sau COVID. Hàn Quốc là quốc gia duy nhất

@@ -91,6 +91,7 @@ The parser was verified against the known quarterly total: Hoa Ky (USA) Q1 2009 
 
 | Metric | Value |
 |--------|-------|
+
 | Total records | 4,692 |
 | Countries | 32 |
 | Date range | July 2008 -- May 2026 |
@@ -103,6 +104,7 @@ Country coverage is highly uneven across the time period:
 
 | Period | Countries per month | Note |
 |--------|-------------------|------|
+
 | 2008 (Jul--Dec) | 30 | t7, t9--t12 only |
 | 2009--2011 | 11--13 | Severely limited |
 | 2012--2017 | 29--30 | Stable coverage |
@@ -142,6 +144,7 @@ This yields 144 training observations and 24 test observations for monthly aggre
 
 | Feature | Description |
 |---------|-------------|
+
 | `year` | Calendar year |
 | `month` | Month (1--12) |
 | `time_idx` | Year + (month$-$1)/12, continuous time index |
@@ -281,6 +284,7 @@ Chronos [12] is a family of pretrained Transformer-based foundation models for t
 
 | Model | Parameters | Context window |
 |-------|-----------|---------------|
+
 | chronos-t5-tiny | 8M | 512 tokens |
 | chronos-t5-small | 46M | 512 tokens |
 | chronos-t5-base | 200M | 512 tokens |
@@ -303,6 +307,7 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 | Model              | MAE       | RMSE      | MAPE   | R²       |
 |--------------------|-----------|-----------|--------|----------|
+
 | Chronos-T5-small   | 170,625   | 214,069   | 10.77% | −0.0345  |
 | Linear Regression  | 275,526   | 340,495   | 19.79% | 0.2439   |
 | Random Forest      | 290,287   | 334,896   | 19.80% | 0.2685   |
@@ -354,10 +359,13 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 
 **Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a more interpretable uncertainty measure than the SARIMAX confidence interval, which spans several orders of magnitude due to the log-transformation. Furthermore, dynamic external features (such as exchange rates) were excluded from the final out-of-sample 2026 models to prevent data leakage, meaning the multi-step forecasts rely strictly on autoregressive patterns, calendar indices, and policy indicators.
+
 ## 12-Month Ensemble Forecast (2026)
 ![SARIMAX 12-month forecast for 2026 with 95\% confidence interval.](output/forecast_plot.png)
+
 | Month | Forecast | 95\% CI Lower | 95\% CI Upper |
 |-------|----------|--------------|--------------|
+
 | Jan 2026 | 1,538,229 | 940,658 | 2,515,418 |
 | Feb 2026 | 1,334,457 | 700,080 | 2,543,676 |
 | Mar 2026 | 1,077,130 | 491,657 | 2,359,791 |
@@ -372,12 +380,15 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 | Dec 2026 | 1,854,630 | 401,648 | 8,563,820 |
 
 To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes.
+
 ## Per-Country Forecasts (2026)
 
 Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMAX) were fitted to the top 5 source countries individually. The tree-based models use recursive forecasting to generate 12-month-ahead predictions; SARIMAX uses its autoregressive structure directly.
 ![Ensemble forecasts for top 5 source countries (2026). Model range band shows disagreement between LR, RF, XGBoost, and SARIMAX.](output/country_forecasts_plot.png)
+
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
+
 | Jan 2026 | 389,721 | 212,894 | 32,843 | 60,466 | 14,745 |
 | Feb 2026 | 407,507 | 230,786 | 31,082 | 60,571 | 15,503 |
 | Mar 2026 | 363,183 | 226,083 | 31,519 | 62,357 | 14,771 |
@@ -404,6 +415,7 @@ With actual data available for the first five months of 2026, we can evaluate th
 
 | Month | Actual | Forecast | Error |
 |-------|--------|----------|-------|
+
 | Jan 2026 | 1,641,403 | 1,169,591 | −28.7% |
 | Feb 2026 | 2,124,123 | 1,225,010 | −42.3% |
 | Mar 2026 | 1,540,586 | 1,077,132 | −30.1% |
@@ -415,6 +427,7 @@ With actual data available for the first five months of 2026, we can evaluate th
 
 | Country | MAPE | Notes |
 |---------|------|-------|
+
 | Hàn Quốc | 8.3% | Best fit; model captures seasonal pattern well |
 | Trung Quốc | 48.1% | Consistent underprediction; structural growth since 2024 not captured |
 | Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |

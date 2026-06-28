@@ -295,12 +295,13 @@ Metric & Value \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Total records & 4,692 \\
-Countries & 32 \\
-Date range & July 2008 -- May 2026 \\
-Missing year & 2021 (border closures) \\
-Incomplete year & 2020 (January--March only) \\
 \end{longtable}
+
+Total records \textbar{} 4,692 \textbar{}\\
+Countries \textbar{} 32 \textbar{}\\
+Date range \textbar{} July 2008 -- May 2026 \textbar{}\\
+Missing year \textbar{} 2021 (border closures) \textbar{}\\
+Incomplete year \textbar{} 2020 (January--March only) \textbar{}
 
 \subsection{Country Coverage Analysis}\label{country-coverage-analysis}
 
@@ -313,13 +314,14 @@ Period & Countries per month & Note \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-2008 (Jul--Dec) & 30 & t7, t9--t12 only \\
-2009--2011 & 11--13 & Severely limited \\
-2012--2017 & 29--30 & Stable coverage \\
-2018--2019 & 31 & Slight expansion \\
-2020 (Jan--Mar) & 31 & Pre-COVID only \\
-2022--2026 & 29--31 & Post-COVID recovery \\
 \end{longtable}
+
+2008 (Jul--Dec) \textbar{} 30 \textbar{} t7, t9--t12 only \textbar{}\\
+2009--2011 \textbar{} 11--13 \textbar{} Severely limited \textbar{}\\
+2012--2017 \textbar{} 29--30 \textbar{} Stable coverage \textbar{}\\
+2018--2019 \textbar{} 31 \textbar{} Slight expansion \textbar{}\\
+2020 (Jan--Mar) \textbar{} 31 \textbar{} Pre-COVID only \textbar{}\\
+2022--2026 \textbar{} 29--31 \textbar{} Post-COVID recovery \textbar{}
 
 This coverage gap means that aggregate totals for 2009--2011 are
 artificially low. All trend analyses in this report use the period 2012
@@ -399,31 +401,28 @@ quarterly analysis. The continuous calendar ensures that lag features
 
 \subsection{Feature Engineering}\label{feature-engineering}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.4091}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.5909}}@{}}
+\begin{longtable}[]{@{}ll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Feature
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Description
-\end{minipage} \\
+Feature & Description \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{year} & Calendar year \\
-\texttt{month} & Month (1--12) \\
-\texttt{time\_idx} & Year + (month\$-\$1)/12, continuous time index \\
-\texttt{lag\_1} & Previous month's total arrivals \\
-\texttt{lag\_12} & Same month in previous year \\
-\texttt{rolling\_mean\_12} & 12-month trailing average \\
-\texttt{covid\_closed} & Binary indicator (1 for April 2020--December
-2021, 0 otherwise) \\
-\texttt{exchange\_rate\_*} & VND spot rates vs.~8 currencies (optional,
-lagged by 1 month) \\
-\texttt{visa\_*} & Visa policy indicators (optional) \\
 \end{longtable}
+
+\texttt{year} \textbar{} Calendar year \textbar{}\\
+\texttt{month} \textbar{} Month (1--12) \textbar{}\\
+\texttt{time\_idx} \textbar{} Year + (month\$-\$1)/12, continuous time
+index \textbar{}\\
+\texttt{lag\_1} \textbar{} Previous month's total arrivals \textbar{}\\
+\texttt{lag\_12} \textbar{} Same month in previous year \textbar{}\\
+\texttt{rolling\_mean\_12} \textbar{} 12-month trailing average
+\textbar{}\\
+\texttt{covid\_closed} \textbar{} Binary indicator (1 for April
+2020--December 2021, 0 otherwise) \textbar{}\\
+\texttt{exchange\_rate\_*} \textbar{} VND spot rates vs.~8 currencies
+(optional, lagged by 1 month) \textbar{}\\
+\texttt{visa\_*} \textbar{} Visa policy indicators (optional) \textbar{}
 
 Exchange rates were obtained from Yahoo Finance as end-of-month spot
 rates {[}17{]}. When used as features, exchange rates are lagged by one
@@ -693,10 +692,11 @@ Model & Parameters & Context window \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-chronos-t5-tiny & 8M & 512 tokens \\
-chronos-t5-small & 46M & 512 tokens \\
-chronos-t5-base & 200M & 512 tokens \\
 \end{longtable}
+
+chronos-t5-tiny \textbar{} 8M \textbar{} 512 tokens \textbar{}\\
+chronos-t5-small \textbar{} 46M \textbar{} 512 tokens \textbar{}\\
+chronos-t5-base \textbar{} 200M \textbar{} 512 tokens \textbar{}
 
 \textbf{Advantage of monthly data:} With 120 context points (vs.~55
 quarterly), the model has a denser signal for pattern recognition. The
@@ -740,13 +740,20 @@ Model & MAE & RMSE & MAPE & R² \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Chronos-T5-small & 170,625 & 214,069 & 10.77\% & −0.0345 \\
-Linear Regression & 275,526 & 340,495 & 19.79\% & 0.2439 \\
-Random Forest & 290,287 & 334,896 & 19.80\% & 0.2685 \\
-XGBoost & 313,159 & 369,109 & 19.88\% & 0.1114 \\
-SARIMAX (log) & 402,014 & 512,715 & 26.87\% & −0.7145 \\
-CIR\# & 489,200 & 573,449 & 28.54\% & −1.1447 \\
 \end{longtable}
+
+Chronos-T5-small \textbar{} 170,625 \textbar{} 214,069 \textbar{}
+10.77\% \textbar{} −0.0345 \textbar{}\\
+Linear Regression \textbar{} 275,526 \textbar{} 340,495 \textbar{}
+19.79\% \textbar{} 0.2439 \textbar{}\\
+Random Forest \textbar{} 290,287 \textbar{} 334,896 \textbar{} 19.80\%
+\textbar{} 0.2685 \textbar{}\\
+XGBoost \textbar{} 313,159 \textbar{} 369,109 \textbar{} 19.88\%
+\textbar{} 0.1114 \textbar{}\\
+SARIMAX (log) \textbar{} 402,014 \textbar{} 512,715 \textbar{} 26.87\%
+\textbar{} −0.7145 \textbar{}\\
+CIR\# \textbar{} 489,200 \textbar{} 573,449 \textbar{} 28.54\%
+\textbar{} −1.1447 \textbar{}
 
 \textbf{Key observations:}
 
@@ -869,27 +876,51 @@ which spans several orders of magnitude due to the log-transformation.
 Furthermore, dynamic external features (such as exchange rates) were
 excluded from the final out-of-sample 2026 models to prevent data
 leakage, meaning the multi-step forecasts rely strictly on
-autoregressive patterns, calendar indices, and policy indicators. \#\#
-12-Month Ensemble Forecast (2026)
-\includegraphics{output/forecast_plot.png} \textbar{} Month \textbar{}
-Forecast \textbar{} 95\% CI Lower \textbar{} 95\% CI Upper \textbar{}
-\textbar-------\textbar----------\textbar--------------\textbar--------------\textbar{}
-\textbar{} Jan 2026 \textbar{} 1,538,229 \textbar{} 940,658 \textbar{}
-2,515,418 \textbar{} \textbar{} Feb 2026 \textbar{} 1,334,457 \textbar{}
-700,080 \textbar{} 2,543,676 \textbar{} \textbar{} Mar 2026 \textbar{}
-1,077,130 \textbar{} 491,657 \textbar{} 2,359,791 \textbar{} \textbar{}
+autoregressive patterns, calendar indices, and policy indicators.
+
+\subsection{12-Month Ensemble Forecast
+(2026)}\label{month-ensemble-forecast-2026}
+
+\begin{figure}
+\centering
+\includegraphics{output/forecast_plot.png}
+\caption{SARIMAX 12-month forecast for 2026 with 95\% confidence
+interval.}
+\end{figure}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Month & Forecast & 95\% CI Lower & 95\% CI Upper \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\end{longtable}
+
+Jan 2026 \textbar{} 1,538,229 \textbar{} 940,658 \textbar{} 2,515,418
+\textbar{}\\
+Feb 2026 \textbar{} 1,334,457 \textbar{} 700,080 \textbar{} 2,543,676
+\textbar{}\\
+Mar 2026 \textbar{} 1,077,130 \textbar{} 491,657 \textbar{} 2,359,791
+\textbar{}\\
 Apr 2026 \textbar{} 1,164,874 \textbar{} 475,096 \textbar{} 2,856,116
-\textbar{} \textbar{} May 2026 \textbar{} 1,074,181 \textbar{} 395,703
-\textbar{} 2,915,977 \textbar{} \textbar{} Jun 2026 \textbar{} 1,400,343
-\textbar{} 470,662 \textbar{} 4,166,384 \textbar{} \textbar{} Jul 2026
-\textbar{} 1,546,696 \textbar{} 477,592 \textbar{} 5,009,008 \textbar{}
-\textbar{} Aug 2026 \textbar{} 1,713,283 \textbar{} 488,855 \textbar{}
-6,004,510 \textbar{} \textbar{} Sep 2026 \textbar{} 1,586,391 \textbar{}
-420,225 \textbar{} 5,988,773 \textbar{} \textbar{} Oct 2026 \textbar{}
-1,601,608 \textbar{} 395,427 \textbar{} 6,487,018 \textbar{} \textbar{}
+\textbar{}\\
+May 2026 \textbar{} 1,074,181 \textbar{} 395,703 \textbar{} 2,915,977
+\textbar{}\\
+Jun 2026 \textbar{} 1,400,343 \textbar{} 470,662 \textbar{} 4,166,384
+\textbar{}\\
+Jul 2026 \textbar{} 1,546,696 \textbar{} 477,592 \textbar{} 5,009,008
+\textbar{}\\
+Aug 2026 \textbar{} 1,713,283 \textbar{} 488,855 \textbar{} 6,004,510
+\textbar{}\\
+Sep 2026 \textbar{} 1,586,391 \textbar{} 420,225 \textbar{} 5,988,773
+\textbar{}\\
+Oct 2026 \textbar{} 1,601,608 \textbar{} 395,427 \textbar{} 6,487,018
+\textbar{}\\
 Nov 2026 \textbar{} 1,436,842 \textbar{} 331,758 \textbar{} 6,222,945
-\textbar{} \textbar{} Dec 2026 \textbar{} 1,854,630 \textbar{} 401,648
-\textbar{} 8,563,820 \textbar{}
+\textbar{}\\
+Dec 2026 \textbar{} 1,854,630 \textbar{} 401,648 \textbar{} 8,563,820
+\textbar{}
 
 To prevent the forecasting of physically impossible negative arrivals
 and to stabilize variance, the target variable was log-transformed
@@ -898,42 +929,53 @@ confidence intervals were exponentiated back to the original scale using
 \(\exp(\cdot) - 1\), naturally bounding the lower confidence intervals
 at zero without the need for arbitrary manual clipping. This approach
 produces wider confidence intervals than the raw-scale model, reflecting
-the asymmetric uncertainty inherent in multiplicative processes. \#\#
-Per-Country Forecasts (2026)
+the asymmetric uncertainty inherent in multiplicative processes.
+
+\subsection{Per-Country Forecasts
+(2026)}\label{per-country-forecasts-2026}
 
 Ensemble models (averaging Linear Regression, Random Forest, XGBoost,
 and SARIMAX) were fitted to the top 5 source countries individually. The
 tree-based models use recursive forecasting to generate 12-month-ahead
 predictions; SARIMAX uses its autoregressive structure directly.
-\includegraphics{output/country_forecasts_plot.png} \textbar{} Month
-\textbar{} Hàn Quốc \textbar{} Trung Quốc \textbar{} Campuchia
-\textbar{} Nhật Bản \textbar{} Nga \textbar{}
-\textbar-------\textbar----------\textbar------------\textbar-----------\textbar----------\textbar-----\textbar{}
-\textbar{} Jan 2026 \textbar{} 389,721 \textbar{} 212,894 \textbar{}
-32,843 \textbar{} 60,466 \textbar{} 14,745 \textbar{} \textbar{} Feb
-2026 \textbar{} 407,507 \textbar{} 230,786 \textbar{} 31,082 \textbar{}
-60,571 \textbar{} 15,503 \textbar{} \textbar{} Mar 2026 \textbar{}
-363,183 \textbar{} 226,083 \textbar{} 31,519 \textbar{} 62,357
-\textbar{} 14,771 \textbar{} \textbar{} Apr 2026 \textbar{} 350,430
-\textbar{} 227,242 \textbar{} 30,196 \textbar{} 59,207 \textbar{} 13,652
-\textbar{} \textbar{} May 2026 \textbar{} 354,600 \textbar{} 245,202
-\textbar{} 29,337 \textbar{} 60,160 \textbar{} 13,218 \textbar{}
-\textbar{} Jun 2026 \textbar{} 363,588 \textbar{} 252,661 \textbar{}
-28,884 \textbar{} 58,926 \textbar{} 12,304 \textbar{} \textbar{} Jul
-2026 \textbar{} 371,555 \textbar{} 265,062 \textbar{} 30,280 \textbar{}
-60,739 \textbar{} 11,455 \textbar{} \textbar{} Aug 2026 \textbar{}
-420,453 \textbar{} 277,285 \textbar{} 29,165 \textbar{} 75,738
-\textbar{} 11,884 \textbar{} \textbar{} Sep 2026 \textbar{} 400,238
-\textbar{} 269,141 \textbar{} 32,144 \textbar{} 78,329 \textbar{} 12,094
-\textbar{} \textbar{} Oct 2026 \textbar{} 406,438 \textbar{} 271,010
-\textbar{} 32,529 \textbar{} 64,637 \textbar{} 12,410 \textbar{}
-\textbar{} Nov 2026 \textbar{} 411,074 \textbar{} 288,898 \textbar{}
-34,186 \textbar{} 66,296 \textbar{} 14,932 \textbar{} \textbar{} Dec
-2026 \textbar{} 429,562 \textbar{} 309,729 \textbar{} 34,750 \textbar{}
-70,569 \textbar{} 15,117 \textbar{} \textbar{} \textbf{Total} \textbar{}
-\textbf{4,668,349} \textbar{} \textbf{3,075,993} \textbar{}
-\textbf{376,915} \textbar{} \textbf{777,995} \textbar{} \textbf{162,085}
-\textbar{}
+\includegraphics{output/country_forecasts_plot.png}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule\noalign{}
+Month & Hàn Quốc & Trung Quốc & Campuchia & Nhật Bản & Nga \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\end{longtable}
+
+Jan 2026 \textbar{} 389,721 \textbar{} 212,894 \textbar{} 32,843
+\textbar{} 60,466 \textbar{} 14,745 \textbar{}\\
+Feb 2026 \textbar{} 407,507 \textbar{} 230,786 \textbar{} 31,082
+\textbar{} 60,571 \textbar{} 15,503 \textbar{}\\
+Mar 2026 \textbar{} 363,183 \textbar{} 226,083 \textbar{} 31,519
+\textbar{} 62,357 \textbar{} 14,771 \textbar{}\\
+Apr 2026 \textbar{} 350,430 \textbar{} 227,242 \textbar{} 30,196
+\textbar{} 59,207 \textbar{} 13,652 \textbar{}\\
+May 2026 \textbar{} 354,600 \textbar{} 245,202 \textbar{} 29,337
+\textbar{} 60,160 \textbar{} 13,218 \textbar{}\\
+Jun 2026 \textbar{} 363,588 \textbar{} 252,661 \textbar{} 28,884
+\textbar{} 58,926 \textbar{} 12,304 \textbar{}\\
+Jul 2026 \textbar{} 371,555 \textbar{} 265,062 \textbar{} 30,280
+\textbar{} 60,739 \textbar{} 11,455 \textbar{}\\
+Aug 2026 \textbar{} 420,453 \textbar{} 277,285 \textbar{} 29,165
+\textbar{} 75,738 \textbar{} 11,884 \textbar{}\\
+Sep 2026 \textbar{} 400,238 \textbar{} 269,141 \textbar{} 32,144
+\textbar{} 78,329 \textbar{} 12,094 \textbar{}\\
+Oct 2026 \textbar{} 406,438 \textbar{} 271,010 \textbar{} 32,529
+\textbar{} 64,637 \textbar{} 12,410 \textbar{}\\
+Nov 2026 \textbar{} 411,074 \textbar{} 288,898 \textbar{} 34,186
+\textbar{} 66,296 \textbar{} 14,932 \textbar{}\\
+Dec 2026 \textbar{} 429,562 \textbar{} 309,729 \textbar{} 34,750
+\textbar{} 70,569 \textbar{} 15,117 \textbar{}\\
+\textbf{Total} \textbar{} \textbf{4,668,349} \textbar{}
+\textbf{3,075,993} \textbar{} \textbf{376,915} \textbar{}
+\textbf{777,995} \textbar{} \textbf{162,085} \textbar{}
 
 \emph{Table shows ensemble mean of Linear Regression, Random Forest,
 XGBoost, and SARIMAX. Model disagreement range: 8.2M--10.1M total.}
@@ -962,40 +1004,41 @@ Month & Actual & Forecast & Error \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Jan 2026 & 1,641,403 & 1,169,591 & −28.7\% \\
-Feb 2026 & 2,124,123 & 1,225,010 & −42.3\% \\
-Mar 2026 & 1,540,586 & 1,077,132 & −30.1\% \\
-Apr 2026 & 1,601,269 & 1,164,874 & −27.3\% \\
-May 2026 & 1,553,853 & 1,074,181 & −30.8\% \\
-\textbf{MAPE} & & & \textbf{34.7\%} \\
 \end{longtable}
+
+Jan 2026 \textbar{} 1,641,403 \textbar{} 1,169,591 \textbar{} −28.7\%
+\textbar{}\\
+Feb 2026 \textbar{} 2,124,123 \textbar{} 1,225,010 \textbar{} −42.3\%
+\textbar{}\\
+Mar 2026 \textbar{} 1,540,586 \textbar{} 1,077,132 \textbar{} −30.1\%
+\textbar{}\\
+Apr 2026 \textbar{} 1,601,269 \textbar{} 1,164,874 \textbar{} −27.3\%
+\textbar{}\\
+May 2026 \textbar{} 1,553,853 \textbar{} 1,074,181 \textbar{} −30.8\%
+\textbar{}\\
+\textbf{MAPE} \textbar{} \textbar{} \textbar{} \textbf{34.7\%}
+\textbar{}
 
 \textbf{Per-country validation:}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4091}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2727}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3182}}@{}}
+\begin{longtable}[]{@{}lll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Country
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MAPE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Notes
-\end{minipage} \\
+Country & MAPE & Notes \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Hàn Quốc & 8.3\% & Best fit; model captures seasonal pattern well \\
-Trung Quốc & 48.1\% & Consistent underprediction; structural growth
-since 2024 not captured \\
-Nhật Bản & 25.9\% & Improved with corrected parser; seasonal pattern
-partially captured \\
-Campuchia & 50.3\% & Land-border regime shift: visa exemptions + new air
-routes + healthcare tourism; Jan 2026 hit 223K (3× Dec 2025) \\
 \end{longtable}
+
+Hàn Quốc \textbar{} 8.3\% \textbar{} Best fit; model captures seasonal
+pattern well \textbar{}\\
+Trung Quốc \textbar{} 48.1\% \textbar{} Consistent underprediction;
+structural growth since 2024 not captured \textbar{}\\
+Nhật Bản \textbar{} 25.9\% \textbar{} Improved with corrected parser;
+seasonal pattern partially captured \textbar{}\\
+Campuchia \textbar{} 50.3\% \textbar{} Land-border regime shift: visa
+exemptions + new air routes + healthcare tourism; Jan 2026 hit 223K (3×
+Dec 2025) \textbar{}
 
 \textbf{Russia (Nga) case study.} The model forecasts 7,000--12,000
 arrivals/month for Russia in 2026; actual figures are 113,000--137,000
