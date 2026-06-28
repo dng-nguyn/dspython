@@ -428,6 +428,8 @@ With actual data available for the first five months of 2026, we can evaluate th
 | Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |
 | Campuchia | 50.3% | Structural growth since late 2024 not captured by training data |
 
+**Russia (Nga) case study.** The model forecasts 7,000–12,000 arrivals/month for Russia in 2026; actual figures are 113,000–137,000 — a 10× error. This is not a model failure but a geopolitical regime shift. The Russia-Ukraine war (2022) closed EU and US destinations to Russian tourists. Vietnam, with its 45-day visa exemption, resumed direct flights (Aeroflot, VietJet, Vietnam Airlines), and affordable pricing, became a primary alternative. Russian arrivals grew from 39,921 (2022) to 689,714 (2025), surpassing the pre-pandemic peak of 646,524 (2019). No model trained on 2012–2023 data could anticipate this structural redirection of Russian outbound tourism [20].
+
 The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản February anomaly (844,009 arrivals versus a typical 50–90K range) warrants investigation as a potential source data error.
 
 
@@ -508,10 +510,12 @@ The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically under
 
 [19] Vietnam National Assembly, "Resolution on extension and amendment of e-visa policy," approved Jun. 24, 2023, effective Aug. 15, 2023.
 
-[20] Scikit-learn developers, "Scikit-learn: Machine Learning in Python," 2025. [Online]. Available: https://scikit-learn.org/
+[20] VietnamPlus, "Russian tourists to Vietnam surge in 2024," Vietnam News Agency, 2024. [Online]. Available: https://en.vietnamplus.vn/
 
-[21] T. Chen et al., "XGBoost Documentation," 2025. [Online]. Available: https://xgboost.readthedocs.io/
+[21] Scikit-learn developers, "Scikit-learn: Machine Learning in Python," 2025. [Online]. Available: https://scikit-learn.org/
 
-[22] Statsmodels developers, "Statsmodels: Statistical Modeling and Econometrics in Python," 2025. [Online]. Available: https://www.statsmodels.org/
+[22] T. Chen et al., "XGBoost Documentation," 2025. [Online]. Available: https://xgboost.readthedocs.io/
 
-[23] Amazon Science, "Chronos Forecasting," GitHub, 2024. [Online]. Available: https://github.com/amazon-science/chronos-forecasting
+[23] Statsmodels developers, "Statsmodels: Statistical Modeling and Econometrics in Python," 2025. [Online]. Available: https://www.statsmodels.org/
+
+[24] Amazon Science, "Chronos Forecasting," GitHub, 2024. [Online]. Available: https://github.com/amazon-science/chronos-forecasting
