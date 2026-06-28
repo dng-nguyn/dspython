@@ -168,7 +168,7 @@ tiết hơn.
   khách quốc tế đến Việt Nam
 \item
   So sánh các mô hình dự báo: Hồi quy tuyến tính (Linear Regression),
-  Random Forest, XGBoost, SARIMA, mô hình nền tảng Chronos-T5, và mô
+  Random Forest, XGBoost, SARIMAX, mô hình nền tảng Chronos-T5, và mô
   hình phương trình vi phân ngẫu nhiên CIR\#
 \item
   Đánh giá tác động của các đặc trưng bên ngoài (tỷ giá hối đoái, chính
@@ -765,34 +765,19 @@ kế cho các quy trình dừng, có xu hướng hồi quy về giá trị trung
 \caption{So sánh hiệu suất mô hình (MAE, MAPE, R\(^2\)).}
 \end{figure}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2258}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1613}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1935}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.1935}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.2258}}@{}}
+\begin{longtable}[]{@{}lllll@{}}
 \toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Mô hình
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MAE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-RMSE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-MAPE
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-R\(^2\)
-\end{minipage} \\
+Mô hình & MAE & RMSE & MAPE & R² \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Chronos-T5-small & 170.625 & 214.069 & 10,77\% & \$-\(0,03 |
-| Linear Regression | 275.526 | 340.495 | 19,79\% | 0,24 |
-| Random Forest | 290.287 | 334.896 | 19,80\% | 0,27 |
-| XGBoost | 313.159 | 369.109 | 19,88\% | 0,11 |
-| SARIMAX\)(1,1,1)(1,1,1)\_\{12\}\$ \\
-CIR\# & 489.200 & 573.449 & 28,54\% & \$-\$1,14 \\
+Chronos-T5-small & 170.625 & 214.069 & 10,77\% & −0,03 \\
+Linear Regression & 275.526 & 340.495 & 19,79\% & 0,24 \\
+Random Forest & 290.287 & 334.896 & 19,80\% & 0,27 \\
+XGBoost & 313.159 & 369.109 & 19,88\% & 0,11 \\
+SARIMAX (log) & 402.014 & 512.715 & 26,87\% & −0,71 \\
+CIR\# & 489.200 & 573.449 & 28,54\% & −1,14 \\
 \end{longtable}
 
 \emph{Lưu ý: Các chỉ số chính xác được điền từ đầu ra của mô hình
@@ -817,9 +802,12 @@ CIR\# & 489.200 & 573.449 & 28,54\% & \$-\$1,14 \\
   quý), cho phép các mô hình dựa trên cây quyết định tổng quát hóa tốt
   hơn.
 \item
-  SARIMAX với \(s = 12\) và biến exogenous \texttt{covid\_closed} (MAPE
-  = 21,66\%, R\(^2\) = \$-\$0,03) cải thiện so với SARIMA gốc không có
-  biến exogenous.
+  SARIMAX với mục tiêu biến đổi log và biến exogenous
+  \texttt{covid\_closed} (MAPE = 26,87\%, R\(^2\) = \$-\$0,71). Biến đổi
+  log \(\log(y+1)\) đảm bảo các khoảng tin cậy không âm một cách toán
+  học mà không cần cắt thủ công, nhưng R\(^2\) trên tập kiểm tra cho
+  thấy mô hình vẫn gặp khó khăn trong việc ngoại suy quỹ đạo tăng trưởng
+  sau COVID từ khuôn khổ quy trình dừng.
 \item
   CIR\# tiếp tục thất bại (MAPE = 28,54\%, R\(^2\) = \$-\$1,14) do vi
   phạm giả định hồi quy về giá trị trung bình, mặc dù có dữ liệu hàng
@@ -906,6 +894,20 @@ giá thấp mức độ phục hồi sau COVID. Các mô hình dựa trên cây 
 XGBoost) cho thấy sự biến động nhiều hơn trong các dự đoán, trong khi
 Hồi quy tuyến tính tạo ra các dự báo mượt mà hơn.
 
+\textbf{Ghi chú phương pháp dự báo.} Các mô hình dựa trên cây (Hồi quy
+tuyến tính, Random Forest, XGBoost) dựa vào \texttt{lag\_1} làm đặc
+trưng chính. Trên tập kiểm tra 24 tháng (2024--2025), giá trị
+\texttt{lag\_1} thực tế của mỗi tháng đều có sẵn, nên các mô hình này
+thực chất thực hiện dự đoán một bước. Để tạo dự báo trước 12 tháng thực
+sự, các mô hình này sẽ cần một chiến lược đệ quy: dự báo tháng \(t\),
+sau đó đưa dự báo đó trở lại làm đặc trưng \texttt{lag\_1} cho tháng
+\(t+1\). Cách tiếp cận này tích lũy sai số tại mỗi bước và không được sử
+dụng ở đây. Thay vào đó, dự báo 12 tháng cho năm 2026 được tạo độc quyền
+bởi SARIMAX, có cấu trúc tự hồi quy và mùa vụ tự nhiên tạo ra dự báo đa
+bước mà không cần đầu vào lag bên ngoài. Tỷ giá hối đoái và các đặc
+trưng bên ngoài khác đã bị loại khỏi dự báo ngoài mẫu để tránh rò rỉ dữ
+liệu.
+
 \subsection{Dự báo 12 tháng
 (2026)}\label{dux1ef1-buxe1o-12-thuxe1ng-2026}
 
@@ -923,92 +925,73 @@ Tháng & Dự báo & KTC 95\% Dưới & KTC 95\% Trên \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Tháng 1/2026 & 1.558.157 & 743.110 & 2.373.205 \\
-Tháng 2/2026 & 1.548.631 & 524.976 & 2.572.285 \\
-Tháng 3/2026 & 1.409.524 & 158.421 & 2.660.628 \\
-Tháng 4/2026 & 1.461.912 & 43.534 & 2.880.290 \\
-Tháng 5/2026 & 1.402.826 & 0 & 2.982.026 \\
-Tháng 6/2026 & 1.363.119 & 0 & 3.082.894 \\
-Tháng 7/2026 & 1.423.628 & 0 & 3.275.842 \\
-Tháng 8/2026 & 1.501.787 & 0 & 3.476.374 \\
-Tháng 9/2026 & 1.429.359 & 0 & 3.519.748 \\
-Tháng 10/2026 & 1.453.412 & 0 & 3.653.234 \\
-Tháng 11/2026 & 1.505.489 & 0 & 3.809.689 \\
-Tháng 12/2026 & 1.605.797 & 0 & 4.009.780 \\
+Tháng 1/2026 & 1.538.229 & 940.658 & 2.515.418 \\
+Tháng 2/2026 & 1.334.457 & 700.080 & 2.543.676 \\
+Tháng 3/2026 & 1.077.130 & 491.657 & 2.359.791 \\
+Tháng 4/2026 & 1.164.874 & 475.096 & 2.856.116 \\
+Tháng 5/2026 & 1.074.181 & 395.703 & 2.915.977 \\
+Tháng 6/2026 & 1.400.343 & 470.662 & 4.166.384 \\
+Tháng 7/2026 & 1.546.696 & 477.592 & 5.009.008 \\
+Tháng 8/2026 & 1.713.283 & 488.855 & 6.004.510 \\
+Tháng 9/2026 & 1.586.391 & 420.225 & 5.988.773 \\
+Tháng 10/2026 & 1.601.608 & 395.427 & 6.487.018 \\
+Tháng 11/2026 & 1.436.842 & 331.758 & 6.222.945 \\
+Tháng 12/2026 & 1.854.630 & 401.648 & 8.563.820 \\
 \end{longtable}
 
-Tất cả các cận dưới khoảng tin cậy đều không âm, được cắt về 0 khi sự
-không chắc chắn của mô hình tạo ra các giá trị âm không thể có.
-
-Các khoảng tin cậy được cắt về 0 ở cận dưới, vì lượng khách du lịch
-không thể âm. SARIMAX, được huấn luyện trên dữ liệu bao gồm giai đoạn
-đóng cửa COVID với biến exogenous \texttt{covid\_closed}, tạo ra dự báo
-có tính đến điểm gãy cấu trúc. Tuy nhiên, mô hình vẫn có xu hướng hồi
-quy về giá trị trung bình và tạo ra các dải không chắc chắn rộng, phản
-ánh thách thức cơ bản của việc ngoại suy quỹ đạo tăng trưởng từ một mô
-hình được thiết kế cho các quy trình dừng.
-
-\subsection{Dự báo theo quốc gia nguồn
-(2026)}\label{dux1ef1-buxe1o-theo-quux1ed1c-gia-nguux1ed3n-2026}
-
-Các mô hình SARIMAX cũng được điều chỉnh cho 5 quốc gia nguồn hàng đầu,
-mỗi quốc gia với đặc tả \((1,1,1)(1,1,1)_{12}\) và biến exogenous
-\texttt{covid\_closed}.
+Để ngăn chặn dự báo các lượt khách đến âm không thể có về mặt vật lý và
+ổn định phương sai, biến mục tiêu đã được biến đổi log (\(\log(y+1)\))
+trước khi điều chỉnh SARIMAX. Các dự báo và khoảng tin cậy kết quả đã
+được chuyển đổi ngược lại về thang đo gốc bằng \(\exp(\cdot) - 1\), tự
+nhiên giới hạn các cận dưới khoảng tin cậy ở mức 0 mà không cần cắt thủ
+công tùy ý. Cách tiếp cận này tạo ra các khoảng tin cậy rộng hơn so với
+mô hình thang đo gốc, phản ánh sự không đối xứng vốn có trong các quy
+trình nhân. \#\# Dự báo theo quốc gia nguồn (2026)
 
 \begin{figure}
 \centering
 \includegraphics{output/country_forecasts_plot.png}
 \caption{Dự báo 12 tháng của SARIMAX cho 5 quốc gia nguồn hàng đầu
-(2026).}
+(2026, biến đổi log).}
 \end{figure}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1273}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2182}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0909}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Tháng
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hàn Quốc
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trung Quốc
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Campuchia
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Nhật Bản
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Nga
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Tháng 1/2026 & 406.033 & 225.944 & 79.694 & 58.328 & 30.915 \\
-Tháng 2/2026 & 425.290 & 243.241 & 71.998 & 73.671 & 0 \\
-Tháng 3/2026 & 406.926 & 237.041 & 66.775 & 63.948 & 1.635 \\
-Tháng 4/2026 & 436.806 & 266.077 & 69.734 & 63.759 & 33.858 \\
-Tháng 5/2026 & 432.141 & 256.206 & 66.298 & 62.497 & 35.968 \\
-Tháng 6/2026 & 440.612 & 235.861 & 64.801 & 62.218 & 27.508 \\
-Tháng 7/2026 & 441.553 & 240.007 & 62.298 & 64.854 & 27.994 \\
-Tháng 8/2026 & 483.539 & 240.881 & 63.978 & 75.912 & 28.229 \\
-Tháng 9/2026 & 451.197 & 228.056 & 64.054 & 75.121 & 28.193 \\
-Tháng 10/2026 & 455.982 & 238.553 & 68.781 & 70.844 & 28.071 \\
-Tháng 11/2026 & 458.589 & 252.875 & 71.295 & 73.937 & 30.572 \\
-Tháng 12/2026 & 479.518 & 253.037 & 77.163 & 75.748 & 26.281 \\
-\textbf{Tổng} & \textbf{5.318.186} & \textbf{2.917.779} &
-\textbf{826.869} & \textbf{820.837} & \textbf{299.222} \\
-\end{longtable}
+Các mô hình SARIMAX cũng được điều chỉnh cho 5 quốc gia nguồn hàng đầu,
+mỗi quốc gia với đặc tả biến đổi log \((1,1,1)(1,1,1)_{12}\) và biến
+exogenous \texttt{covid\_closed}. \textbar{} Tháng \textbar{} Hàn Quốc
+\textbar{} Trung Quốc \textbar{} Campuchia \textbar{} Nhật Bản
+\textbar{} Nga \textbar{}
+\textbar-------\textbar----------\textbar------------\textbar-----------\textbar----------\textbar-----\textbar{}
+\textbar{} Tháng 1/2026 \textbar{} 362.533 \textbar{} 224.089 \textbar{}
+43.723 \textbar{} 47.358 \textbar{} 141.432 \textbar{} \textbar{} Tháng
+2/2026 \textbar{} 370.518 \textbar{} 236.649 \textbar{} 41.219
+\textbar{} 55.668 \textbar{} 164.831 \textbar{} \textbar{} Tháng 3/2026
+\textbar{} 355.806 \textbar{} 231.739 \textbar{} 38.627 \textbar{}
+52.316 \textbar{} 148.636 \textbar{} \textbar{} Tháng 4/2026 \textbar{}
+378.053 \textbar{} 265.488 \textbar{} 38.591 \textbar{} 50.945
+\textbar{} 165.096 \textbar{} \textbar{} Tháng 5/2026 \textbar{} 373.250
+\textbar{} 254.144 \textbar{} 36.658 \textbar{} 50.092 \textbar{}
+162.268 \textbar{} \textbar{} Tháng 6/2026 \textbar{} 380.791 \textbar{}
+238.941 \textbar{} 36.127 \textbar{} 49.878 \textbar{} 160.042
+\textbar{} \textbar{} Tháng 7/2026 \textbar{} 378.599 \textbar{} 244.291
+\textbar{} 34.608 \textbar{} 51.895 \textbar{} 154.678 \textbar{}
+\textbar{} Tháng 8/2026 \textbar{} 420.853 \textbar{} 246.601 \textbar{}
+35.461 \textbar{} 62.429 \textbar{} 162.852 \textbar{} \textbar{} Tháng
+9/2026 \textbar{} 387.020 \textbar{} 233.377 \textbar{} 35.073
+\textbar{} 59.689 \textbar{} 154.430 \textbar{} \textbar{} Tháng 10/2026
+\textbar{} 386.890 \textbar{} 240.010 \textbar{} 37.756 \textbar{}
+55.797 \textbar{} 154.497 \textbar{} \textbar{} Tháng 11/2026 \textbar{}
+383.187 \textbar{} 254.971 \textbar{} 38.787 \textbar{} 56.244
+\textbar{} 157.243 \textbar{} \textbar{} Tháng 12/2026 \textbar{}
+404.288 \textbar{} 259.547 \textbar{} 41.241 \textbar{} 58.898
+\textbar{} 160.726 \textbar{} \textbar{} \textbf{Tổng} \textbar{}
+\textbf{4.581.788} \textbar{} \textbf{2.930.847} \textbar{}
+\textbf{457.871} \textbar{} \textbf{651.209} \textbar{}
+\textbf{1.886.733} \textbar{}
 
-5 quốc gia hàng đầu chiếm 57,6\% tổng dự báo tích lũy năm 2026 (10,2
+5 quốc gia hàng đầu chiếm 59,3\% tổng dự báo tích lũy năm 2026 (10,5
 trên 17,7 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất,
-tiếp theo là Trung Quốc. Nga (Russia) cho thấy sự không chắc chắn dự báo
-cao nhất, với mô hình tạo ra cận dưới bị cắt về 0 cho tháng 2, phản ánh
-tính biến động mùa vụ trong một thị trường có khối lượng cơ bản thấp
-hơn.
+tiếp theo là Trung Quốc. Tất cả các cận dưới khoảng tin cậy theo quốc
+gia đều tự nhiên không âm nhờ biến đổi log, không cần cắt thủ công.
 
 \newpage
 

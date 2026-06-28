@@ -33,7 +33,7 @@ This study analyzes monthly international tourist arrivals to Vietnam from 12 so
 ## Objectives
 
 1. Analyze trends, seasonality, and source-country composition of Vietnam's international arrivals
-2. Compare forecasting models: Linear Regression, Random Forest, XGBoost, SARIMA, Chronos-T5 foundation model, and the CIR\# stochastic differential equation model
+2. Compare forecasting models: Linear Regression, Random Forest, XGBoost, SARIMAX, Chronos-T5 foundation model, and the CIR\# stochastic differential equation model
 3. Evaluate the impact of external features (exchange rates, visa policy) on forecast accuracy
 4. Generate 12-month-ahead forecasts with confidence intervals
 5. Document model assumptions, limitations, and boundary conditions
@@ -301,21 +301,21 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 ![Model performance comparison (MAE, MAPE, R$^2$).](output/model_comparison.png)
 
-| Model | MAE | RMSE | MAPE | R$^2$ |
-|-------|-----|------|------|-------|
-| Chronos-T5-small | 170,625 | 214,069 | 10.77\% | $-$0.0345 |
-| Linear Regression | 275,526 | 340,495 | 19.79\% | 0.2439 |
-| Random Forest | 290,287 | 334,896 | 19.80\% | 0.2685 |
-| XGBoost | 313,159 | 369,109 | 19.88\% | 0.1114 |
-| SARIMAX$(1,1,1)(1,1,1)_{12}$ | 320,315 | 396,549 | 21.66\% | $-$0.0256 |
-| CIR\# | 489,200 | 573,449 | 28.54\% | $-$1.1447 |
+| Model              | MAE       | RMSE      | MAPE   | R²       |
+|--------------------|-----------|-----------|--------|----------|
+| Chronos-T5-small   | 170,625   | 214,069   | 10.77% | −0.0345  |
+| Linear Regression  | 275,526   | 340,495   | 19.79% | 0.2439   |
+| Random Forest      | 290,287   | 334,896   | 19.80% | 0.2685   |
+| XGBoost            | 313,159   | 369,109   | 19.88% | 0.1114   |
+| SARIMAX (log)        | 402,014   | 512,715   | 26.87% | −0.7145  |
+| CIR#               | 489,200   | 573,449   | 28.54% | −1.1447  |
 
 **Key observations:**
 
 - **Chronos-T5-small achieves the best MAPE** (10.77\%) as a zero-shot foundation model, demonstrating strong zero-shot generalization without any training on this dataset.
 - **Linear Regression, Random Forest, and XGBoost** perform similarly (MAPE $\approx$ 19.8\%), with Random Forest achieving the highest R$^2$ (0.27). These models benefit from the `lag_1` feature but are limited by the structural break between training (2012--2019 + 2022--2023) and test (2024--2025) distributions.
 - **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor. The dominance of `lag_1` means the tree-based models function primarily as naive one-step-ahead forecasters. This works well on the 24-month test set (where each month's actual lag is available) but would degrade significantly in multi-step-ahead forecasting scenarios where lag values must be recursively predicted. The test-set MAPE therefore represents an upper bound on one-step-ahead accuracy, not true forecasting capability.
-- **SARIMAX** (MAPE = 21.66\%, R$^2$ = $-$0.03) with the `covid_closed` exogenous variable performs better than the original SARIMA without exogenous variables, but still struggles to extrapolate the post-COVID growth trend.
+- **SARIMAX** (MAPE = 26.87\%, R$^2$ = $-$0.71) with log-transformed target and `covid_closed` exogenous variable. The log-transformation $\log(y+1)$ ensures mathematically non-negative confidence intervals without arbitrary clipping, but the test-set R$^2$ indicates the model still struggles to extrapolate the post-COVID growth trend from a stationary-process framework.
 - **CIR\# fails** (MAPE = 28.54\%, R$^2$ = $-$1.14) despite having monthly data. The estimated $\kappa = 0.225$ is positive (mean-reverting), which conflicts with the upward-trending data. This confirms the model's documented boundary condition [13, 14].
 
 \newpage
@@ -354,52 +354,52 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 XGBoost and Random Forest track the actual values most closely, while SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides competitive zero-shot predictions without any training on this dataset.
 
+**Forecasting methodology note.** The tree-based models (Linear Regression, Random Forest, XGBoost) rely on `lag_1` as their dominant feature. On the 24-month test set (2024--2025), each month's actual `lag_1` value is available, so these models effectively perform one-step-ahead prediction. Generating a genuine 12-month-ahead forecast with these models would require a recursive strategy: predicting month $t$, then feeding that prediction back as the `lag_1` feature for month $t+1$. This approach accumulates error at each step and was not employed here. Instead, the 12-month forecast for 2026 is generated exclusively by SARIMAX, whose autoregressive and seasonal structure naturally produces multi-step-ahead predictions without requiring external lag inputs. Exchange rates and other external features were excluded from the out-of-sample forecast to prevent data leakage.
+
 ## 12-Month Forecast (2026)
 
 ![SARIMAX 12-month forecast for 2026 with 95\% confidence interval.](output/forecast_plot.png)
 
 | Month | Forecast | 95\% CI Lower | 95\% CI Upper |
 |-------|----------|--------------|--------------|
-| Jan 2026 | 1,558,157 | 743,110 | 2,373,205 |
-| Feb 2026 | 1,548,631 | 524,976 | 2,572,285 |
-| Mar 2026 | 1,409,524 | 158,421 | 2,660,628 |
-| Apr 2026 | 1,461,912 | 43,534 | 2,880,290 |
-| May 2026 | 1,402,826 | 0 | 2,982,026 |
-| Jun 2026 | 1,363,119 | 0 | 3,082,894 |
-| Jul 2026 | 1,423,628 | 0 | 3,275,842 |
-| Aug 2026 | 1,501,787 | 0 | 3,476,374 |
-| Sep 2026 | 1,429,359 | 0 | 3,519,748 |
-| Oct 2026 | 1,453,412 | 0 | 3,653,234 |
-| Nov 2026 | 1,505,489 | 0 | 3,809,689 |
-| Dec 2026 | 1,605,797 | 0 | 4,009,780 |
+| Jan 2026 | 1,538,229 | 940,658 | 2,515,418 |
+| Feb 2026 | 1,334,457 | 700,080 | 2,543,676 |
+| Mar 2026 | 1,077,130 | 491,657 | 2,359,791 |
+| Apr 2026 | 1,164,874 | 475,096 | 2,856,116 |
+| May 2026 | 1,074,181 | 395,703 | 2,915,977 |
+| Jun 2026 | 1,400,343 | 470,662 | 4,166,384 |
+| Jul 2026 | 1,546,696 | 477,592 | 5,009,008 |
+| Aug 2026 | 1,713,283 | 488,855 | 6,004,510 |
+| Sep 2026 | 1,586,391 | 420,225 | 5,988,773 |
+| Oct 2026 | 1,601,608 | 395,427 | 6,487,018 |
+| Nov 2026 | 1,436,842 | 331,758 | 6,222,945 |
+| Dec 2026 | 1,854,630 | 401,648 | 8,563,820 |
 
-All lower confidence bounds are non-negative, clipped to zero where the model's uncertainty would otherwise produce impossible negative arrivals.
-
-The confidence intervals are clipped to zero at the lower bound, since tourist arrivals cannot be negative. SARIMAX, trained on data including the COVID closure period with a `covid_closed` exogenous variable, forecasts a pattern that accounts for the structural break. However, the model still tends toward mean-reversion and produces wide uncertainty bands, reflecting the fundamental challenge of extrapolating a growth trend from a model designed for stationary processes.
+To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes.
 
 ## Per-Country Forecasts (2026)
 
-SARIMAX models were also fitted to the top 5 source countries individually, each with the same $(1,1,1)(1,1,1)_{12}$ specification and `covid_closed` exogenous variable.
+SARIMAX models were also fitted to the top 5 source countries individually, each with the same log-transformed $(1,1,1)(1,1,1)_{12}$ specification and `covid_closed` exogenous variable.
 
 ![SARIMAX 12-month forecasts for top 5 source countries (2026).](output/country_forecasts_plot.png)
 
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
-| Jan 2026 | 406,033 | 225,944 | 79,694 | 58,328 | 30,915 |
-| Feb 2026 | 425,290 | 243,241 | 71,998 | 73,671 | 0 |
-| Mar 2026 | 406,926 | 237,041 | 66,775 | 63,948 | 1,635 |
-| Apr 2026 | 436,806 | 266,077 | 69,734 | 63,759 | 33,858 |
-| May 2026 | 432,141 | 256,206 | 66,298 | 62,497 | 35,968 |
-| Jun 2026 | 440,612 | 235,861 | 64,801 | 62,218 | 27,508 |
-| Jul 2026 | 441,553 | 240,007 | 62,298 | 64,854 | 27,994 |
-| Aug 2026 | 483,539 | 240,881 | 63,978 | 75,912 | 28,229 |
-| Sep 2026 | 451,197 | 228,056 | 64,054 | 75,121 | 28,193 |
-| Oct 2026 | 455,982 | 238,553 | 68,781 | 70,844 | 28,071 |
-| Nov 2026 | 458,589 | 252,875 | 71,295 | 73,937 | 30,572 |
-| Dec 2026 | 479,518 | 253,037 | 77,163 | 75,748 | 26,281 |
-| **Total** | **5,318,186** | **2,917,779** | **826,869** | **820,837** | **299,222** |
+| Jan 2026 | 362,533 | 224,089 | 43,723 | 47,358 | 141,432 |
+| Feb 2026 | 370,518 | 236,649 | 41,219 | 55,668 | 164,831 |
+| Mar 2026 | 355,806 | 231,739 | 38,627 | 52,316 | 148,636 |
+| Apr 2026 | 378,053 | 265,488 | 38,591 | 50,945 | 165,096 |
+| May 2026 | 373,250 | 254,144 | 36,658 | 50,092 | 162,268 |
+| Jun 2026 | 380,791 | 238,941 | 36,127 | 49,878 | 160,042 |
+| Jul 2026 | 378,599 | 244,291 | 34,608 | 51,895 | 154,678 |
+| Aug 2026 | 420,853 | 246,601 | 35,461 | 62,429 | 162,852 |
+| Sep 2026 | 387,020 | 233,377 | 35,073 | 59,689 | 154,430 |
+| Oct 2026 | 386,890 | 240,010 | 37,756 | 55,797 | 154,497 |
+| Nov 2026 | 383,187 | 254,971 | 38,787 | 56,244 | 157,243 |
+| Dec 2026 | 404,288 | 259,547 | 41,241 | 58,898 | 160,726 |
+| **Total** | **4,581,788** | **2,930,847** | **457,871** | **651,209** | **1,886,733** |
 
-The top 5 countries account for 57.6\% of the total 2026 aggregate forecast (10.2M of 17.7M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. Russia (Nga) shows the highest forecast uncertainty, with the model producing a clipped zero lower bound for February reflecting seasonal volatility in a market with lower baseline volumes.
+The top 5 countries account for 59.3\% of the total 2026 aggregate forecast (10.5M of 17.7M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. All per-country lower confidence bounds are naturally non-negative through the log-transformation, with no manual clipping required.
 
 \newpage
 

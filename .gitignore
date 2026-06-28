@@ -9,3 +9,5 @@ _tmp_report.ipynb
 notebooks/data/
 data/cir sharp model.pdf
 report_review.md
+report/*.aux
+report/*.log
