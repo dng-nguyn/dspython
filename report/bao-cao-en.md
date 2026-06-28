@@ -91,7 +91,6 @@ The parser was verified against the known quarterly total: Hoa Ky (USA) Q1 2009 
 
 | Metric | Value |
 |--------|-------|
-
 | Total records | 4,692 |
 | Countries | 32 |
 | Date range | July 2008 -- May 2026 |
@@ -104,7 +103,6 @@ Country coverage is highly uneven across the time period:
 
 | Period | Countries per month | Note |
 |--------|-------------------|------|
-
 | 2008 (Jul--Dec) | 30 | t7, t9--t12 only |
 | 2009--2011 | 11--13 | Severely limited |
 | 2012--2017 | 29--30 | Stable coverage |
@@ -144,7 +142,6 @@ This yields 144 training observations and 24 test observations for monthly aggre
 
 | Feature | Description |
 |---------|-------------|
-
 | `year` | Calendar year |
 | `month` | Month (1--12) |
 | `time_idx` | Year + (month$-$1)/12, continuous time index |
@@ -284,7 +281,6 @@ Chronos [12] is a family of pretrained Transformer-based foundation models for t
 
 | Model | Parameters | Context window |
 |-------|-----------|---------------|
-
 | chronos-t5-tiny | 8M | 512 tokens |
 | chronos-t5-small | 46M | 512 tokens |
 | chronos-t5-base | 200M | 512 tokens |
@@ -307,7 +303,6 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 | Model              | MAE       | RMSE      | MAPE   | R²       |
 |--------------------|-----------|-----------|--------|----------|
-
 | Chronos-T5-small   | 170,625   | 214,069   | 10.77% | −0.0345  |
 | Linear Regression  | 275,526   | 340,495   | 19.79% | 0.2439   |
 | Random Forest      | 290,287   | 334,896   | 19.80% | 0.2685   |
@@ -365,7 +360,6 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 | Month | Forecast | 95\% CI Lower | 95\% CI Upper |
 |-------|----------|--------------|--------------|
-
 | Jan 2026 | 1,538,229 | 940,658 | 2,515,418 |
 | Feb 2026 | 1,334,457 | 700,080 | 2,543,676 |
 | Mar 2026 | 1,077,130 | 491,657 | 2,359,791 |
@@ -388,7 +382,6 @@ Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMA
 
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
-
 | Jan 2026 | 389,721 | 212,894 | 32,843 | 60,466 | 14,745 |
 | Feb 2026 | 407,507 | 230,786 | 31,082 | 60,571 | 15,503 |
 | Mar 2026 | 363,183 | 226,083 | 31,519 | 62,357 | 14,771 |
@@ -415,7 +408,6 @@ With actual data available for the first five months of 2026, we can evaluate th
 
 | Month | Actual | Forecast | Error |
 |-------|--------|----------|-------|
-
 | Jan 2026 | 1,641,403 | 1,169,591 | −28.7% |
 | Feb 2026 | 2,124,123 | 1,225,010 | −42.3% |
 | Mar 2026 | 1,540,586 | 1,077,132 | −30.1% |
@@ -427,7 +419,6 @@ With actual data available for the first five months of 2026, we can evaluate th
 
 | Country | MAPE | Notes |
 |---------|------|-------|
-
 | Hàn Quốc | 8.3% | Best fit; model captures seasonal pattern well |
 | Trung Quốc | 48.1% | Consistent underprediction; structural growth since 2024 not captured |
 | Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |
