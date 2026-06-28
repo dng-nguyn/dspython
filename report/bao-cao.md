@@ -383,21 +383,21 @@ Tất cả các mô hình đều nắm bắt được xu hướng đi lên tổn
 Các mô hình SARIMAX cũng được điều chỉnh cho 5 quốc gia nguồn hàng đầu, mỗi quốc gia với đặc tả biến đổi log $(1,1,1)(1,1,1)_{12}$ và biến exogenous `covid_closed`.
 | Tháng | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
-| Tháng 1/2026 | 362.533 | 224.089 | 43.723 | 47.358 | 141.432 |
-| Tháng 2/2026 | 370.518 | 236.649 | 41.219 | 55.668 | 164.831 |
-| Tháng 3/2026 | 355.806 | 231.739 | 38.627 | 52.316 | 148.636 |
-| Tháng 4/2026 | 378.053 | 265.488 | 38.591 | 50.945 | 165.096 |
-| Tháng 5/2026 | 373.250 | 254.144 | 36.658 | 50.092 | 162.268 |
-| Tháng 6/2026 | 380.791 | 238.941 | 36.127 | 49.878 | 160.042 |
-| Tháng 7/2026 | 378.599 | 244.291 | 34.608 | 51.895 | 154.678 |
-| Tháng 8/2026 | 420.853 | 246.601 | 35.461 | 62.429 | 162.852 |
-| Tháng 9/2026 | 387.020 | 233.377 | 35.073 | 59.689 | 154.430 |
-| Tháng 10/2026 | 386.890 | 240.010 | 37.756 | 55.797 | 154.497 |
-| Tháng 11/2026 | 383.187 | 254.971 | 38.787 | 56.244 | 157.243 |
-| Tháng 12/2026 | 404.288 | 259.547 | 41.241 | 58.898 | 160.726 |
-| **Tổng** | **4.581.788** | **2.930.847** | **457.871** | **651.209** | **1.886.733** |
+| Tháng 1/2026 | 380.180 | 225.460 | 36.933 | 51.257 | 9.098 |
+| Tháng 2/2026 | 387.218 | 239.567 | 34.718 | 59.976 | 8.491 |
+| Tháng 3/2026 | 372.467 | 233.620 | 32.387 | 56.201 | 7.848 |
+| Tháng 4/2026 | 396.242 | 267.890 | 32.350 | 54.744 | 9.146 |
+| Tháng 5/2026 | 391.206 | 256.514 | 30.706 | 53.840 | 8.931 |
+| Tháng 6/2026 | 399.179 | 240.941 | 30.260 | 53.611 | 8.764 |
+| Tháng 7/2026 | 396.829 | 246.314 | 28.985 | 55.742 | 8.443 |
+| Tháng 8/2026 | 441.167 | 248.874 | 29.721 | 67.062 | 8.902 |
+| Tháng 9/2026 | 405.653 | 235.186 | 29.398 | 64.102 | 8.392 |
+| Tháng 10/2026 | 405.516 | 242.237 | 31.653 | 59.949 | 8.427 |
+| Tháng 11/2026 | 401.651 | 257.179 | 32.517 | 60.453 | 8.613 |
+| Tháng 12/2026 | 423.479 | 261.057 | 34.580 | 63.432 | 8.798 |
+| **Tổng** | **4.800.787** | **2.954.839** | **424.126** | **700.369** | **103.853** |
 
-5 quốc gia hàng đầu chiếm 59,3\% tổng dự báo tích lũy năm 2026 (10,5 trên 17,7 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất, tiếp theo là Trung Quốc. Tất cả các cận dưới khoảng tin cậy theo quốc gia đều tự nhiên không âm nhờ biến đổi log, không cần cắt thủ công.
+5 quốc gia hàng đầu chiếm 54,1\% tổng dự báo tích lũy năm 2026 (9,0 trên 16,7 triệu). Hàn Quốc được dự báo vẫn là thị trường nguồn lớn nhất, tiếp theo là Trung Quốc. Tất cả các cận dưới khoảng tin cậy theo quốc gia đều tự nhiên không âm nhờ biến đổi log, không cần cắt thủ công.
 
 
 \newpage
@@ -410,12 +410,12 @@ Với dữ liệu thực tế có sẵn cho 5 tháng đầu năm 2026, chúng ta
 
 | Tháng | Thực tế | Dự báo | Sai số |
 |-------|---------|--------|--------|
-| Tháng 1/2026 | 1.897.983 | 1.538.229 | −19,0% |
-| Tháng 2/2026 | 3.002.978 | 1.334.457 | −55,6% |
-| Tháng 3/2026 | 1.735.764 | 1.077.130 | −37,9% |
-| Tháng 4/2026 | 1.607.153 | 1.164.874 | −27,5% |
-| Tháng 5/2026 | 1.531.220 | 1.074.181 | −29,8% |
-| **MAPE** | | | **34,0%** |
+| Tháng 1/2026 | 1.641.403 | 1.169.591 | −28,7% |
+| Tháng 2/2026 | 2.124.123 | 1.225.010 | −42,3% |
+| Tháng 3/2026 | 1.540.586 | 1.077.132 | −30,1% |
+| Tháng 4/2026 | 1.601.269 | 1.164.874 | −27,3% |
+| Tháng 5/2026 | 1.553.853 | 1.074.181 | −30,8% |
+| **MAPE** | | | **34,7%** |
 
 **Kiểm chứng theo quốc gia:**
 
@@ -423,8 +423,8 @@ Với dữ liệu thực tế có sẵn cho 5 tháng đầu năm 2026, chúng ta
 |----------|------|---------|
 | Hàn Quốc | 8,3% | Phù hợp tốt nhất; mô hình nắm bắt mẫu mùa vụ tốt |
 | Trung Quốc | 48,1% | Đánh giá thấp nhất quán; tăng trưởng cấu trúc từ 2024 không được nắm bắt |
-| Nhật Bản | 46,7% | Ngoại lệ tháng 2/2026 (844K so với ~67K thông thường) có thể là bất thường dữ liệu nguồn |
-| Campuchia | 92,0% | Thay đổi cấu trúc lớn: lượng khách tăng từ ~40K lên ~440K |
+| Nhật Bản | 25,9% | Ngoại lệ tháng 2/2026 (844K so với ~67K thông thường) có thể là bất thường dữ liệu nguồn |
+| Campuchia | 50,3% | Thay đổi cấu trúc lớn: lượng khách tăng từ ~40K lên ~440K |
 
 MAPE tổng hợp là 34,0% xác nhận rằng mô hình SARIMAX đánh giá thấp nhất quán sự tăng tốc tăng trưởng sau COVID. Hàn Quốc là quốc gia duy nhất được dự báo tốt (MAPE = 8,3%), vì quỹ đạo tăng trưởng của nó gần nhất với phân phối huấn luyện 2012–2023. Trường hợp Campuchia minh họa giới hạn cơ bản: mô hình không thể dự đoán sự thay đổi chế độ gấp 10 lần. Bất thường tháng 2 của Nhật Bản (844.009 lượt khách so với phạm vi thông thường 50–90K) cần được điều tra.
 

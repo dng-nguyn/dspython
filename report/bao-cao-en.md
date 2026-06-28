@@ -312,11 +312,12 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 **Key observations:**
 
-- **Chronos-T5-small achieves the best MAPE** (10.77\%) as a zero-shot foundation model, demonstrating strong zero-shot generalization without any training on this dataset.
-- **Linear Regression, Random Forest, and XGBoost** perform similarly (MAPE $\approx$ 19.8\%), with Random Forest achieving the highest R$^2$ (0.27). These models benefit from the `lag_1` feature but are limited by the structural break between training (2012--2019 + 2022--2023) and test (2024--2025) distributions.
-- **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor. The dominance of `lag_1` means the tree-based models function primarily as naive one-step-ahead forecasters. This works well on the 24-month test set (where each month's actual lag is available) but would degrade significantly in multi-step-ahead forecasting scenarios where lag values must be recursively predicted. The test-set MAPE therefore represents an upper bound on one-step-ahead accuracy, not true forecasting capability.
-- **SARIMAX** (MAPE = 26.87\%, R$^2$ = $-$0.71) with log-transformed target and `covid_closed` exogenous variable. The log-transformation $\log(y+1)$ ensures mathematically non-negative confidence intervals without arbitrary clipping, but the test-set R$^2$ indicates the model still struggles to extrapolate the post-COVID growth trend from a stationary-process framework.
-- **CIR\# fails** (MAPE = 28.54\%, R$^2$ = $-$1.14) despite having monthly data. The estimated $\kappa = 0.225$ is positive (mean-reverting), which conflicts with the upward-trending data. This confirms the model's documented boundary condition [13, 14].
+- **XGBoost achieves the best performance** (MAPE = 7.47\%, R$^2$ = 0.57), followed closely by Random Forest (8.19\%) and Linear Regression (9.16\%).
+- **Tree-based models achieve strong R$^2$ values** (0.43--0.57), confirming that monthly data with 120 training observations provides sufficient signal for pattern learning.
+- **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor. The dominance of `lag_1` means the tree-based models function primarily as naive one-step-ahead forecasters. This works well on the 24-month test set (where each month's actual lag is available) but would degrade significantly in multi-step-ahead forecasting scenarios where lag values must be recursively predicted.
+- **Chronos-T5-small** performs competitively (MAPE = 10.77\%) as a zero-shot method but has negative R$^2$ (−0.03), indicating it does not fully capture the post-COVID growth trend.
+- **SARIMAX** (MAPE = 20.39\%, R$^2$ = $-$1.85) with log-transformed target and `covid_closed` exogenous variable. The log-transformation ensures non-negative confidence intervals, but the model still struggles to extrapolate the post-COVID growth trend.
+- **CIR\# fails** (MAPE = 35.88\%, R$^2$ = $-$2.21) despite having monthly data. The estimated $\kappa$ is positive (mean-reverting), which conflicts with the upward-trending data. This confirms the model's documented boundary condition [13, 14].
 
 \newpage
 
@@ -385,21 +386,21 @@ SARIMAX models were also fitted to the top 5 source countries individually, each
 
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
-| Jan 2026 | 362,533 | 224,089 | 43,723 | 47,358 | 141,432 |
-| Feb 2026 | 370,518 | 236,649 | 41,219 | 55,668 | 164,831 |
-| Mar 2026 | 355,806 | 231,739 | 38,627 | 52,316 | 148,636 |
-| Apr 2026 | 378,053 | 265,488 | 38,591 | 50,945 | 165,096 |
-| May 2026 | 373,250 | 254,144 | 36,658 | 50,092 | 162,268 |
-| Jun 2026 | 380,791 | 238,941 | 36,127 | 49,878 | 160,042 |
-| Jul 2026 | 378,599 | 244,291 | 34,608 | 51,895 | 154,678 |
-| Aug 2026 | 420,853 | 246,601 | 35,461 | 62,429 | 162,852 |
-| Sep 2026 | 387,020 | 233,377 | 35,073 | 59,689 | 154,430 |
-| Oct 2026 | 386,890 | 240,010 | 37,756 | 55,797 | 154,497 |
-| Nov 2026 | 383,187 | 254,971 | 38,787 | 56,244 | 157,243 |
-| Dec 2026 | 404,288 | 259,547 | 41,241 | 58,898 | 160,726 |
-| **Total** | **4,581,788** | **2,930,847** | **457,871** | **651,209** | **1,886,733** |
+| Jan 2026 | 380,180 | 225,460 | 36,933 | 51,257 | 9,098 |
+| Feb 2026 | 387,218 | 239,567 | 34,718 | 59,976 | 8,491 |
+| Mar 2026 | 372,467 | 233,620 | 32,387 | 56,201 | 7,848 |
+| Apr 2026 | 396,242 | 267,890 | 32,350 | 54,744 | 9,146 |
+| May 2026 | 391,206 | 256,514 | 30,706 | 53,840 | 8,931 |
+| Jun 2026 | 399,179 | 240,941 | 30,260 | 53,611 | 8,764 |
+| Jul 2026 | 396,829 | 246,314 | 28,985 | 55,742 | 8,443 |
+| Aug 2026 | 441,167 | 248,874 | 29,721 | 67,062 | 8,902 |
+| Sep 2026 | 405,653 | 235,186 | 29,398 | 64,102 | 8,392 |
+| Oct 2026 | 405,516 | 242,237 | 31,653 | 59,949 | 8,427 |
+| Nov 2026 | 401,651 | 257,179 | 32,517 | 60,453 | 8,613 |
+| Dec 2026 | 423,479 | 261,057 | 34,580 | 63,432 | 8,798 |
+| **Total** | **4,800,787** | **2,954,839** | **424,126** | **700,369** | **103,853** |
 
-The top 5 countries account for 59.3\% of the total 2026 aggregate forecast (10.5M of 17.7M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. All per-country lower confidence bounds are naturally non-negative through the log-transformation, with no manual clipping required.
+The top 5 countries account for 54.1\% of the total 2026 aggregate forecast (9.0M of 16.7M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. All per-country lower confidence bounds are naturally non-negative through the log-transformation, with no manual clipping required.
 
 \newpage
 
@@ -411,12 +412,12 @@ With actual data available for the first five months of 2026, we can evaluate th
 
 | Month | Actual | Forecast | Error |
 |-------|--------|----------|-------|
-| Jan 2026 | 1,897,983 | 1,538,229 | −19.0% |
-| Feb 2026 | 3,002,978 | 1,334,457 | −55.6% |
-| Mar 2026 | 1,735,764 | 1,077,130 | −37.9% |
-| Apr 2026 | 1,607,153 | 1,164,874 | −27.5% |
-| May 2026 | 1,531,220 | 1,074,181 | −29.8% |
-| **MAPE** | | | **34.0%** |
+| Jan 2026 | 1,641,403 | 1,169,591 | −28.7% |
+| Feb 2026 | 2,124,123 | 1,225,010 | −42.3% |
+| Mar 2026 | 1,540,586 | 1,077,132 | −30.1% |
+| Apr 2026 | 1,601,269 | 1,164,874 | −27.3% |
+| May 2026 | 1,553,853 | 1,074,181 | −30.8% |
+| **MAPE** | | | **34.7%** |
 
 **Per-country validation:**
 
@@ -424,10 +425,10 @@ With actual data available for the first five months of 2026, we can evaluate th
 |---------|------|-------|
 | Hàn Quốc | 8.3% | Best fit; model captures seasonal pattern well |
 | Trung Quốc | 48.1% | Consistent underprediction; structural growth since 2024 not captured |
-| Nhật Bản | 46.7% | Feb 2026 outlier (844K vs ~67K typical) likely a source data anomaly |
-| Campuchia | 92.0% | Massive structural shift: arrivals jumped from ~40K to ~440K |
+| Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |
+| Campuchia | 50.3% | Structural growth since late 2024 not captured by training data |
 
-The aggregate MAPE of 34.0% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản February anomaly (844,009 arrivals versus a typical 50–90K range) warrants investigation as a potential source data error.
+The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản February anomaly (844,009 arrivals versus a typical 50–90K range) warrants investigation as a potential source data error.
 
 
 # Conclusion

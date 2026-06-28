@@ -45,15 +45,6 @@ md("## 1. Thu thập và parse dữ liệu hàng tháng")
 code("""REGIONAL = ['Các thị trường khác', 'Tổng số', 'Totals']
 REGIONAL_PREFIXES = ['Châu']
 
-def parse_text_nodes(tr):
-    texts = []
-    for child in tr:
-        if child.text and child.text.strip():
-            texts.append(child.text.strip())
-        if child.tail and child.tail.strip():
-            texts.append(child.tail.strip())
-    return texts
-
 all_dfs = []
 for m in range(1, 13):
     path = f'data/t{m}.xls'
@@ -63,51 +54,44 @@ for m in range(1, 13):
         tree = html.parse(f)
     trs = tree.xpath('.//tr')
     year_cols = {}
-    for tr in trs:
-        texts = parse_text_nodes(tr)
-        if not texts:
-            continue
+    for tr in trs[:5]:
+        texts = []
+        for child in tr:
+            if child.text and child.text.strip(): texts.append(child.text.strip())
+            if child.tail and child.tail.strip(): texts.append(child.tail.strip())
         if 'Năm' in texts:
             year_start = texts.index('Năm') + 1
-            year_cols = {}
             yi = 0
             for i in range(year_start, len(texts)):
                 if texts[i].isdigit() and len(texts[i]) == 4:
                     year_cols[yi] = int(texts[i])
                     yi += 1
-            continue
-        if not year_cols:
-            continue
-        country = None
-        data_start = 0
-        for i, t in enumerate(texts):
-            if t and not t.replace('.', '').replace(',', '').isdigit():
-                country = t
-                data_start = i + 1
-                break
-        if not country:
-            continue
-        if any(r in country for r in REGIONAL):
-            continue
-        if any(country.startswith(p) for p in REGIONAL_PREFIXES):
-            continue
-        nums = []
-        for t in texts[data_start:]:
-            cleaned = t.replace('.', '').replace(',', '').strip()
-            if cleaned.isdigit():
-                nums.append(int(cleaned))
-        for (yi, year), val in zip(year_cols.items(), nums[:len(year_cols)]):
-            if val > 0:
-                all_dfs.append({'country': country, 'year': year, 'month': m, 'arrivals': val})
+            break
+    for tr in trs:
+        tds = tr.xpath('.//td')
+        if len(tds) < 2: continue
+        country = (tds[0].text or '').strip() or (tds[0].tail or '').strip()
+        if not country: continue
+        if any(r in country for r in REGIONAL): continue
+        if any(country.startswith(p) for p in REGIONAL_PREFIXES): continue
+        data_tds = tds[1:]
+        for yi, year in year_cols.items():
+            if yi < len(data_tds):
+                raw = (data_tds[yi].text or '').strip() or (data_tds[yi].tail or '').strip()
+                cleaned = raw.replace('.', '').replace(',', '').strip()
+                if cleaned.isdigit():
+                    val = int(cleaned)
+                    if val > 0:
+                        all_dfs.append({'country': country, 'year': year, 'month': m, 'arrivals': val})
 
 df = pd.DataFrame(all_dfs)
 df = df.sort_values(['country', 'year', 'month']).reset_index(drop=True)
 df.to_csv('output/df_monthly.csv', index=False)
 
-# Verification
 usa_q1 = df[(df['country']=='Hoa Kỳ') & (df['year']==2009) & (df['month'].isin([1,2,3]))]
-print(f"\\nVerification — Hoa Kỳ Q1/2009: {usa_q1['arrivals'].sum():,} (expected 104,520)")
-print(f"Total: {len(df)} records, {df['country'].nunique()} countries, {df['year'].nunique()} years")""")
+print(f"\nVerification — Hoa Kỳ Q1/2009: {usa_q1['arrivals'].sum():,} (expected 104,520)")
+print(f"Total: {len(df)} records, {df['country'].nunique()} countries, {df['year'].nunique()} years"""")
+
 
 # --- Clean & Aggregate ---
 md("## 2. Làm sạch và tổng hợp")
