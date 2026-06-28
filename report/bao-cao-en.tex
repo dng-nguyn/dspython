@@ -753,13 +753,19 @@ CIR\# & 489,200 & 573,449 & 28.54\% & −1.1447 \\
 \begin{itemize}
 \tightlist
 \item
-  \textbf{XGBoost achieves the best performance} (MAPE = 7.47\%, R\(^2\)
-  = 0.57), followed closely by Random Forest (8.19\%) and Linear
-  Regression (9.16\%).
+  \textbf{Chronos-T5-small achieves the lowest overall error} (MAPE =
+  10.77\%, MAE = 170,625), demonstrating the strong zero-shot
+  generalization of foundation models on complex, structurally broken
+  datasets. Its negative R\(^2\) (\$-\$0.03) reflects the difficulty of
+  extrapolating the post-COVID growth trend from a model pretrained on
+  general time-series patterns.
 \item
-  \textbf{Tree-based models achieve strong R\(^2\) values} (0.43--0.57),
-  confirming that monthly data with 120 training observations provides
-  sufficient signal for pattern learning.
+  \textbf{Linear Regression and tree-based models achieve moderate but
+  positive R\(^2\) values} (0.11--0.27) and similar MAPEs (\(\approx\)
+  19.8\%). While they successfully extract some signal from the data,
+  their accuracy is heavily constrained by the structural break between
+  the training period (2012--2023, including zero-imputed COVID months)
+  and the test period (2024--2025 post-COVID recovery).
 \item
   \textbf{Feature importance} (Random Forest): \texttt{lag\_1} dominates
   at 69.8\%, followed by \texttt{lag\_12} (11.3\%) and
@@ -771,16 +777,13 @@ CIR\# & 489,200 & 573,449 & 28.54\% & −1.1447 \\
   multi-step-ahead forecasting scenarios where lag values must be
   recursively predicted.
 \item
-  \textbf{Chronos-T5-small} performs competitively (MAPE = 10.77\%) as a
-  zero-shot method but has negative R\(^2\) (−0.03), indicating it does
-  not fully capture the post-COVID growth trend.
-\item
-  \textbf{SARIMAX} (MAPE = 20.39\%, R\(^2\) = \$-\$1.85) with
+  \textbf{SARIMAX} (MAPE = 26.87\%, R\(^2\) = \$-\$0.71) with
   log-transformed target and \texttt{covid\_closed} exogenous variable.
   The log-transformation ensures non-negative confidence intervals, but
-  the model still struggles to extrapolate the post-COVID growth trend.
+  the model still struggles to extrapolate the post-COVID growth trend
+  from a stationary-process framework.
 \item
-  \textbf{CIR\# fails} (MAPE = 35.88\%, R\(^2\) = \$-\$2.21) despite
+  \textbf{CIR\# fails} (MAPE = 28.54\%, R\(^2\) = \$-\$1.14) despite
   having monthly data. The estimated \(\kappa\) is positive
   (mean-reverting), which conflicts with the upward-trending data. This
   confirms the model's documented boundary condition {[}13, 14{]}.
@@ -851,9 +854,11 @@ Set)}\label{predicted-vs.-actual-test-set}
 (2024--2025).}
 \end{figure}
 
-XGBoost and Random Forest track the actual values most closely, while
-SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides
-competitive zero-shot predictions without any training on this dataset.
+XGBoost and Random Forest track the actual values most closely (MAPE
+\(\approx\) 20\%), while SARIMAX and CIR\# diverge significantly.
+Chronos-T5-small provides the best overall accuracy (MAPE = 10.77\%) as
+a zero-shot method. Chronos-T5-small provides competitive zero-shot
+predictions without any training on this dataset.
 
 \textbf{Forecasting methodology note.} All four models generate
 12-month-ahead forecasts for 2026. The tree-based models (Linear
@@ -867,36 +872,31 @@ more robust forecast than any single model. The shaded band shows the
 range between the most optimistic and most pessimistic model --- a more
 interpretable uncertainty measure than the SARIMAX confidence interval,
 which spans several orders of magnitude due to the log-transformation.
-
-\subsection{12-Month Forecast (2026)}\label{month-forecast-2026}
-
-\begin{figure}
-\centering
+Furthermore, dynamic external features (such as exchange rates) were
+excluded from the final out-of-sample 2026 models to prevent data
+leakage, meaning the multi-step forecasts rely strictly on
+autoregressive patterns, calendar indices, and policy indicators. \#\#
+12-Month Ensemble Forecast (2026)
 \includegraphics{output/forecast_plot.png}
-\caption{SARIMAX 12-month forecast for 2026 with 95\% confidence
-interval.}
-\end{figure}
-
-\begin{longtable}[]{@{}llll@{}}
-\toprule\noalign{}
-Month & Forecast & 95\% CI Lower & 95\% CI Upper \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Jan 2026 & 1,538,229 & 940,658 & 2,515,418 \\
-Feb 2026 & 1,334,457 & 700,080 & 2,543,676 \\
-Mar 2026 & 1,077,130 & 491,657 & 2,359,791 \\
-Apr 2026 & 1,164,874 & 475,096 & 2,856,116 \\
-May 2026 & 1,074,181 & 395,703 & 2,915,977 \\
-Jun 2026 & 1,400,343 & 470,662 & 4,166,384 \\
-Jul 2026 & 1,546,696 & 477,592 & 5,009,008 \\
-Aug 2026 & 1,713,283 & 488,855 & 6,004,510 \\
-Sep 2026 & 1,586,391 & 420,225 & 5,988,773 \\
-Oct 2026 & 1,601,608 & 395,427 & 6,487,018 \\
-Nov 2026 & 1,436,842 & 331,758 & 6,222,945 \\
-Dec 2026 & 1,854,630 & 401,648 & 8,563,820 \\
-\end{longtable}
+\includegraphics{output/forecast_plot.png} \textbar{} Month \textbar{}
+Forecast \textbar{} 95\% CI Lower \textbar{} 95\% CI Upper \textbar{}
+\textbar-------\textbar----------\textbar--------------\textbar--------------\textbar{}
+\textbar{} Jan 2026 \textbar{} 1,538,229 \textbar{} 940,658 \textbar{}
+2,515,418 \textbar{} \textbar{} Feb 2026 \textbar{} 1,334,457 \textbar{}
+700,080 \textbar{} 2,543,676 \textbar{} \textbar{} Mar 2026 \textbar{}
+1,077,130 \textbar{} 491,657 \textbar{} 2,359,791 \textbar{} \textbar{}
+Apr 2026 \textbar{} 1,164,874 \textbar{} 475,096 \textbar{} 2,856,116
+\textbar{} \textbar{} May 2026 \textbar{} 1,074,181 \textbar{} 395,703
+\textbar{} 2,915,977 \textbar{} \textbar{} Jun 2026 \textbar{} 1,400,343
+\textbar{} 470,662 \textbar{} 4,166,384 \textbar{} \textbar{} Jul 2026
+\textbar{} 1,546,696 \textbar{} 477,592 \textbar{} 5,009,008 \textbar{}
+\textbar{} Aug 2026 \textbar{} 1,713,283 \textbar{} 488,855 \textbar{}
+6,004,510 \textbar{} \textbar{} Sep 2026 \textbar{} 1,586,391 \textbar{}
+420,225 \textbar{} 5,988,773 \textbar{} \textbar{} Oct 2026 \textbar{}
+1,601,608 \textbar{} 395,427 \textbar{} 6,487,018 \textbar{} \textbar{}
+Nov 2026 \textbar{} 1,436,842 \textbar{} 331,758 \textbar{} 6,222,945
+\textbar{} \textbar{} Dec 2026 \textbar{} 1,854,630 \textbar{} 401,648
+\textbar{} 8,563,820 \textbar{}
 
 To prevent the forecasting of physically impossible negative arrivals
 and to stabilize variance, the target variable was log-transformed
@@ -905,61 +905,51 @@ confidence intervals were exponentiated back to the original scale using
 \(\exp(\cdot) - 1\), naturally bounding the lower confidence intervals
 at zero without the need for arbitrary manual clipping. This approach
 produces wider confidence intervals than the raw-scale model, reflecting
-the asymmetric uncertainty inherent in multiplicative processes.
+the asymmetric uncertainty inherent in multiplicative processes. To
+prevent the forecasting of physically impossible negative arrivals and
+to stabilize variance, the target variable was log-transformed
+(\(\log(y+1)\)) prior to SARIMAX fitting. The resulting forecasts and
+confidence intervals were exponentiated back to the original scale using
+\(\exp(\cdot) - 1\), naturally bounding the lower confidence intervals
+at zero without the need for arbitrary manual clipping. This approach
+produces wider confidence intervals than the raw-scale model, reflecting
+the asymmetric uncertainty inherent in multiplicative processes. The
+SARIMAX-only forecast is evaluated against actual 2026 data in Section
+8.4. \#\# Per-Country Forecasts (2026)
 
-\subsection{Per-Country Forecasts
-(2026)}\label{per-country-forecasts-2026}
-
-SARIMAX models were also fitted to the top 5 source countries
-individually, each with the same log-transformed \((1,1,1)(1,1,1)_{12}\)
-specification and \texttt{covid\_closed} exogenous variable.
-
-\begin{figure}
-\centering
-\includegraphics{output/country_forecasts_plot.png}
-\caption{SARIMAX 12-month forecasts for top 5 source countries (2026).}
-\end{figure}
-
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1273}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2182}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.2000}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.1818}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.0909}}@{}}
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Month
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Hàn Quốc
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trung Quốc
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Campuchia
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Nhật Bản
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Nga
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Jan 2026 & 389,721 & 212,894 & 32,843 & 60,466 & 14,745 \\
-Feb 2026 & 407,507 & 230,786 & 31,082 & 60,571 & 15,503 \\
-Mar 2026 & 363,183 & 226,083 & 31,519 & 62,357 & 14,771 \\
-Apr 2026 & 350,430 & 227,242 & 30,196 & 59,207 & 13,652 \\
-May 2026 & 354,600 & 245,202 & 29,337 & 60,160 & 13,218 \\
-Jun 2026 & 363,588 & 252,661 & 28,884 & 58,926 & 12,304 \\
-Jul 2026 & 371,555 & 265,062 & 30,280 & 60,739 & 11,455 \\
-Aug 2026 & 420,453 & 277,285 & 29,165 & 75,738 & 11,884 \\
-Sep 2026 & 400,238 & 269,141 & 32,144 & 78,329 & 12,094 \\
-Oct 2026 & 406,438 & 271,010 & 32,529 & 64,637 & 12,410 \\
-Nov 2026 & 411,074 & 288,898 & 34,186 & 66,296 & 14,932 \\
-Dec 2026 & 429,562 & 309,729 & 34,750 & 70,569 & 15,117 \\
-\textbf{Total} & \textbf{4,668,349} & \textbf{3,075,993} &
-\textbf{376,915} & \textbf{777,995} & \textbf{162,085} \\
-\end{longtable}
+Ensemble models (averaging Linear Regression, Random Forest, XGBoost,
+and SARIMAX) were fitted to the top 5 source countries individually. The
+tree-based models use recursive forecasting to generate 12-month-ahead
+predictions; SARIMAX uses its autoregressive structure directly.
+\includegraphics{output/country_forecasts_plot.png} \textbar{} Month
+\textbar{} Hàn Quốc \textbar{} Trung Quốc \textbar{} Campuchia
+\textbar{} Nhật Bản \textbar{} Nga \textbar{}
+\textbar-------\textbar----------\textbar------------\textbar-----------\textbar----------\textbar-----\textbar{}
+\textbar{} Jan 2026 \textbar{} 389,721 \textbar{} 212,894 \textbar{}
+32,843 \textbar{} 60,466 \textbar{} 14,745 \textbar{} \textbar{} Feb
+2026 \textbar{} 407,507 \textbar{} 230,786 \textbar{} 31,082 \textbar{}
+60,571 \textbar{} 15,503 \textbar{} \textbar{} Mar 2026 \textbar{}
+363,183 \textbar{} 226,083 \textbar{} 31,519 \textbar{} 62,357
+\textbar{} 14,771 \textbar{} \textbar{} Apr 2026 \textbar{} 350,430
+\textbar{} 227,242 \textbar{} 30,196 \textbar{} 59,207 \textbar{} 13,652
+\textbar{} \textbar{} May 2026 \textbar{} 354,600 \textbar{} 245,202
+\textbar{} 29,337 \textbar{} 60,160 \textbar{} 13,218 \textbar{}
+\textbar{} Jun 2026 \textbar{} 363,588 \textbar{} 252,661 \textbar{}
+28,884 \textbar{} 58,926 \textbar{} 12,304 \textbar{} \textbar{} Jul
+2026 \textbar{} 371,555 \textbar{} 265,062 \textbar{} 30,280 \textbar{}
+60,739 \textbar{} 11,455 \textbar{} \textbar{} Aug 2026 \textbar{}
+420,453 \textbar{} 277,285 \textbar{} 29,165 \textbar{} 75,738
+\textbar{} 11,884 \textbar{} \textbar{} Sep 2026 \textbar{} 400,238
+\textbar{} 269,141 \textbar{} 32,144 \textbar{} 78,329 \textbar{} 12,094
+\textbar{} \textbar{} Oct 2026 \textbar{} 406,438 \textbar{} 271,010
+\textbar{} 32,529 \textbar{} 64,637 \textbar{} 12,410 \textbar{}
+\textbar{} Nov 2026 \textbar{} 411,074 \textbar{} 288,898 \textbar{}
+34,186 \textbar{} 66,296 \textbar{} 14,932 \textbar{} \textbar{} Dec
+2026 \textbar{} 429,562 \textbar{} 309,729 \textbar{} 34,750 \textbar{}
+70,569 \textbar{} 15,117 \textbar{} \textbar{} \textbf{Total} \textbar{}
+\textbf{4,668,349} \textbar{} \textbf{3,075,993} \textbar{}
+\textbf{376,915} \textbar{} \textbf{777,995} \textbar{} \textbf{162,085}
+\textbar{}
 
 \emph{Table shows ensemble mean of Linear Regression, Random Forest,
 XGBoost, and SARIMAX. Model disagreement range: 8.2M--10.1M total.}
@@ -977,14 +967,9 @@ interval.
 2026)}\label{forecast-validation-janmay-2026}
 
 With actual data available for the first five months of 2026, we can
-evaluate the SARIMAX forecast against reality.
-
-\begin{figure}
-\centering
+evaluate the SARIMAX-only forecast against reality (the ensemble
+forecast uses the same SARIMAX component for its aggregate prediction).
 \includegraphics{output/forecast_validation.png}
-\caption{Forecast vs Actual for Jan---May 2026 (aggregate and top source
-countries).}
-\end{figure}
 
 \begin{longtable}[]{@{}llll@{}}
 \toprule\noalign{}
@@ -1071,9 +1056,11 @@ systematically underestimates post-COVID growth acceleration. Hàn Quốc
 is the only country well-predicted (MAPE = 8.3\%), as its growth
 trajectory most closely resembles the 2012--2023 training distribution.
 The Campuchia case illustrates a fundamental limitation: a model trained
-on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản
-February anomaly (844,009 arrivals versus a typical 50--90K range)
-warrants investigation as a potential source data error.
+on pre-2024 data cannot anticipate a 10× regime shift. The aggregate
+MAPE of 34.7\% confirms that the SARIMAX model systematically
+underestimates post-COVID growth acceleration. Hàn Quốc is the only
+country well-predicted (MAPE = 8.3\%), as its growth trajectory most
+closely resembles the 2012--2023 training distribution.
 
 \section{Conclusion}\label{conclusion}
 
@@ -1101,9 +1088,10 @@ warrants investigation as a potential source data error.
   summer peak in June--August.
 \item
   \textbf{Post-COVID structural break} remains the dominant challenge.
-  Three models (XGBoost, Random Forest, Linear Regression) achieve
-  positive R\(^2\) values, while SARIMAX, Chronos, and CIR\# remain
-  negative because the test distribution (2024--2025 recovery) differs
+  Three models (Random Forest, Linear Regression, XGBoost) achieve
+  positive R\(^2\) values (0.11--0.27), while Chronos, SARIMAX, and
+  CIR\# remain negative (\$-\$0.03, \$-\$0.71, \$-\$1.14 respectively)
+  because the test distribution (2024--2025 recovery) differs
   fundamentally from the training distribution (2012--2023).
 \item
   \textbf{CIR\# fails on trending data.} Despite having monthly data as

@@ -889,10 +889,12 @@ tra)}\label{dux1ef1-ux111ouxe1n-so-vux1edbi-thux1ef1c-tux1ebf-tux1eadp-kiux1ec3m
 (2022--2025).}
 \end{figure}
 
-Tất cả các mô hình đều nắm bắt được xu hướng đi lên tổng thể nhưng đánh
-giá thấp mức độ phục hồi sau COVID. Các mô hình dựa trên cây (RF,
-XGBoost) cho thấy sự biến động nhiều hơn trong các dự đoán, trong khi
-Hồi quy tuyến tính tạo ra các dự báo mượt mà hơn.
+XGBoost và Random Forest theo dõi giá trị thực tế chặt chẽ nhất (MAPE
+\(\approx\) 20\%), trong khi SARIMAX và CIR\# phân kỳ đáng kể.
+Chronos-T5-small cung cấp dự báo zero-shot cạnh tranh tốt nhất (MAPE =
+10,77\%). Các mô hình dựa trên cây (RF, XGBoost) cho thấy sự biến động
+nhiều hơn trong các dự đoán, trong khi Hồi quy tuyến tính tạo ra các dự
+báo mượt mà hơn.
 
 \textbf{Ghi chú phương pháp dự báo.} Tất cả bốn mô hình tạo dự báo trước
 12 tháng cho năm 2026. Các mô hình dựa trên cây (Hồi quy tuyến tính,
@@ -904,10 +906,13 @@ tạo dự báo đa bước trực tiếp. Giá trị trung bình tập hợp (h
 màu đỏ) lấy trung bình của cả bốn mô hình, cung cấp dự báo mạnh mẽ hơn
 bất kỳ mô hình đơn lẻ nào. Dải bóng hiển thị phạm vi giữa mô hình lạc
 quan nhất và bi quan nhất --- thước đo dễ hiểu hơn khoảng tin cậy
-SARIMAX.
+SARIMAX. Hơn nữa, các đặc trưng bên ngoài động (như tỷ giá hối đoái) đã
+bị loại khỏi các mô hình dự báo ngoài mẫu cuối cùng năm 2026 để tránh rò
+rỉ dữ liệu, nghĩa là các dự báo đa bước dựa hoàn toàn vào các mẫu tự hồi
+quy, chỉ số lịch và chỉ báo chính sách.
 
-\subsection{Dự báo 12 tháng
-(2026)}\label{dux1ef1-buxe1o-12-thuxe1ng-2026}
+\subsection{Dự báo tập hợp 12 tháng
+(2026)}\label{dux1ef1-buxe1o-tux1eadp-hux1ee3p-12-thuxe1ng-2026}
 
 \begin{figure}
 \centering
@@ -949,14 +954,15 @@ trình nhân. \#\# Dự báo theo quốc gia nguồn (2026)
 \begin{figure}
 \centering
 \includegraphics{output/country_forecasts_plot.png}
-\caption{Dự báo 12 tháng của SARIMAX cho 5 quốc gia nguồn hàng đầu
-(2026, biến đổi log).}
+\caption{Dự báo tập hợp cho 5 quốc gia nguồn hàng đầu (2026). Dải phạm
+vi mô hình hiển thị sự bất đồng giữa LR, RF, XGBoost và SARIMAX.}
 \end{figure}
 
-Các mô hình SARIMAX cũng được điều chỉnh cho 5 quốc gia nguồn hàng đầu,
-mỗi quốc gia với đặc tả biến đổi log \((1,1,1)(1,1,1)_{12}\) và biến
-exogenous \texttt{covid\_closed}. \textbar{} Tháng \textbar{} Hàn Quốc
-\textbar{} Trung Quốc \textbar{} Campuchia \textbar{} Nhật Bản
+Các mô hình tập hợp (trung bình của Hồi quy tuyến tính, Random Forest,
+XGBoost và SARIMAX) được điều chỉnh cho 5 quốc gia nguồn hàng đầu. Các
+mô hình cây sử dụng dự báo đệ quy để tạo dự đoán trước 12 tháng; SARIMAX
+sử dụng cấu trúc tự hồi quy trực tiếp. \textbar{} Tháng \textbar{} Hàn
+Quốc \textbar{} Trung Quốc \textbar{} Campuchia \textbar{} Nhật Bản
 \textbar{} Nga \textbar{}
 \textbar-------\textbar----------\textbar------------\textbar-----------\textbar----------\textbar-----\textbar{}
 \textbar{} Tháng 1/2026 \textbar{} 389.721 \textbar{} 212.894 \textbar{}
@@ -1001,7 +1007,8 @@ cậy SARIMAX.
 1--5/2026)}\label{kiux1ec3m-chux1ee9ng-dux1ef1-buxe1o-thuxe1ng-152026}
 
 Với dữ liệu thực tế có sẵn cho 5 tháng đầu năm 2026, chúng ta có thể
-đánh giá dự báo SARIMAX so với thực tế.
+đánh giá dự báo chỉ-SARIMAX so với thực tế (dự báo tập hợp sử dụng thành
+phần SARIMAX tương tự cho dự báo tổng hợp).
 
 \begin{figure}
 \centering
@@ -1057,9 +1064,7 @@ MAPE tổng hợp là 34,0\% xác nhận rằng mô hình SARIMAX đánh giá th
 quán sự tăng tốc tăng trưởng sau COVID. Hàn Quốc là quốc gia duy nhất
 được dự báo tốt (MAPE = 8,3\%), vì quỹ đạo tăng trưởng của nó gần nhất
 với phân phối huấn luyện 2012--2023. Trường hợp Campuchia minh họa giới
-hạn cơ bản: mô hình không thể dự đoán sự thay đổi chế độ gấp 10 lần. Bất
-thường tháng 2 của Nhật Bản (844.009 lượt khách so với phạm vi thông
-thường 50--90K) cần được điều tra.
+hạn cơ bản: mô hình không thể dự đoán sự thay đổi chế độ gấp 10 lần.
 
 \section{Kết luận}\label{kux1ebft-luux1eadn}
 
@@ -1089,10 +1094,11 @@ thường 50--90K) cần được điều tra.
   tháng 6--Tháng 8.
 \item
   \textbf{Điểm gãy cấu trúc sau COVID} vẫn là thách thức thống trị. Ba
-  mô hình (XGBoost, Random Forest, Linear Regression) đạt giá trị
-  R\(^2\) dương, trong khi SARIMAX, Chronos và CIR\# vẫn ở mức âm vì
-  phân phối của tập kiểm tra (phục hồi 2024--2025) khác biệt cơ bản so
-  với phân phối của tập huấn luyện (2012--2023).
+  mô hình (Random Forest, Linear Regression, XGBoost) đạt giá trị
+  R\(^2\) dương (0,11--0,27), trong khi Chronos, SARIMAX và CIR\# vẫn ở
+  mức âm (\$-\$0,03, \$-\$0,71, \$-\$1,14) vì phân phối của tập kiểm tra
+  (phục hồi 2024--2025) khác biệt cơ bản so với phân phối của tập huấn
+  luyện (2012--2023).
 \item
   \textbf{CIR\# thất bại trên dữ liệu có xu hướng.} Mặc dù có dữ liệu
   hàng tháng như khuyến nghị của Orlando và Bufalo {[}13{]}, giả định

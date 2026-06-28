@@ -312,12 +312,11 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 **Key observations:**
 
-- **XGBoost achieves the best performance** (MAPE = 7.47\%, R$^2$ = 0.57), followed closely by Random Forest (8.19\%) and Linear Regression (9.16\%).
-- **Tree-based models achieve strong R$^2$ values** (0.43--0.57), confirming that monthly data with 120 training observations provides sufficient signal for pattern learning.
+- **Chronos-T5-small achieves the lowest overall error** (MAPE = 10.77\%, MAE = 170,625), demonstrating the strong zero-shot generalization of foundation models on complex, structurally broken datasets. Its negative R$^2$ ($-$0.03) reflects the difficulty of extrapolating the post-COVID growth trend from a model pretrained on general time-series patterns.
+- **Linear Regression and tree-based models achieve moderate but positive R$^2$ values** (0.11--0.27) and similar MAPEs ($\approx$ 19.8\%). While they successfully extract some signal from the data, their accuracy is heavily constrained by the structural break between the training period (2012--2023, including zero-imputed COVID months) and the test period (2024--2025 post-COVID recovery).
 - **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor. The dominance of `lag_1` means the tree-based models function primarily as naive one-step-ahead forecasters. This works well on the 24-month test set (where each month's actual lag is available) but would degrade significantly in multi-step-ahead forecasting scenarios where lag values must be recursively predicted.
-- **Chronos-T5-small** performs competitively (MAPE = 10.77\%) as a zero-shot method but has negative R$^2$ (−0.03), indicating it does not fully capture the post-COVID growth trend.
-- **SARIMAX** (MAPE = 20.39\%, R$^2$ = $-$1.85) with log-transformed target and `covid_closed` exogenous variable. The log-transformation ensures non-negative confidence intervals, but the model still struggles to extrapolate the post-COVID growth trend.
-- **CIR\# fails** (MAPE = 35.88\%, R$^2$ = $-$2.21) despite having monthly data. The estimated $\kappa$ is positive (mean-reverting), which conflicts with the upward-trending data. This confirms the model's documented boundary condition [13, 14].
+- **SARIMAX** (MAPE = 26.87\%, R$^2$ = $-$0.71) with log-transformed target and `covid_closed` exogenous variable. The log-transformation ensures non-negative confidence intervals, but the model still struggles to extrapolate the post-COVID growth trend from a stationary-process framework.
+- **CIR\# fails** (MAPE = 28.54\%, R$^2$ = $-$1.14) despite having monthly data. The estimated $\kappa$ is positive (mean-reverting), which conflicts with the upward-trending data. This confirms the model's documented boundary condition [13, 14].
 
 \newpage
 
@@ -353,14 +352,12 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 ![Predicted vs. actual monthly arrivals for the test set (2024--2025).](output/pred_vs_actual.png)
 
-XGBoost and Random Forest track the actual values most closely, while SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides competitive zero-shot predictions without any training on this dataset.
+XGBoost and Random Forest track the actual values most closely (MAPE $\approx$ 20\%), while SARIMAX and CIR\# diverge significantly. Chronos-T5-small provides the best overall accuracy (MAPE = 10.77\%) as a zero-shot method. Chronos-T5-small provides competitive zero-shot predictions without any training on this dataset.
 
-**Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a more interpretable uncertainty measure than the SARIMAX confidence interval, which spans several orders of magnitude due to the log-transformation.
-
-## 12-Month Forecast (2026)
-
+**Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a more interpretable uncertainty measure than the SARIMAX confidence interval, which spans several orders of magnitude due to the log-transformation. Furthermore, dynamic external features (such as exchange rates) were excluded from the final out-of-sample 2026 models to prevent data leakage, meaning the multi-step forecasts rely strictly on autoregressive patterns, calendar indices, and policy indicators.
+## 12-Month Ensemble Forecast (2026)
 ![SARIMAX 12-month forecast for 2026 with 95\% confidence interval.](output/forecast_plot.png)
-
+![SARIMAX 12-month forecast for 2026 with 95\% confidence interval. Note: the ensemble forecast (not shown) uses the same SARIMAX component for its aggregate prediction.](output/forecast_plot.png)
 | Month | Forecast | 95\% CI Lower | 95\% CI Upper |
 |-------|----------|--------------|--------------|
 | Jan 2026 | 1,538,229 | 940,658 | 2,515,418 |
@@ -377,13 +374,11 @@ XGBoost and Random Forest track the actual values most closely, while SARIMAX an
 | Dec 2026 | 1,854,630 | 401,648 | 8,563,820 |
 
 To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes.
-
+To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes. The SARIMAX-only forecast is evaluated against actual 2026 data in Section 8.4.
 ## Per-Country Forecasts (2026)
 
-SARIMAX models were also fitted to the top 5 source countries individually, each with the same log-transformed $(1,1,1)(1,1,1)_{12}$ specification and `covid_closed` exogenous variable.
-
-![SARIMAX 12-month forecasts for top 5 source countries (2026).](output/country_forecasts_plot.png)
-
+Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMAX) were fitted to the top 5 source countries individually. The tree-based models use recursive forecasting to generate 12-month-ahead predictions; SARIMAX uses its autoregressive structure directly.
+![Ensemble forecasts for top 5 source countries (2026). Model range band shows disagreement between LR, RF, XGBoost, and SARIMAX.](output/country_forecasts_plot.png)
 | Month | Hàn Quốc | Trung Quốc | Campuchia | Nhật Bản | Nga |
 |-------|----------|------------|-----------|----------|-----|
 | Jan 2026 | 389,721 | 212,894 | 32,843 | 60,466 | 14,745 |
@@ -407,9 +402,7 @@ The top 5 countries account for 55.3\% of the total 2026 ensemble forecast (9.1M
 \newpage
 
 ## Forecast Validation (Jan–May 2026)
-
-With actual data available for the first five months of 2026, we can evaluate the SARIMAX forecast against reality.
-
+With actual data available for the first five months of 2026, we can evaluate the SARIMAX-only forecast against reality (the ensemble forecast uses the same SARIMAX component for its aggregate prediction).
 ![Forecast vs Actual for Jan—May 2026 (aggregate and top source countries).](output/forecast_validation.png)
 
 | Month | Actual | Forecast | Error |
@@ -440,8 +433,8 @@ With actual data available for the first five months of 2026, we can evaluate th
 
 The model, trained on 2012–2023 data showing Cambodia at 20,000–70,000/month, cannot anticipate either effect [21].
 
-The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift. The Nhật Bản February anomaly (844,009 arrivals versus a typical 50–90K range) warrants investigation as a potential source data error.
-
+The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift.
+The aggregate MAPE of 34.7\% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution.
 
 # Conclusion
 
@@ -455,7 +448,7 @@ The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically under
 
 4. **Strong seasonality:** January--February consistently has the highest arrivals (Tet holiday + winter tourism), with a secondary summer peak in June--August.
 
-5. **Post-COVID structural break** remains the dominant challenge. Three models (XGBoost, Random Forest, Linear Regression) achieve positive R$^2$ values, while SARIMAX, Chronos, and CIR\# remain negative because the test distribution (2024--2025 recovery) differs fundamentally from the training distribution (2012--2023).
+5. **Post-COVID structural break** remains the dominant challenge. Three models (Random Forest, Linear Regression, XGBoost) achieve positive R$^2$ values (0.11--0.27), while Chronos, SARIMAX, and CIR\# remain negative ($-$0.03, $-$0.71, $-$1.14 respectively) because the test distribution (2024--2025 recovery) differs fundamentally from the training distribution (2012--2023).
 
 6. **CIR\# fails on trending data.** Despite having monthly data as recommended by Orlando and Bufalo [13], the model's mean-reversion assumption is violated by Vietnam's upward-trending tourism trajectory. This constitutes a documented boundary condition for the model [13, 14].
 
