@@ -1,0 +1,186 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\setlist{leftmargin=*}
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+\title{Technical Review of \emph{Analysis and Forecasting of Vietnam's International Tourist Arrivals Using Monthly Data}}
+\author{Paper-review skill audit}
+\date{2026-06-29}
+
+\begin{document}
+\maketitle
+
+\section*{Overall assessment}
+
+The manuscript addresses a clear applied forecasting problem and contains useful data-cleaning notes, model comparisons, and post-COVID interpretation. The main technical risk is not the model menu itself; it is that several reported numerical results, forecast tables, data definitions, and supporting output artifacts disagree with one another. These inconsistencies currently weaken the central conclusions about which model performs best, what the 2026 forecast is, and whether the validation results support the stated claims.
+
+I explicitly checked the equation-bearing sections, metric definitions, model notation, forecast tables, supporting CSV/NPZ artifacts, figure/table captions, references, branch/sign conventions, dimensional consistency, and implementation ambiguity. No inverse-trigonometric, coordinate-transform, or quadrant-convention formulas are present, so the branch/quadrant audit produced no concrete findings.
+
+\section*{Highest-priority fixes}
+
+\begin{enumerate}
+\item Choose one canonical results pipeline and regenerate the model-comparison table, figure, 2026 forecast table, validation table, and conclusion from it.
+\item Define one target series throughout: either official all-market Vietnam arrivals or the 32-country source-country sum after excluding aggregates. Do not mix these without labeling them.
+\item Separate one-step-ahead test accuracy from recursive 12-month-ahead forecast accuracy; evaluate the latter with a rolling-origin or blocked time-series protocol.
+\item Correct the reported \(R^2\) baseline and the Jan--May 2026 validation MAPE before making ranking claims.
+\item Clarify the SARIMAX log-scale forecast as a median-scale back-transform or apply a bias correction for original-scale means.
+\end{enumerate}
+
+\section*{Technical and factual findings}
+
+\subsection*{1. Model-comparison results are internally inconsistent}
+
+\textbf{Location.} Model-comparison figure/table and discussion, lines 736--800; conclusion, lines 1120--1125; supporting files \path{output/model_results.csv}, \path{output/model_comparison.csv}, \path{output/pred_vs_actual.csv}, and \path{output/_ml_preds.json}.
+
+\textbf{Problem.} The manuscript table reports Chronos-T5-small as best (MAPE \(=10.77\%\), MAE \(=170{,}625\)) and gives Linear Regression, Random Forest, and XGBoost MAPEs near \(19.8\%\). However, \path{output/model_results.csv} ranks XGBoost, Random Forest, and Linear Regression ahead of Chronos, with MAPEs \(7.47\%\), \(8.19\%\), and \(9.16\%\), respectively. The file \path{output/pred_vs_actual.csv} reproduces the manuscript's Linear Regression, Random Forest, XGBoost, and CIR\# metrics, but not the manuscript's SARIMAX row. A separate \path{output/model_comparison.csv} contains still another set of metrics and model names.
+
+\textbf{Why it matters.} The central conclusion that ``Chronos-T5-small achieves the lowest overall error'' is not robust to the artifacts shipped with the paper. Depending on which file is authoritative, the best model changes, the magnitude of errors changes, and the interpretation of foundation-model generalization changes.
+
+\textbf{Suggested fix.} Create a single canonical results table generated directly from the final evaluation script. Remove obsolete CSVs or label them as legacy outputs. In the manuscript, state the exact evaluation protocol used for each model and update the figure, table, narrative bullets, and conclusion from the same source.
+
+\subsection*{2. The \(R^2\) definition does not match the reported numbers}
+
+\textbf{Location.} Metric definition, lines 584--589; model-comparison table, lines 751--756.
+
+\textbf{Problem.} The manuscript defines \(R^2\) as variance explained ``relative to the training-set mean.'' The reported values match the standard test-set-mean denominator, not the training-set-mean denominator. For example, recomputing from \path{output/pred_vs_actual.csv} gives Linear Regression \(R^2=0.2439\) when using \(\bar y_{\mathrm{test}}\), matching the manuscript. Using the 2012--2023 training mean from the project data gives a much larger positive value for the same predictions.
+
+\textbf{Why it matters.} The interpretation ``performance worse than predicting the training-set mean'' is not supported by the displayed numbers. This affects the narrative that negative values arise because the test distribution differs from the training distribution.
+
+\textbf{Suggested fix.} Either define the reported metric as
+\[
+R^2 = 1 - \frac{\sum_i (y_i - \hat y_i)^2}{\sum_i (y_i - \bar y_{\mathrm{test}})^2},
+\]
+or recompute all \(R^2\) values against the training-set mean and revise the interpretation. If the goal is forecasting accuracy under distribution shift, consider reporting MAE, RMSE, MAPE, and a naive seasonal baseline instead of relying on \(R^2\).
+
+\subsection*{3. One-step test accuracy is being used to support a multi-step forecasting objective}
+
+\textbf{Location.} Model-comparison discussion, lines 778--785; forecasting methodology note, lines 868--883.
+
+\textbf{Problem.} The manuscript acknowledges that lag-1 dominance makes tree models behave like one-step-ahead forecasters and that recursive multi-step forecasting would degrade performance. Nevertheless, the model-comparison table is used as the main evidence for the models' forecasting quality, even though the 2026 task is 12-month-ahead recursive forecasting.
+
+\textbf{Why it matters.} A model evaluated with actual lagged values in the 2024--2025 test set can look much stronger than it will be when its own predictions must feed subsequent months. This can invert model rankings and produce overconfident recommendations.
+
+\textbf{Suggested fix.} Report two separate evaluations: (i) one-step-ahead accuracy with observed lags, and (ii) rolling-origin recursive 12-month forecasts, matching the 2026 use case. The conclusion should rely primarily on the second evaluation.
+
+\subsection*{4. The 2026 forecast section mixes SARIMAX and ensemble terminology and uses inconsistent numbers}
+
+\textbf{Location.} Section title and figure/table, lines 885--927; validation table, lines 1016--1021; supporting file \path{output/forecast.csv}.
+
+\textbf{Problem.} The subsection is titled ``12-Month Ensemble Forecast,'' but the figure caption says ``SARIMAX 12-month forecast.'' The table has SARIMAX-style confidence intervals, while the surrounding text describes an ensemble mean of four models. The table values also disagree with \path{output/forecast.csv}: for example, January 2026 is \(1{,}538{,}229\) in the forecast table but \(1{,}169{,}591\) in \path{output/forecast.csv} and in the validation table. December 2026 has an upper interval of \(8{,}563{,}820\) in the manuscript table but \(19{,}761{,}705\) in \path{output/forecast.csv}.
+
+\textbf{Why it matters.} The reader cannot tell whether the reported 2026 forecast is a SARIMAX forecast, an ensemble forecast, or an older run. Forecast magnitudes and interval widths are central results, so this inconsistency is material.
+
+\textbf{Suggested fix.} Split the section into ``SARIMAX forecast with interval'' and ``ensemble point forecast/range,'' or present a single final forecast product. Regenerate the table and plot from the same data file and include the generation date or run ID.
+
+\subsection*{5. The Jan--May 2026 validation table has arithmetic and data-basis problems}
+
+\textbf{Location.} Forecast-validation text/table, lines 1000--1021; interpretation, lines 1088--1093.
+
+\textbf{Problem.} The five displayed error rows imply a MAPE of approximately \(31.9\%\), not the reported \(34.7\%\). In addition, the displayed actuals do not match the current source-country sums in \path{output/df_monthly.csv}; for example, the project data sum for January 2026 is \(2{,}210{,}922\), while the manuscript table reports \(1{,}641{,}403\). The April and May forecast values in the validation table also differ from \path{output/forecast.csv}.
+
+\textbf{Why it matters.} The statement that ``the aggregate MAPE of 34.7\% confirms'' systematic underestimation rests on a number that is not reproducible from the displayed table. The mismatch between actual series also makes it unclear whether the validation uses official all-market totals or the paper's 32-country modeled series.
+
+\textbf{Suggested fix.} Add a column or footnote identifying the validation target series. Recompute the row errors and MAPE from that target and forecast vector. If official all-market totals are used, do not compare them directly against a model trained on the 32-country aggregate unless the excluded residual category is modeled or adjusted.
+
+\subsection*{6. Official all-market totals and the 32-country modeled aggregate are mixed}
+
+\textbf{Location.} Scope and background, lines 145--157 and 192--196; EDA trend discussion, lines 464--484; dataset summary, lines 302--306.
+
+\textbf{Problem.} The manuscript says regional aggregates are excluded and that the study analyzes 32 source countries. It also reports official-style all-market totals such as \(6.8\) million in 2012, \(18.0\) million in 2019, and \(21.2\) million in 2025. The project's \path{output/df_monthly.csv} source-country sums are lower: approximately \(5.05\) million in 2012, \(17.49\) million in 2019, and \(19.27\) million in 2025. The scope also says the period begins in January 2008, while the parsed dataset summary says July 2008.
+
+\textbf{Why it matters.} Mixing official totals with the modeled source-country aggregate changes growth rates, validation totals, and conclusions about recovery. It also makes model targets ambiguous.
+
+\textbf{Suggested fix.} Define two series explicitly if both are needed: \(Y^{\mathrm{official}}_t\) for all-market official totals and \(Y^{32}_t\) for the 32-country sum. Use one target for model fitting and validation, and label figures/tables accordingly. Correct the scope to July 2008 if that is the first usable month.
+
+\subsection*{7. SARIMAX log-scale notation and back-transform are ambiguous}
+
+\textbf{Location.} SARIMAX equation, lines 664--668; log-transform explanation, lines 916--927.
+
+\textbf{Problem.} The equation is written for \(y_t\), but the text later says SARIMAX was fitted to \(\log(y+1)\). The back-transform \(\exp(\cdot)-1\) is described as producing forecasts on the original scale. If the prediction is a conditional mean on the log scale and errors are approximately normal there, \(\exp(\hat z_t)-1\) is a median-type back-transform, not the original-scale mean; an unbiased mean forecast would require a variance correction such as \(\exp(\mu_t + \sigma_t^2/2)-1\) or simulation.
+
+\textbf{Why it matters.} MAE/RMSE comparisons and interval interpretations depend on whether point forecasts are medians, means, or bias-corrected means on the original scale.
+
+\textbf{Suggested fix.} Define \(z_t=\log(y_t+1)\) and write the SARIMAX model for \(z_t\). State whether the back-transformed point forecast is a median forecast or apply a lognormal/smearing correction before reporting original-scale means.
+
+\subsection*{8. Hyperparameter optimization may leak temporal information}
+
+\textbf{Location.} Hyperparameter optimization section, lines 805--839.
+
+\textbf{Problem.} The manuscript reports GridSearchCV and RandomizedSearchCV but does not specify a time-series split. If ordinary \(k\)-fold cross-validation was used, validation folds can be earlier than training folds or otherwise violate temporal ordering.
+
+\textbf{Why it matters.} Temporal leakage can make tuned Random Forest and XGBoost models appear more accurate than they would be in real forecasting.
+
+\textbf{Suggested fix.} Specify the cross-validation object. Use \texttt{TimeSeriesSplit}, rolling-origin validation, or blocked folds that always train on past observations and validate on future observations. Report the fold design.
+
+\subsection*{9. CIR\# implementation and interpretation are under-specified}
+
+\textbf{Location.} CIR\# equation and evaluation, lines 716--734; CIR\# discussion, lines 794--800; supporting file \path{output/cir_results.npz}.
+
+\textbf{Problem.} The CIR\# section does not define \(r(t)\), \(\kappa\), \(\theta\), \(\sigma\), or the discretization/estimation formula used for monthly arrivals. The supporting NPZ artifact appears to contain quarterly labels and 57 observations, not 144 monthly observations, with extreme parameter values and forecasts clamped near zero or around \(20\) million in early entries. Also, the sentence ``The estimated \(\kappa\) is positive (mean-reverting), which conflicts with the upward-trending data'' is not by itself diagnostic; positive \(\kappa\) is a parameter constraint/feature of the model, while the conflict should be shown through residual diagnostics, parameter plausibility, or forecast failure.
+
+\textbf{Why it matters.} CIR\# is one of the headline comparisons and is used to claim a documented boundary condition. Without a clear monthly implementation and diagnostics, the comparison is not reproducible.
+
+\textbf{Suggested fix.} Define the target variable and time unit for \(r(t)\), give the discretized likelihood or estimation procedure, show fitted parameter values with units and constraints, and ensure the artifact used for the manuscript is monthly. If the available implementation is quarterly, revise the text accordingly or remove the monthly-CIR\# claim.
+
+\subsection*{10. Feature-set descriptions drift across models and forecast stages}
+
+\textbf{Location.} Feature table, lines 407--433; model-building overview, lines 569--571; Chronos description, lines 690--695; final forecast note, lines 880--883.
+
+\textbf{Problem.} The manuscript says every model uses the Section 4.3 feature set, but Chronos is described as using only time-series values, SARIMAX appears to use at least \texttt{covid\_closed} and possibly not all engineered ML features, and final 2026 forecasts exclude dynamic external features.
+
+\textbf{Why it matters.} Readers cannot reproduce the design matrix or compare models fairly without knowing which covariates each model used in training, validation, and final forecasting.
+
+\textbf{Suggested fix.} Add a compact matrix with rows for LR, RF, XGBoost, SARIMAX, Chronos, and CIR\# and columns for lags, rolling mean, month/year, COVID indicator, exchange rates, visa variables, and whether the variable is available in 2026 recursive forecasts.
+
+\section*{Notation and terminology drift check}
+
+\begin{itemize}
+\item \textbf{Aggregate arrivals.} First described as monthly arrivals from 32 source countries with regional aggregates excluded; later used interchangeably with official all-market annual totals. This is a substantive target-definition conflict.
+\item \textbf{Forecast versus ensemble.} The 2026 aggregate section calls the result an ensemble forecast, but the figure/table are labeled and structured as SARIMAX forecasts with confidence intervals. This is an implementation-facing ambiguity.
+\item \textbf{\(y_t\).} Introduced as the SARIMAX target in the equation, but the implemented target is later described as \(\log(y+1)\). Define \(z_t\) for the log target.
+\item \textbf{\(R^2\).} Verbally defined against the training-set mean, while reported values use the test-set mean.
+\item \textbf{\(r(t)\).} Used in the CIR\# SDE without a verbal descriptor, unit, or mapping to arrivals. Define whether \(r(t)\) is raw arrivals, normalized arrivals, log arrivals, or a rate.
+\end{itemize}
+
+\section*{Meaningful editorial and presentation findings}
+
+\begin{enumerate}
+\item \textbf{Manual table of contents starts at 2.} Lines 111--115 set \texttt{enumi} to 1 before the first item, so ``Introduction'' is numbered 2. Use \verb|\tableofcontents| or remove the counter reset.
+\item \textbf{Country names are partly translated.} Tables and prose use English labels for South Korea, China, and Japan but leave ``Campuchia'' and ``Nga'' in Vietnamese. For an English report, use ``Cambodia'' and ``Russia'' or define the Vietnamese names once and use them consistently.
+\item \textbf{Reference specificity is weak for key current claims.} References [4], [15], [17], [20], and [21] use broad homepages or incomplete article metadata. Replace homepage URLs with direct URLs, publication dates, access dates, and exact government document identifiers where available.
+\item \textbf{Claim strength should be calibrated.} Phrases such as ``This confirms the model's documented boundary condition'' and ``demonstrating the strong zero-shot generalization'' should be softened unless the regenerated results and diagnostics support them. Suggested wording: ``This result is consistent with the model being poorly suited to this strongly nonstationary setting.''
+\end{enumerate}
+
+\section*{Proofing-sweep items}
+
+The bundled \path{scripts/proofing_scan.py} was run on both the compiled manuscript PDF and the LaTeX source. Semicolon-capitalization hits were spot-checked; the meaningful high-confidence items are:
+
+\begin{itemize}
+\item \textbf{Line 424:} \verb|month\$-\$1| will typeset literal dollar signs. Use \verb|\texttt{year + (month - 1)/12}| or move the expression out of \verb|\texttt{}|.
+\item \textbf{Lines 767, 788, 794, and 1123:} \verb|\$-\$0.03| and similar strings typeset as literal dollar signs around the minus. Use \verb|\(-0.03\)|, \verb|\(-0.71\)|, and \verb|\(-1.14\)|.
+\item \textbf{Lines 1016--1021:} the displayed validation errors are internally consistent with the row values, but the displayed MAPE is not. Replace \(34.7\%\) with the recomputed value for the final chosen target series.
+\item \textbf{Reference [3]:} if the title is not quoted exactly from the source, standardize ``Covid-19'' to ``COVID-19'' for consistency with the manuscript.
+\end{itemize}
+
+\section*{Items needing external verification}
+
+\begin{itemize}
+\item The 2025 all-time-high claim of \(21.2\) million arrivals needs a direct official or stable news source, not only a broad VietnamNet homepage.
+\item The Jan--May 2026 validation actuals should be checked against the exact GSO monthly releases used by the model. If official totals are used, the manuscript must explain why they are comparable to a 32-country aggregate model.
+\item The Russia and Cambodia case-study causal explanations require direct support for visa exemptions, new routes, flight counts, healthcare-tourism claims, and monthly arrival figures. At present, the narrative is plausible but stronger than the cited evidence shown in the reference list.
+\item The CIR\# literature claims, including the \(1.18\%\) MAPE and ``70\% error reduction,'' should be rechecked against [13] and quoted with enough context to avoid overgeneralizing from the Italian case.
+\end{itemize}
+
+\end{document}

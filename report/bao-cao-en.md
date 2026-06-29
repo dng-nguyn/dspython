@@ -26,7 +26,7 @@ date: "June 2026"
 
 ## Background
 
-Tourism is one of Vietnam's most important economic sectors, contributing approximately 7\% of GDP and supporting approximately 5.96 million jobs as of 2024 [1]. Vietnam welcomed a record 18.0 million international visitors in 2019, ranking fifth in the Asia-Pacific region (fourth in Southeast Asia according to PATA H1 2019 data) [2,26]. The COVID-19 pandemic caused international arrivals to fall by 78.7\% in 2020 [3], with borders effectively closed from April 2020 through March 2022 (Resolution No.~32/NQ-CP). Vietnam's tourism has since recovered strongly, reaching an all-time high of 21.2 million arrivals in 2025 [4].
+Tourism is one of Vietnam's most important economic sectors, contributing approximately 7\% of GDP and supporting approximately 5.96 million jobs as of 2024 [1]. Vietnam welcomed a record 18.0 million international visitors in 2019 (official all-market total; the 32-country modeled aggregate is approximately 17.5M), ranking fifth in the Asia-Pacific region (fourth in Southeast Asia according to PATA H1 2019 data) [2,26]. The COVID-19 pandemic caused international arrivals to fall by 78.7\% in 2020 [3], with borders effectively closed from April 2020 through March 2022 (Resolution No.~32/NQ-CP). Vietnam's tourism has since recovered strongly, reaching an all-time high of 21.2 million arrivals in 2025 [4].
 
 This study analyzes monthly international tourist arrivals to Vietnam from 32 source countries over the period 2008--2026 using data published by Vietnam's General Statistics Office (GSO). Monthly granularity provides approximately 12 times as many observations as quarterly aggregation, enabling more robust statistical inference and finer seasonal resolution.
 
@@ -43,6 +43,7 @@ This study analyzes monthly international tourist arrivals to Vietnam from 32 so
 - **Subject:** Monthly international tourist arrivals to Vietnam by source country
 - **Period:** January 2008 -- May 2026 (no data for 2021 due to COVID-19 border closures; only January--March 2020 available)
 - **Countries:** 32 individual countries (regional aggregates excluded)
+- **Target series:** $Y^{32}_t$ = sum of arrivals from the 32 modeled source countries. Note: official GSO all-market totals ($Y^{\mathrm{official}}_t$) include residual categories not in the 32-country set, so $Y^{\mathrm{official}}_t > Y^{32}_t$ (e.g., 18.0M vs. 17.5M in 2019). All model fitting, validation, and forecasting use $Y^{32}_t$.
 - **Tools:** Python 3, pandas, scikit-learn, XGBoost, statsmodels, Chronos-T5, yfinance
 
 \newpage
@@ -144,13 +145,30 @@ This yields 144 training observations and 24 test observations for monthly aggre
 |---------|-------------|
 | `year` | Calendar year |
 | `month` | Month (1--12) |
-| `time_idx` | Year + (month$-$1)/12, continuous time index |
+| `time_idx` | Year + (month $-$ 1)/12, continuous time index |
 | `lag_1` | Previous month's total arrivals |
 | `lag_12` | Same month in previous year |
 | `rolling_mean_12` | 12-month trailing average |
 | `covid_closed` | Binary indicator (1 for April 2020--December 2021, 0 otherwise) |
 | `exchange_rate_*` | VND spot rates vs. 8 currencies (optional, lagged by 1 month) |
 | `visa_*` | Visa policy indicators (optional) |
+
+**Feature usage by model:**
+
+| Feature | LR | RF | XGBoost | SARIMAX | Chronos | CIR# |
+|---------|----|----|---------|---------|---------|------|
+| `lag_1` | yes | yes | yes | implicit | no | no |
+| `lag_12` | yes | yes | yes | implicit | no | no |
+| `rolling_mean_12` | yes | yes | yes | no | no | no |
+| `year`, `month`, `time_idx` | yes | yes | yes | no | no | no |
+| `covid_closed` | yes | yes | yes | exog | no | no |
+| `exchange_rate_*` | opt | opt | opt | no | no | no |
+| `visa_*` | opt | opt | opt | no | no | no |
+| log-transform target | no | no | no | yes | no | no |
+| 2026 forecast method | recursive | recursive | recursive | AR struct | N/A | MC sim |
+
+*Note: Chronos uses only raw time-series values. SARIMAX uses ARIMA structure for lags and `covid_closed` as exog. Exchange rates and visa features excluded from 2026 forecasts to prevent data leakage.*
+
 Exchange rates were obtained from Yahoo Finance as end-of-month spot rates [17]. When used as features, exchange rates are lagged by one month to avoid data leakage, as current-month rates are not available at forecast time. Visa policy indicators were manually encoded from Vietnamese government sources [18, 19]:
 
 - `visa_evisa`: Binary, set to 1 from February 2017 (pilot e-visa for 40 countries)
@@ -214,7 +232,7 @@ This section describes each forecasting model applied to **aggregate monthly arr
 - **MAE** (Mean Absolute Error)
 - **RMSE** (Root Mean Squared Error)
 - **MAPE** (Mean Absolute Percentage Error)
-- **R$^2$** (Coefficient of Determination): Proportion of variance explained relative to the training-set mean. Negative values indicate performance worse than predicting the training-set mean, which is expected when the test distribution (post-COVID recovery) differs fundamentally from the training distribution (pre-COVID era) [11].
+- **R$^2$** (Coefficient of Determination): Proportion of variance explained, computed as $R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{\mathrm{test}})^2}$. Negative values indicate performance worse than predicting the test-set mean, which occurs when models trained on 2012--2023 data cannot extrapolate the post-COVID growth trend [11].
 
 ## Linear Regression
 
@@ -263,9 +281,9 @@ where $\ell$ is squared error and $\Omega$ penalizes tree complexity.
 
 ## SARIMAX$(1,1,1)(1,1,1)_{12}$
 
-SARIMAX (Seasonal AutoRegressive Integrated Moving Average with eXogenous variables) [7, 8] is a classical statistical model decomposing a time series into autoregressive, differencing, moving-average, and seasonal components, augmented with exogenous regressors:
+SARIMAX (Seasonal AutoRegressive Integrated Moving Average with eXogenous variables) [7, 8] is a classical statistical model decomposing a time series into autoregressive, differencing, moving-average, and seasonal components, augmented with exogenous regressors. To stabilize variance and ensure non-negative back-transforms, the model is fitted to $z_t = \log(y_t + 1)$:
 
-$$\Phi_P(B^s)\,\phi_p(B)\,(1-B^s)^D\,(1-B)^d\, y_t = \sum_{j} \beta_j x_{j,t} + \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t$$
+$$\Phi_P(B^s)\,\phi_p(B)\,(1-B^s)^D\,(1-B)^d\, z_t = \sum_{j} \beta_j x_{j,t} + \Theta_Q(B^s)\,\theta_q(B)\,\varepsilon_t$$
 
 where $B$ is the backshift operator ($B y_t = y_{t-1}$), $s = 12$ is the seasonal period, $x_{j,t}$ are exogenous variables, and $\varepsilon_t$ is white noise.
 
@@ -293,9 +311,11 @@ The CIR\# model [13, 14] extends the Cox--Ingersoll--Ross SDE for tourism foreca
 
 $$dr(t) = \kappa(\theta - r(t))\,dt + \sigma\sqrt{r(t)}\,dW(t)$$
 
+where $r(t)$ denotes monthly aggregate tourist arrivals (persons/month), $\kappa > 0$ is the mean-reversion speed (per month), $\theta$ is the long-run mean level (persons/month), $\sigma$ is the volatility scaling (persons/month$^{1/2}$), and $dW(t)$ is a standard Brownian motion increment. Parameters are estimated via OLS on the discrete differences $\Delta r = r_{t+1} - r_t$ against $r_t$, yielding $\hat{\kappa} = -\hat{\beta}$ and $\hat{\theta} = \hat{\alpha}/\hat{\kappa}$.
+
 Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (288 observations), a 70\% error reduction over SARIMA and Holt--Winters. The CIR\# extension replaces Brownian motion with ARIMA-filtered residuals and partitions data into subsamples around structural breaks.
 
-**Evaluation on monthly Vietnam data:** With 144 training observations, CIR\# has sufficient data for MLE parameter estimation but faces three fundamental challenges: (1) Vietnam's tourism exhibits a strong upward trend that violates the mean-reversion assumption ($\kappa(\theta - r(t))$ term); (2) the 78.7\% COVID drop followed by full recovery creates extreme log-return volatility amplified by the $\sqrt{r}$ diffusion term; (3) the model is designed for stationary, mean-reverting processes [14].
+**Evaluation on monthly Vietnam data:** CIR\# was included specifically to test its documented boundary condition [13, 14]: the model assumes stationary, mean-reverting processes. With 144 training observations, CIR\# has sufficient data for parameter estimation but faces three fundamental challenges: (1) Vietnam's tourism exhibits a strong upward trend that violates the mean-reversion assumption; (2) the 78.7\% COVID drop followed by full recovery creates extreme volatility amplified by the $\sqrt{r}$ diffusion term; (3) the estimated $\kappa$ is positive while the data is nonstationary, producing near-zero forecasts. This result is consistent with the model being poorly suited to this strongly nonstationary setting.
 
 ## Model Comparison
 
@@ -303,20 +323,22 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 | Model              | MAE       | RMSE      | MAPE   | R²       |
 |--------------------|-----------|-----------|--------|----------|
-| Chronos-T5-small   | 170,625   | 214,069   | 10.77% | −0.0345  |
+| Chronos-T5-small   | 170,625   | 214,069   | 10.77% | $-0.0345$  |
 | Linear Regression  | 275,526   | 340,495   | 19.79% | 0.2439   |
 | Random Forest      | 290,287   | 334,896   | 19.80% | 0.2685   |
-| XGBoost            | 313,159   | 369,109   | 19.88% | 0.1114   |
-| SARIMAX (log)        | 402,014   | 512,715   | 26.87% | −0.7145  |
-| CIR#               | 489,200   | 573,449   | 28.54% | −1.1447  |
+| XGBoost            | 274,730   | 320,581   | 17.75% | -1.3201   |
+| SARIMAX (log)        | 314,479   | 355,003   | 20.39% | $-1.8452$  |
+| CIR#               | 396,833   | 467,793   | 25.12% | $-3.9402$  |
 
 **Key observations:**
 
-- **Chronos-T5-small achieves the lowest overall error** (MAPE = 10.77\%, MAE = 170,625), demonstrating the strong zero-shot generalization of foundation models on complex, structurally broken datasets. Its negative R$^2$ ($-$0.03) reflects the difficulty of extrapolating the post-COVID growth trend from a model pretrained on general time-series patterns.
+- **Chronos-T5-small achieves the lowest overall error** (MAPE = 10.77\%, MAE = 170,625), consistent with reasonable zero-shot generalization by foundation models, though the result should be interpreted with caution given the one-step-ahead evaluation protocol. Its negative R$^2$ ($-0.03$) reflects the difficulty of extrapolating the post-COVID growth trend from a model pretrained on general time-series patterns.
 - **Linear Regression and tree-based models achieve moderate but positive R$^2$ values** (0.11--0.27) and similar MAPEs ($\approx$ 19.8\%). While they successfully extract some signal from the data, their accuracy is heavily constrained by the structural break between the training period (2012--2023, including zero-imputed COVID months) and the test period (2024--2025 post-COVID recovery).
-- **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor. The dominance of `lag_1` means the tree-based models function primarily as naive one-step-ahead forecasters. This works well on the 24-month test set (where each month's actual lag is available) but would degrade significantly in multi-step-ahead forecasting scenarios where lag values must be recursively predicted.
+- **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor.
+
+- **Important caveat: one-step-ahead vs. multi-step forecasting.** The model-comparison table above evaluates *one-step-ahead* accuracy: each test month uses the observed lag from the previous month. The 2026 forecast, however, requires *recursive multi-step* prediction: each month's forecast feeds back as the `lag_1` input for the next month, accumulating error. The one-step metrics reported here therefore represent an upper bound on forecasting performance. A proper multi-step evaluation (rolling-origin or blocked time-series protocol) would be needed to assess 12-month-ahead forecast accuracy.
 - **SARIMAX** (MAPE = 26.87\%, R$^2$ = $-$0.71) with log-transformed target and `covid_closed` exogenous variable. The log-transformation ensures non-negative confidence intervals, but the model still struggles to extrapolate the post-COVID growth trend from a stationary-process framework.
-- **CIR\# fails** (MAPE = 28.54\%, R$^2$ = $-$1.14) despite having monthly data. CIR\# was included in the comparison specifically to empirically validate its documented boundary condition [13, 14]: the model requires mean-reverting stationary processes. The estimated $\kappa$ is positive (mean-reverting), which conflicts with the upward-trending data. This confirms the model's documented boundary condition [13, 14].
+- **CIR\# fails** (MAPE = 28.54\%, R$^2$ = $-$1.14) despite having monthly data. CIR\# was included in the comparison specifically to empirically validate its documented boundary condition [13, 14]: the model requires mean-reverting stationary processes. The estimated $\kappa$ is positive (mean-reverting), which conflicts with the upward-trending data. This result is consistent with the model being poorly suited to this strongly nonstationary setting, confirming the documented boundary condition [13, 14].
 
 \newpage
 
@@ -324,13 +346,13 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 ## Hyperparameter Optimization
 
-**Random Forest** was optimized via GridSearchCV (3-fold cross-validation):
+**Random Forest** was optimized via GridSearchCV with `TimeSeriesSplit(n_splits=3)` to prevent temporal leakage:
 
 - `n_estimators`: {100, 200, 300}
 - `max_depth`: {5, 10, 15, None}
 - `min_samples_split`: {2, 5, 10}
 
-**XGBoost** was optimized via RandomizedSearchCV (50 iterations):
+**XGBoost** was optimized via RandomizedSearchCV (50 iterations) with `TimeSeriesSplit(n_splits=3)`:
 
 - `n_estimators`: 100--500
 - `max_depth`: 3--9
@@ -354,8 +376,11 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 **Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a more interpretable uncertainty measure than the SARIMAX confidence interval, which spans several orders of magnitude due to the log-transformation. Furthermore, dynamic external features (such as exchange rates) were excluded from the final out-of-sample 2026 models to prevent data leakage, meaning the multi-step forecasts rely strictly on autoregressive patterns, calendar indices, and policy indicators.
 
-## 12-Month Ensemble Forecast (2026)
+## SARIMAX 12-Month Forecast (2026)
+
 ![SARIMAX 12-month forecast for 2026 with 95\% confidence interval.](output/forecast_plot.png)
+
+*Figure shows the SARIMAX-only forecast with 95\% confidence intervals. The ensemble point forecast is reported separately below.*
 
 | Month | Forecast | 95\% CI Lower | 95\% CI Upper |
 |-------|----------|--------------|--------------|
@@ -372,7 +397,9 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 | Nov 2026 | 1,436,842 | 331,758 | 6,222,945 |
 | Dec 2026 | 1,854,630 | 401,648 | 8,563,820 |
 
-To prevent the forecasting of physically impossible negative arrivals and to stabilize variance, the target variable was log-transformed ($\log(y+1)$) prior to SARIMAX fitting. The resulting forecasts and confidence intervals were exponentiated back to the original scale using $\exp(\cdot) - 1$, naturally bounding the lower confidence intervals at zero without the need for arbitrary manual clipping. This approach produces wider confidence intervals than the raw-scale model, reflecting the asymmetric uncertainty inherent in multiplicative processes. The extreme width of the confidence intervals (e.g., December 2026 upper bound of 8,563,820 vs. point estimate 1,854,630) may also indicate model misspecification for multi-step forecasting with log-transformed targets, rather than merely reflecting genuine uncertainty.
+**Ensemble point forecast.** The ensemble forecast averages the recursive multi-step predictions of Linear Regression, Random Forest, XGBoost, and the SARIMAX median back-transform. Full ensemble table available in `output/ensemble_forecast.csv`.
+
+The back-transform $\exp(\hat{z}_t) - 1$ produces a *median-scale* forecast on the original scale, not the conditional mean. An unbiased mean forecast would require a lognormal correction $\exp(\hat{z}_t + \hat{\sigma}^2_t/2) - 1$ or simulation-based averaging. The confidence intervals are asymmetric on the original scale, reflecting the multiplicative nature of the log-transform. The extreme width (e.g., December 2026 upper bound exceeding 8M) indicates that model uncertainty grows rapidly beyond a few steps, consistent with the challenges of multi-step forecasting with log-transformed targets.
 
 ## Per-Country Forecasts (2026)
 
@@ -398,12 +425,12 @@ Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMA
 
 *Table shows ensemble mean of Linear Regression, Random Forest, XGBoost, and SARIMAX. Model disagreement range: 8.2M–10.1M total.*
 
-The top 5 countries account for 52.3\% of the total 2026 ensemble forecast (9.1M of 17.3M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. The shaded band shows the range between the highest and lowest model predictions — a more interpretable measure of uncertainty than the SARIMAX confidence interval.
+The top 5 countries account for 52.3\% of the total 2026 ensemble forecast (9.1M of 14.0M). Hàn Quốc is projected to remain the largest source market, followed by Trung Quốc. The shaded band shows the range between the highest and lowest model predictions — a more interpretable measure of uncertainty than the SARIMAX confidence interval.
 
 \newpage
 
 ## Forecast Validation (Jan–May 2026)
-With actual data available for the first five months of 2026, we can evaluate the SARIMAX-only forecast against reality (the ensemble forecast uses the same SARIMAX component for its aggregate prediction).
+With actual data available for the first five months of 2026, we evaluate the SARIMAX-only forecast against the 32-country source-country sums ($Y^{32}_t$) (the ensemble forecast uses the same SARIMAX component for its aggregate prediction).
 
 ![Forecast vs Actual for Jan—May 2026 (aggregate and top source countries).](output/forecast_validation.png)
 
@@ -416,6 +443,8 @@ With actual data available for the first five months of 2026, we can evaluate th
 | May 2026 | 1,553,853 | 1,074,181 | −30.8% |
 | **MAPE** | | | **34.7%** |
 
+*Actuals are $Y^{32}_t$ (32-country sums from df\_monthly.csv). Official all-market totals are higher due to residual categories.*
+
 **Per-country validation:**
 
 | Country | MAPE | Notes |
@@ -425,7 +454,7 @@ With actual data available for the first five months of 2026, we can evaluate th
 | Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |
 | Campuchia | 50.3% | Land-border regime shift: visa exemptions + new air routes + healthcare tourism; Jan 2026 hit 223K (3× Dec 2025) |
 
-**Nga (Russia) case study.** The SARIMAX component forecasts 7,000--12,000 arrivals/month for Nga in 2026 (the ensemble mean in the table is higher because the other three models pull the average up); actual figures are 113,000--137,000 — a 10$\times$ error. This is not a model failure but a geopolitical regime shift. The Russia-Ukraine war (2022) closed EU and US destinations to Russian tourists. Vietnam, with its 45-day visa exemption, resumed direct flights (Aeroflot, VietJet, Vietnam Airlines), and affordable pricing, became a primary alternative. Russian arrivals grew from 39,921 (2022, per the GSO monthly dataset; the VNAT-published annual total for 2022 is 28,056) to 689,714 (2025), surpassing the pre-pandemic peak of 646,524 (2019). No model trained on 2012--2023 data could anticipate this structural redirection of Russian outbound tourism [20].
+**Russia case study.** The SARIMAX component forecasts 7,000--12,000 arrivals/month for Russia in 2026 (the ensemble mean in the table is higher because the other three models pull the average up); actual figures are 113,000--137,000 — a 10$\times$ error. This is not a model failure but a geopolitical regime shift. The Russia-Ukraine war (2022) closed EU and US destinations to Russian tourists. Vietnam, with its 45-day visa exemption, resumed direct flights (Aeroflot, VietJet, Vietnam Airlines), and affordable pricing, became a primary alternative. Russian arrivals grew from 39,921 (2022, per the GSO monthly dataset; the VNAT-published annual total for 2022 is 28,056) to 689,714 (2025), surpassing the pre-pandemic peak of 646,524 (2019). No model trained on 2012--2023 data could anticipate this structural redirection of Russian outbound tourism [20].
 
 **Campuchia case study.** The model forecasts 27,000–38,000 Cambodian arrivals/month for 2026; actual figures range from 53,000 to 223,000. Two effects compound:
 
@@ -480,7 +509,7 @@ The aggregate MAPE of 34.7% confirms that the SARIMAX model systematically under
 
 [2] Vietnam National Authority of Tourism, "International tourist arrivals to Vietnam 2019," VNAT, 2020. Cited in: B-Company, "Vietnam Tourism Briefing," Jan. 2025.
 
-[3] H. T. Thi, "Vietnam Tourism Industry During Covid-19 Pandemic," 2022. See also: General Statistics Office of Vietnam, "Socio-economic situation report 2020," GSO, Hanoi, 2021.
+[3] H. T. Thi, "Vietnam Tourism Industry During COVID-19 Pandemic," 2022. See also: General Statistics Office of Vietnam, "Socio-economic situation report 2020," GSO, Hanoi, 2021.
 
 [4] VietnamNet and General Statistics Office of Vietnam, "Vietnam achieved 21.2 million international arrivals in 2025," VietnamNet, Jan. 2026. [Online]. Available: https://vietnamnet.vn/
 

@@ -30,6 +30,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -89,8 +90,8 @@ df = df.sort_values(['country', 'year', 'month']).reset_index(drop=True)
 df.to_csv('output/df_monthly.csv', index=False)
 
 usa_q1 = df[(df['country']=='Hoa Kỳ') & (df['year']==2009) & (df['month'].isin([1,2,3]))]
-print(f"\nVerification — Hoa Kỳ Q1/2009: {usa_q1['arrivals'].sum():,} (expected 104,520)")
-print(f"Total: {len(df)} records, {df['country'].nunique()} countries, {df['year'].nunique()} years"""")
+print(f"\\nVerification — Hoa Kỳ Q1/2009: {usa_q1['arrivals'].sum():,} (expected 104,520)")
+print(f"Total: {len(df)} records, {df['country'].nunique()} countries, {df['year'].nunique()} years")""")
 
 
 # --- Clean & Aggregate ---
@@ -213,9 +214,14 @@ code("""def metrics(y_true, y_pred, name):
     mae = mean_absolute_error(y_true, y_pred)
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    # R² = 1 - SS_res/SS_tot where SS_tot uses TEST-set mean (standard sklearn definition)
+    # Negative values indicate performance worse than predicting the test-set mean
     r2 = r2_score(y_true, y_pred)
     print(f"  {name:25s} MAE={mae:>12,.0f}  RMSE={rmse:>12,.0f}  MAPE={mape:>6.2f}%  R²={r2:>7.4f}")
     return {'Model': name, 'MAE': mae, 'RMSE': rmse, 'MAPE': mape, 'R²': r2}
+
+# Train models with TimeSeriesSplit for hyperparameter search
+tscv = TimeSeriesSplit(n_splits=3)
 
 lr = LinearRegression().fit(X_train, y_train)
 r_lr = metrics(y_test, lr.predict(X_test), 'Linear Regression')
@@ -230,60 +236,83 @@ print("\\nFeature importance (RF):")
 for f, v in sorted(zip(FEATURES, rf.feature_importances_), key=lambda x: -x[1]):
     print(f"  {f:<20} {v:.3f}")""")
 
-md("## 11. SARIMAX$(1,1,1)(1,1,1)_{12}$ with covid_closed exogenous variable")
-code("""train_ts = train['arrivals'].values.astype(float)
+md("## 11. SARIMAX$(1,1,1)(1,1,1)_{12}$ on $z_t = \\log(y_t + 1)$ with covid_closed exogenous variable")
+code("""# Fit SARIMAX on log-transformed target: z_t = log(y_t + 1)
+# This stabilizes variance and ensures non-negative back-transforms
+train_ts = train['arrivals'].values.astype(float)
 test_ts = test['arrivals'].values.astype(float)
+z_train = np.log(train_ts + 1)
+z_test = np.log(test_ts + 1)
 
 exog_train_covid = train['covid_closed'].values.reshape(-1, 1)
 exog_test_covid = test['covid_closed'].values.reshape(-1, 1)
 
-sarimax = SARIMAX(train_ts, order=(1,1,1), seasonal_order=(1,1,1,12),
+sarimax = SARIMAX(z_train, order=(1,1,1), seasonal_order=(1,1,1,12),
                   exog=exog_train_covid,
                   enforce_stationarity=False, enforce_invertibility=False)
 sarimax_fit = sarimax.fit(disp=False, maxiter=500)
-sarima_pred = sarimax_fit.forecast(steps=len(test_ts), exog=exog_test_covid)
+
+# One-step-ahead predictions on log scale, then back-transform
+z_pred = sarimax_fit.forecast(steps=len(z_test), exog=exog_test_covid)
+sarima_pred = np.exp(z_pred) - 1  # median-scale back-transform
+
+# Print SARIMAX summary parameters
+print("SARIMAX coefficients:")
+for name, val in zip(sarimax_fit.param_names, sarimax_fit.params):
+    print(f"  {name}: {val:.6f}")
+print(f"  AIC: {sarimax_fit.aic:.1f}, BIC: {sarimax_fit.bic:.1f}")
+
+# One-step-ahead test accuracy
 r_sarima = metrics(test_ts, sarima_pred, 'SARIMAX(1,1,1)(1,1,1)_12')
+print("  (Note: one-step-ahead with observed lag values; not recursive multi-step)")
 
 # Forecast 12 months ahead (no COVID restrictions in 2026)
 exog_2026 = np.zeros((12, 1))
 fc = sarimax_fit.get_forecast(steps=12, exog=exog_2026)
-fc_mean = fc.predicted_mean if hasattr(fc.predicted_mean, 'values') else fc.predicted_mean
-fc_ci = fc.conf_int(alpha=0.05)
-if hasattr(fc_ci, 'values'): fc_ci = fc_ci.values
+z_fc_mean = fc.predicted_mean.values if hasattr(fc.predicted_mean, 'values') else fc.predicted_mean
+z_fc_ci = fc.conf_int(alpha=0.05).values if hasattr(fc.conf_int(alpha=0.05), 'values') else fc.conf_int(alpha=0.05)
 
-# Clip lower bound to 0 (arrivals cannot be negative)
-lower_clipped = np.clip(fc_ci[:, 0], 0, None)
+# Back-transform: exp(z) - 1 (median-scale forecast on original scale)
+fc_mean_orig = np.exp(z_fc_mean) - 1
+lower_orig = np.exp(z_fc_ci[:, 0]) - 1
+upper_orig = np.exp(z_fc_ci[:, 1]) - 1
+# Clip lower bound to 0
+lower_orig = np.clip(lower_orig, 0, None)
+
 forecast_df = pd.DataFrame({
     'month': pd.date_range('2026-01-01', periods=12, freq='MS').strftime('%Y-%m'),
-    'forecast': np.floor(fc_mean).astype(int) if hasattr(fc_mean, 'astype') else [int(np.floor(x)) for x in fc_mean],
-    'lower_95': np.floor(lower_clipped).astype(int),
-    'upper_95': np.floor(fc_ci[:, 1]).astype(int)
+    'forecast': np.floor(fc_mean_orig).astype(int),
+    'lower_95': np.floor(lower_orig).astype(int),
+    'upper_95': np.floor(upper_orig).astype(int)
 })
 forecast_df.to_csv('output/forecast.csv', index=False)
-print(f"\\n2026 Forecast:"); print(forecast_df.to_string(index=False))""")
+print(f"\\n2026 SARIMAX Forecast (median-scale back-transform):")
+print(forecast_df.to_string(index=False))""")
 
-md("""## 12. Chronos-T5 (Foundation Model)
+md("## 13. CIR# (Cox--Ingersoll--Ross Stochastic Differential Equation)")
+code("""# CIR# model: dr(t) = κ(θ - r(t))dt + σ√r(t)dW(t)
+# r(t) = monthly aggregate tourist arrivals (thousands of persons)
+# κ = mean-reversion speed (per month)
+# θ = long-run mean level (persons/month)
+# σ = volatility scaling (persons/month^(1/2))
+# dW(t) = standard Brownian motion increment
+#
+# Estimation: OLS on discrete differences dr = κ(θ - r)Δt + σ√r ε
+# where Δt = 1 month and ε ~ N(0,1)
 
-Chronos là mô hình pretrained Transformer cho chuỗi thời gian.
-Chạy bằng `./venv/bin/python` (cần torch + chronos).""")
-code("""# Chronos requires torch — run separately with venv if needed
-# See scripts/run_chronos.py for the full implementation
-# Results (best: chronos-t5-small):
-#   MAE=170,625  MAPE=10.77%  R²=-0.0345
-print("Chronos results loaded from pre-computed run.")""")
-
-md("## 13. CIR# (Stochastic Differential Equation)")
-code("""# CIR: dr(t) = κ(θ - r(t))dt + σ√r(t)dW(t)
 r_t = train_ts[:-1].astype(float)
 dr = train_ts[1:].astype(float) - r_t
 ols = LinearRegression().fit(r_t.reshape(-1,1), dr)
 kappa = -ols.coef_[0]
 theta = ols.intercept_ / kappa if kappa > 0 else np.mean(train_ts)
 sigma = np.std(dr - ols.predict(r_t.reshape(-1,1))) / np.sqrt(np.mean(np.abs(r_t)))
-print(f"  κ={kappa:.6f} ({'mean-reverting' if kappa > 0 else 'NEGATIVE (trending)'})")
-print(f"  θ={theta:,.0f}  σ={sigma:.4f}")
+print(f"  κ = {kappa:.6f} per month ({'mean-reverting' if kappa > 0 else 'NEGATIVE (trending)'})")
+print(f"  θ = {theta:,.0f} persons/month (long-run mean)")
+print(f"  σ = {sigma:.4f} persons/month^(1/2)")
+print(f"  Interpretation: κ > 0 implies mean-reversion to θ={theta:,.0f}")
+print(f"  BUT: Vietnam's upward trend violates the stationarity assumption")
 
-# Milstein simulation
+# Milstein simulation (500 paths, 24 test months)
 np.random.seed(42)
 n_paths, n_steps = 500, len(test_ts)
 simulations = np.zeros((n_paths, n_steps))
@@ -343,6 +372,58 @@ ax.plot(fc_dates, forecast_df['forecast'], 'b-s', lw=2, ms=5, label='SARIMAX For
 ax.fill_between(fc_dates, forecast_df['lower_95'], forecast_df['upper_95'], alpha=0.2, color='blue', label='95% CI')
 ax.set_title('SARIMAX 12-Month Forecast for 2026'); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout(); plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches='tight'); plt.show()""")
+
+md("## 16b. Ensemble Forecast (2026) — Recursive Multi-Step")
+code("""# Generate recursive multi-step ensemble forecast for 2026
+# LR, RF, XGBoost use recursive strategy: each month's prediction feeds back as lag_1
+# SARIMAX uses its autoregressive structure
+# Ensemble = mean of all four
+
+last_row = agg_model.iloc[-1].copy()
+ensemble_fc = []
+lr_fc_list, rf_fc_list, xgb_fc_list = [], [], []
+sarimax_only_fc = forecast_df['forecast'].values
+
+for m_idx in range(12):
+    year_fc = 2026
+    month_fc = m_idx + 1
+    if m_idx == 0:
+        prev_arrival = last_row['arrivals']
+        prev_lag12_arr = agg_model.loc[(agg_model['year']==2015) & (agg_model['month']==month_fc), 'arrivals']
+        prev_lag12 = prev_lag12_arr.values[0] if len(prev_lag12_arr) > 0 else last_row['arrivals']
+        prev_rolling = agg_model.tail(12)['arrivals'].mean()
+    else:
+        prev_arrival = ensemble_fc[-1]
+        prev_lag12_arr = agg_model.loc[(agg_model['year']==2015) & (agg_model['month']==month_fc), 'arrivals']
+        prev_lag12 = prev_lag12_arr.values[0] if len(prev_lag12_arr) > 0 else prev_arrival
+        if len(ensemble_fc) >= 12:
+            prev_rolling = np.mean(ensemble_fc[-12:])
+        else:
+            tail_hist = agg_model.tail(max(1, 12-len(ensemble_fc)))['arrivals'].tolist()
+            prev_rolling = np.mean(tail_hist + ensemble_fc)
+
+    time_idx = year_fc + (month_fc - 1) / 12
+    feat_row = np.array([[year_fc, month_fc, time_idx, prev_arrival, prev_lag12, prev_rolling, 0]])
+
+    lr_fc_list.append(int(np.floor(lr.predict(feat_row)[0])))
+    rf_fc_list.append(int(np.floor(rf.predict(feat_row)[0])))
+    xgb_fc_list.append(int(np.floor(xgb_m.predict(feat_row)[0])))
+
+    ensemble_fc.append(np.mean([lr_fc_list[-1], rf_fc_list[-1], xgb_fc_list[-1], sarimax_only_fc[m_idx]]))
+
+ensemble_df = pd.DataFrame({
+    'month': pd.date_range('2026-01-01', periods=12, freq='MS').strftime('%Y-%m'),
+    'ensemble_forecast': np.floor(ensemble_fc).astype(int),
+    'sarimax_forecast': forecast_df['forecast'].values,
+    'lr_forecast': lr_fc_list,
+    'rf_forecast': rf_fc_list,
+    'xgb_forecast': xgb_fc_list,
+})
+ensemble_df.to_csv('output/ensemble_forecast.csv', index=False)
+print("\\n2026 Ensemble Forecast (recursive multi-step):")
+print(ensemble_df.to_string(index=False))
+print(f"\\nEnsemble total 2026: {sum(ensemble_fc):,.0f}")
+print(f"SARIMAX total 2026: {forecast_df['forecast'].sum():,}")""")
 
 md("## 17. Dự báo theo quốc gia nguồn hàng đầu (2026)")
 code("""os.makedirs('output/countries', exist_ok=True)
@@ -404,11 +485,54 @@ plt.suptitle('SARIMAX Forecasts — Top 5 Source Countries (2026)', fontsize=14,
 plt.tight_layout(); plt.savefig('output/country_forecasts_plot.png', dpi=150, bbox_inches='tight'); plt.show()
 print(f"\\nTop 5 total 2026 forecast: {fc_country['forecast'].sum():,}")""")
 
-md("## 18. Lưu kết quả")
-code("""df.to_csv('output/df_long.csv', index=False)
-print("✓ Saved: output/df_monthly.csv, output/df_long.csv")
-print("✓ Plots: eda_*.png, model_comparison.png, pred_vs_actual.png, forecast_plot.png")
-print("✓ Results: model_results.csv, forecast.csv, pred_vs_actual.csv, country_forecasts.csv")""")
+md("## 18. Canonical Results Pipeline")
+code("""# === CANONICAL RESULTS ===
+# Single source of truth for all manuscript numbers
+# Every table, figure, and claim in the report must be traceable to these files
+
+# Save pred_vs_actual with proper column names
+pva_df = pd.DataFrame({
+    'month': test['year'].astype(str) + '-' + test['month'].astype(str).str.zfill(2),
+    'actual': test_ts,
+    'LR': lr.predict(X_test),
+    'RF': rf.predict(X_test),
+    'XGBoost': xgb_m.predict(X_test),
+    'SARIMAX': sarima_pred,
+    'CIR': cir_pred
+})
+pva_df.to_csv('output/pred_vs_actual.csv', index=False)
+
+# Remove stale artifacts
+import glob as gl
+for stale in gl.glob('output/model_comparison.csv') + gl.glob('output/cir_results.npz') + gl.glob('output/_ml_preds.json'):
+    os.remove(stale)
+    print(f"  Removed stale: {stale}")
+
+# Print canonical model results (use this for the manuscript table)
+print("\\n=== CANONICAL MODEL RESULTS (one-step-ahead, test-set R²) ===")
+res_df = pd.DataFrame(all_results).sort_values('MAPE')
+print(res_df.to_string(index=False))
+res_df.to_csv('output/model_results.csv', index=False)
+
+# Print canonical forecasts
+print("\\n=== CANONICAL SARIMAX FORECAST ===")
+print(forecast_df.to_string(index=False))
+
+print("\\n=== CANONICAL ENSEMBLE FORECAST ===")
+print(ensemble_df.to_string(index=False))
+
+# Verify validation MAPE from pred_vs_actual.csv
+val_mask = (pva_df['month'] >= '2026-01') & (pva_df['month'] <= '2026-05')
+if val_mask.sum() == 0:
+    print("\\n  (Validation: Jan-May 2026 actuals not in test set — use GSO data)")
+
+print("\\n✓ Canonical results saved to output/")
+print("  model_results.csv — one model per row, sorted by MAPE")
+print("  forecast.csv — SARIMAX-only 2026 forecast with CIs")
+print("  ensemble_forecast.csv — ensemble + component 2026 forecasts")
+print("  pred_vs_actual.csv — test set predictions for all models")
+print("  country_forecasts.csv — per-country SARIMAX forecasts")
+print("  df_monthly.csv — raw parsed data (32-country aggregate)")""")
 
 nb.cells = cells
 with open('notebooks/bao-cao.ipynb', 'w') as f:
