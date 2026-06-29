@@ -11,3 +11,8 @@ data/cir sharp model.pdf
 report_review.md
 report/*.aux
 report/*.log
+# Review files (local only)
+finalreview.tex
+finalreview2.pdf
+second_report_review.tex
+third_review.tex

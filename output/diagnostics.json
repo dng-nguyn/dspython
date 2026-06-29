@@ -1,0 +1,36 @@
+{
+  "adf": {
+    "statistic": -2.671,
+    "p_value": 0.0792,
+    "conclusion": "Non-stationary at 5%, stationary at 10%"
+  },
+  "kpss": {
+    "statistic": 0.4032,
+    "p_value": 0.0758,
+    "conclusion": "Stationary at 5%"
+  },
+  "adf_diff": {
+    "statistic": -7.8442,
+    "p_value": 0.0,
+    "conclusion": "Stationary when differenced"
+  },
+  "ljung_box": {
+    "lag_6_p": 0.62,
+    "lag_12_p": 0.0015,
+    "conclusion": "No autocorrelation at lag 6; significant seasonal at lag 12"
+  },
+  "durbin_watson": {
+    "statistic": 1.6144,
+    "conclusion": "No first-order autocorrelation"
+  },
+  "jarque_bera": {
+    "statistic": 834.24,
+    "p_value": 0.0,
+    "conclusion": "Non-normal residuals"
+  },
+  "breusch_pagan": {
+    "statistic": 22.15,
+    "p_value": 0.0024,
+    "conclusion": "Heteroscedastic"
+  }
+}

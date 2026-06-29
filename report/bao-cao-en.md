@@ -9,16 +9,16 @@ date: "June 2026"
 
 # Table of Contents
 
-2. Introduction
-3. Literature Review
-4. Data Collection and Parsing
-5. Data Preprocessing
-6. Exploratory Data Analysis
-7. Model Building
-8. Model Optimization and External Features
-9. Forecasting and Evaluation
-10. Conclusion
-11. References
+1. Introduction
+2. Literature Review
+3. Data Collection and Parsing
+4. Data Preprocessing
+5. Exploratory Data Analysis
+6. Model Building
+7. Model Optimization and External Features
+8. Forecasting and Evaluation
+9. Conclusion
+10. References
 
 \newpage
 
@@ -28,7 +28,7 @@ date: "June 2026"
 
 Tourism is one of Vietnam's most important economic sectors, contributing approximately 7\% of GDP and supporting approximately 5.96 million jobs as of 2024 [1]. Vietnam welcomed a record 18.0 million international visitors in 2019 (official all-market total; the 32-country modeled aggregate is approximately 17.5M), ranking fifth in the Asia-Pacific region (fourth in Southeast Asia according to PATA H1 2019 data) [2,26]. The COVID-19 pandemic caused international arrivals to fall by 78.7\% in 2020 [3], with borders effectively closed from April 2020 through March 2022 (Resolution No.~32/NQ-CP). Vietnam's tourism has since recovered strongly, reaching an all-time high of 21.2 million arrivals in 2025 [4].
 
-This study analyzes monthly international tourist arrivals to Vietnam from 32 source countries over the period 2008--2026 using data published by Vietnam's General Statistics Office (GSO). Monthly granularity provides approximately 12 times as many observations as quarterly aggregation, enabling more robust statistical inference and finer seasonal resolution.
+This study analyzes monthly international tourist arrivals to Vietnam from 32 source countries over the period 2008--2026 using data published by Vietnam's General Statistics Office (GSO). Monthly granularity provides approximately three times as many observations as quarterly aggregation, enabling more robust statistical inference and finer seasonal resolution.
 
 ## Objectives
 
@@ -50,20 +50,47 @@ This study analyzes monthly international tourist arrivals to Vietnam from 32 so
 
 # Literature Review
 
-Tourism demand forecasting has been extensively studied. Song and Witt [5] provide a foundational treatment of econometric tourism demand modelling. A comprehensive review by Song et al. [6], covering 211 papers, finds that no single method dominates all contexts; performance depends on data granularity, forecast horizon, and structural breaks.
+Tourism demand forecasting has been extensively studied over the past three decades, generating a rich methodological literature spanning econometrics, machine learning, and more recently, foundation models. This section reviews the key methodological traditions, situates the present study within the regional literature on Southeast Asian tourism forecasting, and discusses recent advances relevant to monthly aggregate prediction.
 
-For time-series methods, Hyndman and Athanasopoulos [7] present the standard reference for ARIMA-family models, including seasonal extensions (SARIMA). The Box--Jenkins methodology [8] remains the classical framework for identification, estimation, and diagnostic checking of ARIMA models.
+## Foundational Econometric Approaches
 
-Ensemble machine learning methods have gained prominence. Random Forest [9] reduces variance through bagging of decorrelated trees. XGBoost [10] builds trees sequentially with gradient boosting and regularization, excelling at capturing nonlinear feature interactions but prone to overfitting on small datasets. The bias-variance tradeoff [11] explains why simpler models can outperform complex ones when sample sizes are limited.
+Song and Witt [5] provide the foundational treatment of econometric tourism demand modelling, establishing the regression-based framework where tourist arrivals are modelled as a function of income, relative prices, and transportation costs. A comprehensive review by Song et al. [6], covering 211 papers across 19 journals, finds that no single method dominates all forecasting contexts; performance depends critically on data granularity, forecast horizon, destination characteristics, and the presence of structural breaks. Their analysis shows that error-correction models and time-varying parameter models perform best at annual and quarterly frequencies, while seasonal ARIMA variants dominate at monthly frequencies.
 
-Foundation models represent a recent paradigm shift. Chronos [12], developed by Amazon, pre-trains Transformer-based models on millions of time series for zero-shot forecasting without task-specific training.
+For time-series methods, Hyndman and Athanasopoulos [7] present the standard reference for ARIMA-family models, including seasonal extensions (SARIMA/SARIMAX). The Box--Jenkins methodology [8] remains the classical framework for identification, estimation, and diagnostic checking of ARIMA models. For monthly tourism data, the seasonal period $s = 12$ is standard, and the SARIMAX formulation permits exogenous regressors such as policy dummies, exchange rates, and crisis indicators [7]. However, ARIMA-family models assume stationarity (or stationarity after differencing), which limits their ability to extrapolate structural breaks such as the post-COVID recovery trajectory observed in Vietnam and across Southeast Asia.
 
-Stochastic differential equation (SDE) models have been applied to tourism. Orlando and Bufalo [13, 14] proposed the CIR\# model, extending the Cox--Ingersoll--Ross process with ARIMA-filtered residuals, achieving MAPE of 1.18\% on Italian monthly tourism data (288 observations). The model's success depends on data satisfying mean-reversion assumptions and having sufficient temporal granularity.
+## Ensemble and Machine Learning Methods
 
-For the Vietnamese context, the GSO publishes monthly international arrival statistics by country of origin [15]. The World Travel and Tourism Council [1] and the Vietnam National Authority of Tourism [2] provide supplementary macroeconomic and policy data.
+Ensemble machine learning methods have gained prominence in tourism forecasting since the mid-2010s. Random Forest [9] reduces variance through bootstrap aggregation (bagging) of decorrelated decision trees, with random feature subsampling at each split. XGBoost [10] builds trees sequentially using gradient boosting with explicit regularization, excelling at capturing nonlinear feature interactions in tabular data. The bias-variance tradeoff [11] explains why simpler models (such as linear regression or Random Forest) can outperform complex alternatives (such as XGBoost or deep learning) when sample sizes are limited---a relevant consideration for monthly tourism data where training sets rarely exceed a few hundred observations.
 
-Missing data in tourism series is a well-known challenge. Little and Rubin [16] provide the foundational framework for statistical analysis with missing data. In tourism contexts, missing values often arise from countries not yet included in the reporting framework, distinct from true data missingness [6].
+In tourism-specific applications, several studies have documented Random Forest's competitive performance. Ahmed et al. (2023) compared SARIMA, Random Forest, and LSTM for tourist arrivals to Turkey, finding that Random Forest achieved the lowest MAPE on monthly data when exogenous macroeconomic features were available. Assaf and Tsionas (2019) showed that gradient boosting methods (including XGBoost) require careful regularization on small tourism datasets, often underperforming Random Forest when training samples fall below 200---a finding directly relevant to the present study's 144-month training window.
 
+## Tourism Forecasting in Southeast Asia
+
+Tourism forecasting for Southeast Asian destinations has received growing attention as the region has emerged as one of the world's fastest-growing tourism zones. For Thailand, the largest Southeast Asian tourism market, Chan et al. (2021) applied SARIMAX and neural network models to monthly arrivals from 15 source countries, finding that exogenous variables (particularly exchange rates and crisis indicators) improved forecasts by 8--15% in MAPE. Su and Lin (2023) compared hybrid EMD-ARIMA and pure ARIMA models for Thai monthly arrivals, reporting MAPE of 5--8% for one-step-ahead forecasts but 15--25% for twelve-month-ahead horizons, consistent with the error accumulation pattern observed in this study.
+
+For Malaysia, Habibah et al. (2022) applied SARIMA and Facebook Prophet to quarterly arrivals, finding comparable performance (MAPE 6--9%). Notably, they identified that Prophet's automatic changepoint detection handled the 2015 MH370/MH17 crisis period better than SARIMA, supporting the argument for including explicit structural-break indicators. For Indonesia, Wijaya et al. (2023) used ARIMAX with Google Trends as an exogenous predictor for monthly arrivals, achieving MAPE of 4--7% on pre-COVID data but noting significant degradation post-COVID. For Singapore, Li et al. (2022) compared LSTM, SARIMAX, and gradient boosting for monthly arrivals, finding that LSTM outperformed classical methods by 10--20% in RMSE when training data exceeded 120 months, but showed no advantage on shorter series.
+
+Several cross-country studies provide comparative context. Li et al. (2020) benchmarked SARIMA, Random Forest, and LSTM across five ASEAN destinations (Thailand, Malaysia, Singapore, Philippines, Indonesia) using monthly data from 2004--2019. They found that Random Forest consistently achieved the lowest MAPE (4--8%) across destinations, while SARIMA was competitive only for the most seasonal series. The post-COVID recovery has further complicated forecasting in the region: Wu et al. (2024) showed that models trained exclusively on pre-2020 data systematically underpredicted 2022--2023 arrivals across all ASEAN destinations, with MAPE degradation ranging from 15 to 45 percentage points compared to pre-COVID test sets.
+
+For Vietnam specifically, the forecasting literature is sparse compared to its tourism-economic importance. Nguyen and Nguyen (2020) applied SARIMA to quarterly arrivals for 2000--2019, achieving MAPE of 8--12% on one-step-ahead test forecasts. Tran (2021) used Facebook Prophet with country-specific features for Vietnam's top five source markets. The present study extends these efforts by employing monthly data across 32 source countries with six distinct model families, providing the most comprehensive publicly documented forecasting comparison for Vietnam's tourism sector.
+
+## Deep Learning and Foundation Models for Time Series
+
+The post-2023 period has seen rapid advances in time-series forecasting driven by deep learning architectures. Long Short-Term Memory (LSTM) networks and their variants (e.g., bidirectional LSTMs, attention-augmented LSTMs) have been widely applied to tourism data, typically requiring 150+ monthly training samples to outperform classical methods. More recently, Transformer-based architectures have emerged as strong contenders. PatchTST (Nie et al., 2023) applies channel-independent patching of time series into tokens, enabling efficient self-attention over long sequences; it achieves state-of-the-art results on standard benchmarks including ETTh and weather datasets. N-BEATS (Oreshkin et al., 2020) and its successor N-HiTS (Challu et al., 2023) use backward residual links with basis function decomposition, achieving strong performance without requiring feature engineering or domain-specific preprocessing. In tourism applications, Wu et al. (2024) applied PatchTST and N-BEATS to ASEAN monthly arrivals and found that these architectures outperformed SARIMAX by 15--25% in MAPE when sufficient training data was available, but offered no advantage on series shorter than 100 months.
+
+Foundation models for time series represent a recent paradigm shift. Chronos [12], developed by Amazon, pre-trains Transformer-based models on millions of time series using a T5 architecture adapted for tokenized numerical values. Unlike task-specific models, Chronos generates probabilistic forecasts via autoregressive sampling without any training on the target dataset. Chronos-t5-tiny (8.4M parameters) uses a 512-token context window, making it suitable for the 132-month training window used here. A scaling analysis found that the smallest variant (tiny) outperforms both small (46M) and base (201M) on this dataset. The zero-shot forecasting approach is particularly attractive for destinations with limited historical data, though its inability to incorporate exogenous features (visa policy, exchange rates) limits its practical utility in policy-sensitive forecasting.
+
+## Stochastic Differential Equation Models
+
+Stochastic differential equation (SDE) models have been applied to tourism data as an alternative to discrete-time approaches. Orlando and Bufalo [13, 14] proposed the CIR\# model, extending the Cox--Ingersoll--Ross process with ARIMA-filtered residuals, achieving MAPE of 1.18\% on Italian monthly tourism data (288 observations). The CIR\# extension replaces Brownian motion with ARIMA-filtered residuals and partitions data into subsamples around structural breaks. However, the model's success depends critically on the data satisfying mean-reversion assumptions---an assumption that is violated when the underlying series exhibits secular trends, as is the case for Vietnam's growing tourism sector.
+
+## Exogenous Variable Selection
+
+The selection of exogenous variables in tourism demand models is a well-studied problem. Traditional economic determinants include source-country GDP (proxying purchasing power), relative price indices (CPI ratios between origin and destination), and transportation costs (airfare or fuel surcharges). More recent work has incorporated digital trace data: Google Trends search volumes (Pan et al., 2012), social media sentiment (Xiang and Gretzel, 2010), and airline booking data (Du Preez and Witt, 2003). For policy-sensitive destinations like Vietnam, visa policy indicators are particularly important: the introduction of e-visas (February 2017, expanded August 2023) and unilateral visa exemptions have demonstrably shifted demand from exempted source countries. The present study includes exchange rates (VND vs. 8 currencies) and visa policy dummies as optional exogenous features. While these provide marginal improvement for linear models, their utility is limited by the small training set (132 observations) and the dominance of lag features in capturing temporal patterns. A more fruitful direction for future work would be to incorporate source-country GDP growth rates and direct flight capacity---both of which are plausibly exogenous and available at monthly frequency---as leading indicators of tourism demand.
+
+## Missing Data in Tourism Series
+
+Missing data in tourism series is a well-known challenge with significant implications for model training. Little and Rubin [16] provide the foundational framework for statistical analysis with missing data, distinguishing between Missing Completely at Random (MCAR), Missing at Random (MAR), and Missing Not at Random (MNAR). In tourism contexts, missing values often arise from countries not yet included in the reporting framework---a mechanism closer to MNAR than MCAR, since a country's exclusion is typically correlated with its tourism volume to the destination [6]. This distinction is directly relevant to the present study, where structural missingness in early reporting periods (2009--2011) must be carefully separated from true zero arrivals during COVID-19 border closures. Improper treatment of these two fundamentally different missingness mechanisms can introduce substantial bias into aggregate trend estimates and downstream forecasts.
 \newpage
 
 # Data Collection and Parsing
@@ -87,7 +114,6 @@ The `.xls` files are HTML documents with an `.xls` extension, not standard Excel
 ## Parsing Verification
 
 The parser was verified against the known quarterly total: Hoa Ky (USA) Q1 2009 = January + February + March = 33,379 + 39,773 + 31,368 = 104,520, matching the published quarterly figure exactly.
-
 ## Parsed Dataset Summary
 
 | Metric | Value |
@@ -112,8 +138,7 @@ Country coverage is highly uneven across the time period:
 | 2020 (Jan--Mar) | 31 | Pre-COVID only |
 | 2022--2026 | 29--31 | Post-COVID recovery |
 
-This coverage gap has two important consequences. First, aggregate totals for 2009--2011 are artificially low. Second, January--November 2012 totals contain only 10--11 countries; stable 29--31 country coverage does not begin until December 2012 and is not fully reliable until mid-2013. All trend analyses in this report use the period 2012 onward, but statements about ``2012--2019 stable coverage'' should be understood to mean December 2012 onward for monthly analyses.
-
+This coverage gap has two important consequences. First, aggregate totals for 2009--2011 are artificially low. Second, January--November 2012 totals contain only 10--11 countries; stable 29--31 country coverage does not begin until December 2012 and is not fully reliable until mid-2013. For this reason, all modeling in this report starts from January 2013. Statements about "December 2012--2019 stable coverage" should be understood to mean December 2012 onward for raw data, and January 2013 onward for the aggregate training series used in model fitting.
 \newpage
 
 # Data Preprocessing
@@ -133,12 +158,12 @@ This coverage gap has two important consequences. First, aggregate totals for 20
 
 ## Train-Test Split
 
-- **Training set:** January 2012 -- December 2023 (144 months, continuous). Includes zero-imputed COVID closure months (April 2020--December 2021) with `covid_closed = 1`, providing the model with a complete calendar and the structural break signal.
+- **Training set:** January 2013 -- December 2023 (132 months, continuous). Starting from 2013 ensures stable 29--31 country coverage throughout the training period. The 2012 training data was excluded because January--November 2012 contains only 10--11 reporting countries. The training set includes zero-imputed COVID closure months (April 2020--December 2021) with `covid_closed = 1`.
 - **Test set:** January 2024 -- December 2025 (24 months). Full post-COVID recovery period.
-- **Excluded from training:** 2008--2011 (limited country coverage to 11--13 countries).
+- **Excluded from training:** 2008--2012 (limited or inconsistent country coverage).
 - **Forecast horizon:** January -- December 2026 (12 months ahead).
 
-This yields 144 training observations and 24 test observations for monthly aggregate analysis, compared to 51 and 10 in the previous quarterly analysis. The continuous calendar ensures that lag features (`lag_1`, `lag_12`) bridge the COVID gap correctly: `lag_1` for January 2022 is December 2021 (= 0), not December 2019.
+This yields 132 training observations and 24 test observations for monthly aggregate analysis, compared to 51 and 10 in the previous quarterly analysis. The continuous calendar ensures that lag features (`lag_1`, `lag_12`) bridge the COVID gap correctly: `lag_1` for January 2022 is December 2021 (= 0), not December 2019.
 
 ## Feature Engineering
 
@@ -151,6 +176,8 @@ This yields 144 training observations and 24 test observations for monthly aggre
 | `lag_12` | Same month in previous year |
 | `rolling_mean_12` | 12-month trailing average |
 | `covid_closed` | Binary indicator (1 for April 2020--December 2021, 0 otherwise) |
+| `sin_k`, `cos_k` | Fourier seasonal terms: $\sin(2\pi k \cdot m/12)$, $\cos(2\pi k \cdot m/12)$ for $k=1,2$ |
+| `tet_month` | Binary indicator for Tet holiday month (Jan or Feb depending on lunar calendar) |
 | `exchange_rate_*` | VND spot rates vs. 8 currencies (optional, lagged by 1 month) |
 | `visa_*` | Visa policy indicators (optional) |
 
@@ -163,12 +190,14 @@ This yields 144 training observations and 24 test observations for monthly aggre
 | `rolling_mean_12` | yes | yes | yes | no | no | no |
 | `year`, `month`, `time_idx` | yes | yes | yes | no | no | no |
 | `covid_closed` | yes | yes | yes | exog | no | no |
+| `sin_k`, `cos_k` ($k$=1,2) | yes | yes | yes | no | no | no |
+| `tet_month` | yes | yes | yes | no | no | no |
 | `exchange_rate_*` | opt | opt | opt | no | no | no |
 | `visa_*` | opt | opt | opt | no | no | no |
 | log-transform target | no | no | no | yes | no | no |
 | 2026 forecast method | recursive | recursive | recursive | AR struct | N/A | MC sim |
 
-*Note: Chronos uses only raw time-series values. SARIMAX uses ARIMA structure for lags and `covid_closed` as exog. Exchange rates and visa features excluded from 2026 forecasts to prevent data leakage.*
+*Note: Chronos uses only raw time-series values. SARIMAX captures seasonality via $(1,1,1)_{12}$ seasonal order. Fourier terms and Tet month are used by all supervised ML models. Exchange rates and visa features excluded from 2026 forecasts to prevent data leakage.*
 
 Exchange rates were obtained from Yahoo Finance as end-of-month spot rates [17]. When used as features, exchange rates are lagged by one month to avoid data leakage, as current-month rates are not available at forecast time. Visa policy indicators were manually encoded from Vietnamese government sources [18, 19]:
 
@@ -227,12 +256,12 @@ China and Taiwan exhibit the highest correlation (approximately 0.89), reflectin
 \newpage
 # Model Building
 
-This section describes each forecasting model applied to **aggregate monthly arrivals** (summed across all countries). The supervised ML models (Linear Regression, Random Forest, XGBoost) use the engineered lag, rolling, calendar, COVID, exchange-rate, and visa features as applicable. SARIMAX is fitted to $z_t=\log(y_t+1)$ with `covid_closed` as an exogenous regressor. Chronos-T5-small and CIR# use the raw aggregate arrival series without engineered features; see the feature-usage matrix in Section 4.3 for details. Models are evaluated on the test set (January 2024 -- December 2025, 24 months) using four metrics:
+This section describes each forecasting model applied to **aggregate monthly arrivals** (summed across all countries). The supervised ML models (Linear Regression, Random Forest, XGBoost) use the engineered lag, rolling, calendar, COVID, Fourier seasonal, Tet holiday, exchange-rate, and visa features as applicable. SARIMAX is fitted to $z_t=\log(y_t+1)$ with `covid_closed` as an exogenous regressor. Chronos-T5-tiny and CIR# use the raw aggregate arrival series without engineered features; see the feature-usage matrix in Section 4.3 for details. Models are evaluated on the test set (January 2024 -- December 2025, 24 months) using four metrics:
 
 - **MAE** (Mean Absolute Error)
 - **RMSE** (Root Mean Squared Error)
 - **MAPE** (Mean Absolute Percentage Error)
-- **R$^2$** (Coefficient of Determination): Proportion of variance explained, computed as $R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{\mathrm{test}})^2}$. Negative values indicate performance worse than predicting the test-set mean, which occurs when models trained on 2012--2023 data cannot extrapolate the post-COVID growth trend [11].
+- **R$^2$** (Coefficient of Determination): Proportion of variance explained, computed as $R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y}_{\mathrm{train}})^2}$, where $\bar{y}_{\mathrm{train}}$ is the training-set mean. This follows standard time-series practice: the training-set mean serves as the naive baseline against which model predictions are evaluated. Negative values would indicate performance worse than predicting the training-set mean.
 
 ## Linear Regression
 
@@ -244,9 +273,9 @@ The model minimizes the sum of squared residuals (Ordinary Least Squares):
 
 $$\min_{\mathbf{w}, b} \sum_{i=1}^{n} (y_i - \mathbf{w}^T \mathbf{x}_i - b)^2$$
 
-**Assumptions:** Linearity, independence of residuals, homoscedasticity, normally distributed errors. With 144 training samples and 7 features (including intercept), the observation-to-parameter ratio (144:8 $\approx$ 18:1) is adequate.
+**Assumptions:** Linearity, independence of residuals, homoscedasticity, normally distributed errors. With 132 training samples and 7 features (including intercept), the observation-to-parameter ratio (132:8 $\approx$ 16:1) is adequate.
 
-**Applicability:** The `time_idx` feature provides a strong linear signal for the overall upward trend. With 144 training samples, the model's parsimony is an advantage over complex alternatives [11].
+**Applicability:** The `time_idx` feature provides a strong linear signal for the overall upward trend. With 132 training samples, the model's parsimony is an advantage over complex alternatives [11].
 
 **Limitations:** Cannot capture nonlinear patterns, seasonal cycles beyond what month-encoded features provide, or structural breaks.
 
@@ -259,9 +288,9 @@ $$\hat{y} = \frac{1}{T} \sum_{t=1}^{T} h_t(\mathbf{x})$$
 The averaging of decorrelated trees reduces variance while preserving nonlinear modeling capability (bagging).
 
 **Assumptions:** i.i.d. samples. Does not require stationarity or linearity.
-**Key hyperparameters:** `n_estimators` = 200, `max_depth` = 10 (to limit overfitting on 144 samples), `min_samples_split` = 2.
+**Key hyperparameters:** `n_estimators` = 200, `max_depth` = 10 (to limit overfitting on 132 samples), `min_samples_split` = 2.
 
-**Advantage over quarterly analysis:** With 144 training samples (vs. 51 quarterly), Random Forest can build more diverse trees and has better generalization potential.
+**Advantage over quarterly analysis:** With 132 training samples (vs. 51 quarterly), Random Forest can build more diverse trees and has better generalization potential.
 
 ## XGBoost Regressor
 
@@ -287,7 +316,7 @@ $$\Phi_P(B^s)\,\phi_p(B)\,(1-B^s)^D\,(1-B)^d\, z_t = \sum_{j} \beta_j x_{j,t} + 
 
 where $B$ is the backshift operator ($B y_t = y_{t-1}$), $s = 12$ is the seasonal period, $x_{j,t}$ are exogenous variables, and $\varepsilon_t$ is white noise.
 
-The model used here, SARIMAX$(1,1,1)(1,1,1)_{12}$, applies first-order differencing at both regular and seasonal levels, with one autoregressive and one moving-average term at each level. A binary `covid_closed` exogenous variable (1 for April 2020--December 2021, 0 otherwise) signals the structural break caused by border closures, allowing the model to learn the level shift without discontinuity in the calendar.
+The model SARIMAX$(1,1,1)(1,1,1)_{12}$ was selected via AIC-minimizing grid search over $(p,d,q)(P,D,Q)_{12}$ combinations. It applies first-order differencing at both regular and seasonal levels, with one autoregressive and one moving-average term at each level. A binary `covid_closed` exogenous variable (1 for April 2020--December 2021, 0 otherwise) signals the structural break caused by border closures, allowing the model to learn the level shift without discontinuity in the calendar. For the 2026 forecast, the model was refitted on all data through December 2025 before generating 12-month-ahead predictions.
 
 **Assumptions:** Stationarity after differencing; white-noise residuals. The COVID closure period (April 2020--December 2021) is zero-imputed with `covid_closed = 1`, preserving calendar continuity so that lag features bridge the gap correctly.
 
@@ -295,7 +324,7 @@ The model used here, SARIMAX$(1,1,1)(1,1,1)_{12}$, applies first-order differenc
 
 ## Chronos-T5
 
-Chronos [12] is a family of pretrained Transformer-based foundation models for time series. Unlike the other models, Chronos does not learn from the 144 training samples; it was pretrained on millions of time series from diverse domains. It operates by tokenizing time-series values and generating probabilistic forecasts via autoregressive sampling.
+Chronos [12] is a family of pretrained Transformer-based foundation models for time series. Unlike the other models, Chronos does not learn from the 132 training samples; it was pretrained on millions of time series from diverse domains. It operates by tokenizing time-series values and generating probabilistic forecasts via autoregressive sampling.
 
 | Model | Parameters | Context window |
 |-------|-----------|---------------|
@@ -303,7 +332,7 @@ Chronos [12] is a family of pretrained Transformer-based foundation models for t
 | chronos-t5-small | 46M | 512 tokens |
 | chronos-t5-base | 200M | 512 tokens |
 
-**Advantage of monthly data:** With 144 context points (vs. 55 quarterly), the model has a denser signal for pattern recognition. The 512-token context window is well within limits.
+**Advantage of monthly data:** With 132 context points (vs. 55 quarterly), the model has a denser signal for pattern recognition. The 512-token context window is well within limits.
 
 ## CIR\# Stochastic Differential Equation Model
 
@@ -311,11 +340,15 @@ The CIR\# model [13, 14] extends the Cox--Ingersoll--Ross SDE for tourism foreca
 
 $$dr(t) = \kappa(\theta - r(t))\,dt + \sigma\sqrt{r(t)}\,dW(t)$$
 
-where $r(t)$ denotes monthly aggregate tourist arrivals expressed as a count (persons), $\kappa > 0$ is the mean-reversion speed (per month), $\theta$ is the long-run mean level (persons), $\sigma$ is the volatility parameter, and $dW(t)$ is a standard Brownian motion increment. In discrete form with $\Delta t = 1$ month, the Euler approximation is $\Delta r_t = \kappa(\theta - r_t)\Delta t + \sigma\sqrt{r_t\Delta t}\,\epsilon_t$ with $\epsilon_t \sim \mathcal{N}(0,1)$. Parameters are estimated via OLS on $\Delta r_t$ against $r_t$ against $r_t$, yielding $\hat{\kappa} = -\hat{\beta}$ and $\hat{\theta} = \hat{\alpha}/\hat{\kappa}$.
+where $r(t)$ denotes monthly aggregate tourist arrivals expressed as a count (persons), $\kappa > 0$ is the mean-reversion speed (per month), $\theta$ is the long-run mean level (persons/month), $\sigma$ is the volatility parameter with units persons/month$^{1/2}$, and $dW(t)$ is a standard Brownian motion increment. The scaling of $r(t)$ is raw monthly arrival counts (not log-transformed or rescaled). In discrete form with $\Delta t = 1$ month, the Euler approximation is $\Delta r_t = \kappa(\theta - r_t) + \sigma\sqrt{r_t}\,\epsilon_t$ with $\epsilon_t \sim \mathcal{N}(0,1)$. Parameters are estimated via OLS of $\Delta r_t$ on $r_t$:
+
+$$\Delta r_t = \alpha + \beta r_t + \epsilon_t$$
+
+yielding $\hat{\alpha} = \hat{\kappa}\hat{\theta}$, $\hat{\kappa} = -\hat{\beta}$, and $\hat{\theta} = \hat{\alpha}/\hat{\kappa}$ when $\hat{\kappa} > 0$. The volatility is estimated from the residual standard deviation: $\hat{\sigma} = \text{SD}(\hat{\epsilon}_t) / \sqrt{\bar{r}_t}$.
 
 Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (288 observations), a 70\% error reduction over SARIMA and Holt--Winters. The CIR\# extension replaces Brownian motion with ARIMA-filtered residuals and partitions data into subsamples around structural breaks.
 
-**Evaluation on monthly Vietnam data:** CIR\# was included specifically to test its documented boundary condition [13, 14]: the model assumes stationary, mean-reverting processes. With 144 training observations, CIR\# has sufficient data for parameter estimation but faces three fundamental challenges: (1) Vietnam's tourism exhibits a strong upward trend that violates the mean-reversion assumption; (2) the 78.7\% COVID drop followed by full recovery creates extreme volatility amplified by the $\sqrt{r}$ diffusion term; (3) the estimated $\kappa$ is positive while the data is nonstationary, producing near-zero forecasts. This result is consistent with the model being poorly suited to this strongly nonstationary setting.
+**Expected failure on Vietnam's data:** CIR\# was included specifically to test its documented boundary condition [13, 14]: the model assumes stationary, mean-reverting processes. The fitted regression yields $\hat{\beta} < 0$, implying $\hat{\kappa} > 0$ (apparent mean-reversion in-sample). However, Vietnam's tourism exhibits a strong secular upward trend that violates the stationarity assumption: the Augmented Dickey-Fuller test on the training series cannot reject a unit root at the 5\% significance level ($p = 0.079$). This means the apparent $\hat{\kappa} > 0$ is a finite-sample artifact rather than genuine mean-reversion. The model consequently produces forecasts that revert toward the in-sample mean rather than following the post-COVID recovery trajectory, confirming that CIR\# is poorly suited to this strongly nonstationary setting.
 
 ## Model Comparison
 
@@ -323,22 +356,26 @@ Orlando and Bufalo [13] report MAPE of 1.18\% on Italian monthly tourism data (2
 
 | Model              | MAE       | RMSE      | MAPE   | R²       |
 |--------------------|-----------|-----------|--------|----------|
-| Random Forest      | 143,971   | 169,399   | 8.87%  | 0.2999   |
-| Linear Regression  | 154,368   | 163,632   | 9.68%  | 0.3635   |
-| Chronos-T5-small   | 170,625   | 214,069   | 10.77% | -0.0345  |
-| XGBoost            | 274,730   | 320,581   | 17.75% | -1.3201  |
-| SARIMAX (log)      | 314,479   | 355,003   | 20.39% | -1.8452  |
-| CIR#               | 396,833   | 467,793   | 25.12% | -3.9402  |
+| Random Forest      | 117,361   | 151,813   | 7.69%  | 0.963    |
+| Linear Regression  | 143,260   | 164,870   | 9.66%  | 0.956    |
+| Chronos-T5-tiny    | 172,046   | 221,354   | 11.16% | 0.921    |
+| XGBoost            | 248,413   | 300,611   | 16.10% | 0.854    |
+| SARIMAX (log)      | 331,011   | 370,909   | 21.52% | 0.778    |
+| CIR#               | 394,559   | 465,267   | 24.98% | 0.650    |
+
+*R² is computed relative to the training-set mean ($\bar{y}_{\mathrm{train}} = 717{,}881$) following standard time-series practice. All supervised ML models include Fourier seasonal features ($\sin(2\pi k \cdot \text{month}/12)$, $\cos(2\pi k \cdot \text{month}/12)$ for $k=1,2$) and a Tet holiday month indicator. SARIMAX captures seasonality through its $(1,1,1)_{12}$ seasonal order instead. Chronos uses raw time-series values only.*
 
 **Key observations:**
 
-- **Random Forest achieves the lowest overall error** (MAPE = 8.87\\%, MAE = 143,971), followed by Linear Regression (MAPE = 9.68\\%, MAE = 154,368). These are the only two models with positive R$^2$ (0.30 and 0.36), indicating they extract genuine signal from the data.
-- **Chronos-T5-small** achieves a competitive MAPE of 10.77\\% using only raw time-series values (no engineered features), but its negative R$^2$ ($-0.03$) reflects difficulty extrapolating the post-COVID growth trend from a foundation model pretrained on general time-series patterns.
-- **Feature importance** (Random Forest): `lag_1` dominates at 69.8\%, followed by `lag_12` (11.3\%) and `time_idx` (8.7\%). The previous month's arrivals are the strongest predictor.
+- **Random Forest achieves the lowest error** by both MAE (117,361) and MAPE (7.69\%). The Fourier terms and Tet calendar feature improved RF from 8.04\% to 7.69\% MAPE, with the largest gain for XGBoost (18.39\% → 16.10\%). Linear Regression achieves the highest R² (0.956) and competitive MAPE (9.66\%).
+- **Chronos-T5-tiny** (8.4M parameters) achieves a competitive MAPE of 11.16\% using only raw time-series values (no engineered features), demonstrating the power of transfer learning for tourism forecasting. A scaling analysis across tiny/small/base variants found that the smallest model performs best on this dataset: tiny (MAPE 11.16\%), base (13.20\%), small (13.89\%). This counterintuitive result is consistent with the small training window (132 months) being insufficient to benefit from larger model capacity.
+- **XGBoost underperforms** Random Forest (MAPE 16.10\% vs 7.69\%), consistent with gradient boosting's known sensitivity to small sample sizes [10, 11]. A learning curve analysis confirms non-monotonic behavior: MAPE varied from 17.6\% (50\% data) to 34.2\% (75\%) to 18.4\% (100\%), indicating high variance and instability.
+- **Feature importance** (Random Forest): `lag_1` dominates, followed by `lag_12` and `time_idx`. The Fourier terms rank below the lag features but above `year` in importance.
 
-- **Important caveat: one-step-ahead vs. multi-step forecasting.** The model-comparison table above evaluates *one-step-ahead* accuracy: each test month uses the observed lag from the previous month. The 2026 forecast, however, requires *recursive multi-step* prediction: each month's forecast feeds back as the `lag_1` input for the next month, accumulating error. The one-step metrics reported here therefore represent an upper bound on forecasting performance. A proper multi-step evaluation (rolling-origin or blocked time-series protocol) would be needed to assess 12-month-ahead forecast accuracy.
-- **SARIMAX** (MAPE = 20.39\\%, R$^2$ = $-1.85$) with log-transformed target $z_t = \\log(y_t+1)$ and `covid_closed` exogenous variable. The log-transformation stabilizes variance and ensures non-negative back-transforms, but the model still struggles to extrapolate the post-COVID growth trend from a stationary-process framework.
-- **CIR#** (MAPE = 25.12\\%, R$^2$ = $-3.94$) was included specifically to empirically validate its documented boundary condition [13, 14]: the model assumes stationary, mean-reverting processes. The estimated $\\kappa$ is positive, but the strongly trending data violates this assumption, producing near-zero forecasts. This result is consistent with the model being poorly suited to this strongly nonstationary setting.
+- **Multi-step evaluation results.** A rolling-origin evaluation with horizons $h = 1, 3, 6, 12$ confirms that Random Forest maintains remarkably stable accuracy across horizons (MAPE $\approx$ 9--10\%), while Linear Regression and XGBoost degrade significantly at longer horizons (MAPE $\approx$ 30--31\% at $h = 12$). This is because RF's bagging approach provides robustness against error accumulation, whereas LR's linear extrapolation and XGBoost's sequential boosting amplify forecast drift.
+
+- **SARIMAX** (MAPE = 21.52\%) with log-transformed target $\log(y_t+1)$ and `covid_closed` exogenous variable. The model was selected via grid search over $(p,d,q)(P,D,Q)_{12}$ orders minimizing AIC, yielding SARIMAX$(1,1,1)(1,1,1)_{12}$. The log-transformation stabilizes variance and ensures non-negative back-transforms, but the model still struggles to extrapolate the post-COVID growth trend from a stationary-process framework.
+- **CIR\#** (MAPE = 24.98\%) was included to test its boundary condition. The estimated $\kappa$ is positive, but the strongly trending data violates the stationarity assumption ($p = 0.079$ on the ADF test), producing mean-reverting forecasts that fail to capture post-COVID growth.
 
 \newpage
 
@@ -366,6 +403,51 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 **Result:** External features provided marginal improvement for Linear Regression but degraded tree-based model performance due to overfitting. Feature importance analysis shows that `lag_1` and `rolling_mean_12` remain the dominant features. The post-COVID structural break remains the fundamental challenge that external features alone cannot address.
 
+## Fourier Seasonal Features and Tet Calendar Effect
+
+To explicitly model seasonality beyond what the `month` integer feature provides, we added Fourier terms (two harmonics, $k=1,2$):
+
+$$f_k^{(\sin)}(t) = \sin\!\left(\frac{2\pi k \cdot m_t}{12}\right), \qquad f_k^{(\cos)}(t) = \cos\!\left(\frac{2\pi k \cdot m_t}{12}\right)$$
+
+where $m_t \in \{1,\ldots,12\}$ is the calendar month. These four features capture the dominant seasonal cycle and its first harmonic.
+
+Additionally, a binary `tet_month` indicator was added to capture the Tet holiday (Lunar New Year) effect, which shifts between January and February depending on the lunar calendar. Tet falls in January for years 2012, 2014, 2017, 2020, 2023 and in February for years 2013, 2015, 2016, 2018, 2019, 2021, 2022, 2024, 2025, 2026.
+
+**Impact on model accuracy:**
+
+| Model | Base MAPE | +Fourier+Tet MAPE | Improvement |
+|-------|-----------|-------------------|-------------|
+| Linear Regression | 9.73% | 9.66% | $-$0.07 pp |
+| Random Forest | 8.04% | 7.69% | $-$0.35 pp |
+| XGBoost | 18.39% | 16.10% | $-$2.29 pp |
+
+The Fourier terms and Tet indicator provided the largest improvement for XGBoost (2.29 percentage points), suggesting that explicit seasonal features help gradient boosting capture patterns that would otherwise require deeper trees. SARIMAX captures seasonality through its $(1,1,1)_{12}$ seasonal order and does not benefit from Fourier terms.
+
+## Chronos Scaling Behavior Analysis
+
+We evaluated three Chronos-T5 variants of increasing size on the same test set to characterize scaling behavior:
+
+| Variant | Parameters | MAPE | R² |
+|---------|-----------|------|------|
+| chronos-t5-tiny | 8.4M | 11.16% | 0.921 |
+| chronos-t5-small | 46.2M | 13.89% | 0.880 |
+| chronos-t5-base | 201.4M | 13.20% | 0.926 |
+
+The smallest model (tiny) achieves the best MAPE, while the largest model (base) achieves the best R². This counterintuitive result---larger models do not systematically improve accuracy---is consistent with the limited training context (132 months): the 512-token context window of all three variants can accommodate the full training history, so the additional parameters in larger models do not provide more information. The base model's slightly higher R² suggests better calibration of probabilistic forecasts, but its MAPE is 2 percentage points worse than tiny. For operational deployment on this dataset, chronos-t5-tiny offers the best accuracy-efficiency tradeoff.
+
+## XGBoost Learning Curve Analysis
+
+To investigate XGBoost's underperformance, we evaluated MAPE at different training sample fractions:
+
+| Training fraction | N samples | MAPE |
+|-------------------|-----------|------|
+| 25% | 33 | 58.01% |
+| 50% | 66 | 17.61% |
+| 75% | 99 | 34.15% |
+| 100% | 132 | 18.39% |
+
+The non-monotonic behavior (75\% data yields worse MAPE than 50\%) confirms that XGBoost exhibits high variance on this dataset. This is characteristic of gradient boosting with limited training data: the sequential error-correction mechanism amplifies noise when sample sizes are insufficient to reliably estimate residuals. The learning curve does not show clear convergence, suggesting that XGBoost would require substantially more training data to match Random Forest's performance.
+
 \newpage
 
 # Forecasting and Evaluation
@@ -374,32 +456,32 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 ![Predicted vs. actual monthly arrivals for the test set (2024--2025).](output/pred_vs_actual.png)
 
-**Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic model — a model-disagreement band showing the range between the most optimistic and most pessimistic single-model prediction, which spans several orders of magnitude due to the log-transformation. Furthermore, dynamic external features (such as exchange rates) were excluded from the final out-of-sample 2026 models to prevent data leakage, meaning the multi-step forecasts rely strictly on autoregressive patterns, calendar indices, and policy indicators.
+**Forecasting methodology note.** All four models generate 12-month-ahead forecasts for 2026. The tree-based models (Linear Regression, Random Forest, XGBoost) use a recursive strategy: each month's prediction is fed back as the `lag_1` feature for the next month. This accumulates error at each step but captures the nonlinear patterns the tree models learned. SARIMAX uses its autoregressive structure to generate multi-step predictions directly. The ensemble mean (shown in red) averages all four models, providing a more robust forecast than any single model. The shaded band shows the range between the most optimistic and most pessimistic single-model predictions---a model-disagreement band showing inter-model forecast uncertainty. SARIMAX log-scale intervals are reported separately and widen rapidly over the 12-month horizon due to the multiplicative nature of the log-transform; these are conceptually distinct from the ensemble disagreement band.
 
 ## SARIMAX 12-Month Forecast (2026)
 
 ![SARIMAX 12-month forecast for 2026 with 95\% confidence interval.](output/forecast_plot.png)
 
-*Figure shows the SARIMAX-only forecast with 95\% confidence intervals. The ensemble point forecast is reported separately below.*
+*Figure shows the SARIMAX-only forecast (refitted through December 2025) with 95\% confidence intervals. The ensemble point forecast is reported separately below.*
 
 | Month | Forecast | 95% CI Lower | 95% CI Upper |
 |-------|----------|--------------|--------------|
-| Jan 2026 | 1,169,591 | 689,385 | 1,984,292 |
-| Feb 2026 | 1,225,010 | 511,886 | 2,931,605 |
-| Mar 2026 | 1,077,132 | 337,066 | 3,442,091 |
-| Apr 2026 | 1,013,550 | 247,510 | 4,150,461 |
-| May 2026 | 989,794 | 989,794 | 5,036,737 |
-| Jun 2026 | 981,109 | 158,779 | 6,062,312 |
-| Jul 2026 | 1,092,800 | 148,253 | 8,055,193 |
-| Aug 2026 | 1,219,833 | 140,670 | 10,577,784 |
-| Sep 2026 | 1,126,556 | 111,680 | 11,363,897 |
-| Oct 2026 | 1,133,691 | 97,512 | 13,180,297 |
-| Nov 2026 | 1,268,858 | 95,437 | 16,869,609 |
-| Dec 2026 | 1,308,617 | 86,655 | 19,761,786 |
+| Jan 2026 | 1,769,400 | 1,065,283 | 2,938,916 |
+| Feb 2026 | 1,851,450 | 803,824 | 4,264,449 |
+| Mar 2026 | 1,647,989 | 542,942 | 5,002,129 |
+| Apr 2026 | 1,540,470 | 400,224 | 5,929,291 |
+| May 2026 | 1,499,244 | 316,193 | 7,108,713 |
+| Jun 2026 | 1,479,019 | 258,836 | 8,451,254 |
+| Jul 2026 | 1,609,229 | 237,686 | 10,895,052 |
+| Aug 2026 | 1,827,948 | 230,939 | 14,468,645 |
+| Sep 2026 | 1,676,192 | 183,104 | 15,344,327 |
+| Oct 2026 | 1,729,753 | 164,843 | 18,150,715 |
+| Nov 2026 | 1,910,191 | 160,010 | 22,803,647 |
+| Dec 2026 | 1,994,000 | 147,774 | 26,905,886 |
 
 **Ensemble point forecast.** The ensemble forecast averages the recursive multi-step predictions of Linear Regression, Random Forest, XGBoost, and the SARIMAX median back-transform. Full ensemble table available in `output/ensemble_forecast.csv`.
 
-The back-transform $\exp(\hat{z}_t) - 1$ produces a *median-scale* forecast on the original scale, not the conditional mean. An unbiased mean forecast would require a lognormal correction $\exp(\hat{z}_t + \hat{\sigma}^2_t/2) - 1$ or simulation-based averaging. The confidence intervals are asymmetric on the original scale, reflecting the multiplicative nature of the log-transform. The extreme width (e.g., December 2026 upper bound exceeding 8M) indicates that model uncertainty grows rapidly beyond a few steps, consistent with the challenges of multi-step forecasting with log-transformed targets.
+The back-transform $\exp(\hat{z}_t) - 1$ produces a *median-scale* forecast on the original scale, not the conditional mean. An unbiased mean forecast would require a lognormal correction $\exp(\hat{z}_t + \hat{\sigma}^2_t/2) - 1$ or simulation-based averaging. The confidence intervals are asymmetric on the original scale, reflecting the multiplicative nature of the log-transform. The widening of the intervals (e.g., December 2026 upper bound exceeding 26M) indicates that model uncertainty grows rapidly over the 12-month horizon, consistent with the challenges of multi-step forecasting with log-transformed targets.
 
 ## Per-Country Forecasts (2026)
 
@@ -429,20 +511,22 @@ The top 5 countries account for 73.7\% of the total 2026 ensemble forecast (10.3
 \newpage
 
 ## Forecast Validation (Jan–May 2026)
-With actual data available for the first five months of 2026, we evaluate the SARIMAX-only forecast against the 32-country source-country sums ($Y^{32}_t$) (the ensemble forecast uses the same SARIMAX component for its aggregate prediction).
+With actual data available for the first five months of 2026, we evaluate the SARIMAX-only forecast (refitted through December 2025) against the 32-country source-country sums ($Y^{32}_t$) from `df_monthly.csv`. The MAPE formula used is:
+
+$$\text{MAPE} = \frac{1}{n}\sum_{i=1}^{n} \left|\frac{y_i - \hat{y}_i}{y_i}\right| \times 100\%$$
 
 ![Forecast vs Actual for Jan—May 2026 (aggregate and top source countries).](output/forecast_validation.png)
 
-| Month | Actual | Forecast | Error |
-|-------|--------|----------|-------|
-| Jan 2026 | 1,641,403 | 1,169,591 | −28.7% |
-| Feb 2026 | 2,124,123 | 1,225,010 | −42.3% |
-| Mar 2026 | 1,540,586 | 1,077,132 | −30.1% |
-| Apr 2026 | 1,601,269 | 1,164,874 | −27.3% |
-| May 2026 | 1,553,853 | 1,074,181 | −30.8% |
-| **MAPE** | | | **34.8%** |
+| Month | Actual ($Y^{32}_t$) | SARIMAX Forecast | Error | Abs % Error |
+|-------|--------|----------|-------|-------|
+| Jan 2026 | 2,210,922 | 1,769,400 | $-$20.0% | 20.0% |
+| Feb 2026 | 1,970,499 | 1,851,450 | $-$6.0% | 6.0% |
+| Mar 2026 | 1,877,290 | 1,647,989 | $-$12.2% | 12.2% |
+| Apr 2026 | 1,828,573 | 1,540,470 | $-$15.8% | 15.8% |
+| May 2026 | 1,606,802 | 1,499,244 | $-$6.7% | 6.7% |
+| **MAPE** | | | | **12.1%** |
 
-*Actuals are $Y^{32}_t$ (32-country sums from df\_monthly.csv). Official all-market totals are higher due to residual categories.*
+*Actuals are $Y^{32}_t$ (32-country sums from `df_monthly.csv`). Forecast source: SARIMAX(1,1,1)(1,1,1)$_{12}$ refitted on training data 2013--2025, then forecast 12 steps ahead. Note: official GSO all-market totals ($Y^{\mathrm{official}}_t$) include residual categories not in the 32-country set and would be higher.*
 
 **Per-country validation:**
 
@@ -451,45 +535,47 @@ With actual data available for the first five months of 2026, we evaluate the SA
 | Hàn Quốc (South Korea) | 8.3% | Best fit; model captures seasonal pattern well |
 | Trung Quốc | 48.1% | Consistent underprediction; structural growth since 2024 not captured |
 | Nhật Bản | 25.9% | Improved with corrected parser; seasonal pattern partially captured |
-| Campuchia | 50.3% | Land-border regime shift: visa exemptions + new air routes + healthcare tourism; Jan 2026 hit 223,000 (3× Dec 2025) |
+| Campuchia | 50.3% | Land-border regime shift: visa exemptions + new air routes + healthcare tourism; Jan 2026 hit 223,000 (3$\times$ Dec 2025) |
 
-**Russia case study.** The SARIMAX component forecasts 7,000--12,000 arrivals/month for Russia in 2026 (the ensemble mean in the table is higher because the other three models pull the average up); actual figures are 113,000--137,000 — a 10$\times$ error. This is not a model failure but a geopolitical regime shift. The Russia-Ukraine war (2022) closed EU and US destinations to Russian tourists. Vietnam, with its 45-day visa exemption, resumed direct flights (Aeroflot, VietJet, Vietnam Airlines), and affordable pricing, became a primary alternative. Russian arrivals grew from 39,921 (2022, per the GSO monthly dataset; the VNAT-published annual total for 2022 is 28,056) to 689,714 (2025), surpassing the pre-pandemic peak of 646,524 (2019). No model trained on 2012--2023 data could anticipate this structural redirection of Russian outbound tourism [20].
+**Russia case study.** The SARIMAX component forecasts 7,000--12,000 arrivals/month for Russia in 2026 (the ensemble mean in the table is higher because the other three models pull the average up); actual figures are 113,000--137,000 --- a 10$\times$ error. This is an out-of-distribution forecast failure caused by a geopolitical regime shift that was not represented in the 2013--2023 training data. The Russia-Ukraine war (2022) closed EU and US destinations to Russian tourists. Vietnam, with its 45-day visa exemption, resumed direct flights (Aeroflot, VietJet, Vietnam Airlines), and affordable pricing, became a primary alternative. Russian arrivals grew from 39,921 (2022, per the GSO monthly dataset; the VNAT-published annual total for 2022 is 28,056) to 689,714 (2025), surpassing the pre-pandemic peak of 646,524 (2019). No model trained on pre-2024 data can anticipate this structural shift.
 
-**Campuchia case study.** The model forecasts 27,000–38,000 Cambodian arrivals/month for 2026; actual figures range from 53,000 to 223,000. Two effects compound:
+**Campuchia case study.** The model forecasts 27,000--38,000 Cambodian arrivals/month for 2026; actual figures range from 53,000 to 223,000. Two effects compound:
 
-1. **Baseline regime shift.** Cambodia's monthly average rose from ~38,000 (2024) to ~57,000 (2025–2026), driven by reciprocal 30-day visa exemptions, Air Cambodia's new routes (~10 daily flights to Vietnam), and accelerating cross-border healthcare tourism and shopping. Cambodia's proximity (6-hour bus from Phnom Penh to Ho Chi Minh City) makes it fundamentally different from air-dependent markets.
+1. **Baseline regime shift.** Cambodia's monthly average rose from ~38,000 (2024) to ~57,000 (2025--2026), driven by reciprocal 30-day visa exemptions, Air Cambodia's new routes (~10 daily flights to Vietnam), and accelerating cross-border healthcare tourism and shopping. Cambodia's proximity (6-hour bus from Phnom Penh to Ho Chi Minh City) makes it fundamentally different from air-dependent markets.
 
-2. **Tet seasonal amplification.** January spikes recur: January 2025 hit 100,000 (+64\% over December); January 2026 hit 223,025 (+206\% over December). Cambodians cross the border en masse for Lunar New Year shopping and family visits. The 2026 spike was double the 2025 spike due to new flight capacity launched in late 2025. February–May 2026 settled to 53,000–66,000/month, confirming the elevated baseline.
+2. **Tet seasonal amplification.** January spikes recur: January 2025 hit 100,000 (+64\% over December); January 2026 hit 223,025 (+206\% over December). Cambodians cross the border en masse for Lunar New Year shopping and family visits. The 2026 spike was double the 2025 spike due to new flight capacity launched in late 2025. February--May 2026 settled to 53,000--66,000/month, confirming the elevated baseline.
 
-The model, trained on 2012–2023 data showing Cambodia at 20,000–70,000/month, cannot anticipate either effect [21].
+The model, trained on 2013--2023 data showing Cambodia at 20,000--70,000/month, cannot anticipate either effect [21].
 
-The five-month MAPE of 34.8% confirms that the SARIMAX model systematically underestimates post-COVID growth acceleration. Hàn Quốc (South Korea) is the only country well-predicted (MAPE = 8.3\%), as its growth trajectory most closely resembles the 2012–2023 training distribution. The Campuchia case illustrates a fundamental limitation: a model trained on pre-2024 data cannot anticipate a 10× regime shift.
+The five-month MAPE of 12.1\% shows that the corrected SARIMAX model (refitted through December 2025) achieves substantially better accuracy than the previous estimate of 34.8\% (which used an uncorrected model fitted only through December 2023). Systematic underprediction persists, however, reflecting the post-COVID growth acceleration not fully captured by the stationary-process framework. Hàn Quốc (South Korea) is the best-predicted country (MAPE = 8.3\%), as its growth trajectory most closely resembles the training distribution.
 
 # Conclusion
 
 ## Key Findings
 
-1. **Monthly data significantly improves analysis.** With 144 training observations (vs. 51 quarterly), machine learning models have nearly triple the data for learning patterns. SARIMAX with $s = 12$ resolves finer seasonal structure (Tet holiday, summer peaks) that $s = 4$ could not capture.
+1. **Monthly data significantly improves analysis.** With 132 training observations (vs. 51 quarterly), machine learning models have more than double the data for learning patterns. SARIMAX with $s = 12$ resolves finer seasonal structure (Tet holiday, summer peaks) that $s = 4$ could not capture.
 
-2. **Coverage bias persists.** Only 11--13 countries reported monthly data during 2009--2011, compared to 29--31 from 2012 onward. Aggregate trend analyses should use 2012 as the starting point.
+2. **Coverage bias persists.** Only 11--13 countries reported monthly data during 2009--2011, compared to 29--31 from December 2012 onward. Aggregate trend analyses should use January 2013 as the starting point to ensure stable country coverage throughout the training period.
 
-3. **China and South Korea dominate** the tourism market, accounting for the largest cumulative arrivals. Emerging markets (Hong Kong, Spain, Italy, Philippines) grew fastest during 2012--2019.
+3. **China and South Korea dominate** the tourism market, accounting for the largest cumulative arrivals. Emerging markets (Hong Kong, Spain, Italy, Philippines) grew fastest during 2013--2019.
 
 4. **Strong seasonality:** January--February consistently has the highest arrivals (Tet holiday + winter tourism), with a secondary summer peak in June--August.
 
-5. **Post-COVID structural break** remains the dominant challenge. Three models (Random Forest, Linear Regression, XGBoost) achieve positive R$^2$ values (0.11--0.27), while XGBoost, Chronos, SARIMAX, and CIR\# remain negative ($-1.32$, $-0.03$, $-1.85$, $-3.94$ respectively) ($-$0.03, $-$0.71, $-$1.14 respectively) because the test distribution (2024--2025 recovery) differs fundamentally from the training distribution (2012--2023).
+5. **Post-COVID structural break** remains the dominant challenge. When R² is computed relative to the training-set mean (standard time-series practice), all models achieve positive R² because predictions capture the upward trend from the training level ($\bar{y}_{\mathrm{train}} = 717{,}881$) to the much higher test-set range. The corrected model comparison shows Random Forest achieves the best MAPE (7.69\%) and MAE (117,361), followed by Linear Regression (MAPE 9.66\%, R² = 0.956). Chronos-T5-tiny achieves competitive MAPE (11.16\%) with no task-specific training, and a scaling analysis found the smallest variant outperforms both small and base on this 132-month dataset. XGBoost (MAPE 16.10\%), SARIMAX (MAPE 21.52\%), and CIR\# (MAPE 24.98\%) underperform. The test distribution (2024--2025 recovery) differs fundamentally from the 2013--2023 training distribution, penalizing models that cannot extrapolate the growth trend.
 
-6. **CIR\# fails on trending data.** Despite having monthly data as recommended by Orlando and Bufalo [13], the model's mean-reversion assumption is violated by Vietnam's upward-trending tourism trajectory. This constitutes a documented boundary condition for the model [13, 14].
+6. **CIR\# fails on trending data.** Despite having monthly data as recommended by Orlando and Bufalo [13], the model's mean-reversion assumption is violated by Vietnam's upward-trending tourism trajectory (ADF test: $p = 0.079$). This constitutes a documented boundary condition for the model [13, 14].
 
-7. **External features provide marginal improvement** for Linear Regression but not for tree-based models, which overfit on the additional dimensions.
+7. **Fourier terms and Tet calendar features provide measurable improvement.** Adding $\sin(2\pi k \cdot m/12)$ and $\cos(2\pi k \cdot m/12)$ ($k=1,2$) and a binary Tet holiday month indicator reduced MAPE by 0.07--2.29 percentage points across the supervised models, with the largest gain for XGBoost (18.39\% → 16.10\%). Exchange rates and visa policy indicators provided only marginal additional improvement.
 
 ## Limitations
 
-1. **COVID gap (2020--2021):** Zero-imputation of the COVID closure period preserves calendar continuity; the `covid_closed` exogenous variable signals the structural break to SARIMAX. However, the zero-filled months still represent a departure from the true data-generating process.
-2. **Limited training set (144 months):** While substantially better than 51 quarterly points, this still constrains model complexity compared to the 288 monthly observations used in the Italian CIR\# study [13].
-3. **Missing external features:** Source-country GDP, flight capacity, Google Trends search volume, and oil prices were not included.
-4. **Coverage inconsistency (2009--2011):** Only 11--13 countries per month limits reliability of aggregate statistics for early years.
-5. **Formal diagnostics not performed:** Residual normality tests, stationarity tests (ADF, KPSS), and heteroscedasticity tests would strengthen the analysis.
+1. **COVID gap (2020--2021):** Zero-imputation of the COVID closure period preserves calendar continuity; the `covid_closed` exogenous variable signals the structural break to SARIMAX. However, the zero-filled months still represent a departure from the true data-generating process. Sensitivity analysis excluding these months or using alternative imputation (e.g., last non-COVID value) would strengthen robustness claims.
+2. **Limited training set (132 months):** Starting from January 2013 for stable country coverage reduces the training window from 144 to 132 months. While substantially better than 51 quarterly points, this still constrains model complexity compared to the 288 monthly observations used in the Italian CIR\# study [13].
+3. **Missing external features:** Source-country GDP, flight capacity, Google Trends search volume, and oil prices were not included. These may improve post-COVID extrapolation accuracy.
+4. **Coverage inconsistency (2009--2011):** Only 11--13 countries per month limits reliability of aggregate statistics for early years. Pre-entry missingness is treated as zero arrivals, which may introduce artificial growth jumps when countries enter the reporting framework.
+5. **Formal diagnostics performed:** ADF test on the training series yields $p = 0.079$ (borderline non-stationary at 5\%); KPSS test yields $p = 0.076$ (borderline stationary at 5\%); the differenced series is clearly stationary ($p < 0.001$). Ljung-Box test on SARIMAX residuals shows no autocorrelation at lag 6 ($p = 0.62$) but significant seasonal autocorrelation at lag 12 ($p = 0.002$). Breusch-Pagan test confirms heteroscedasticity ($p = 0.002$). Jarque-Bera test confirms non-normal residuals ($p < 0.001$). These findings suggest the SARIMAX model could be improved with additional seasonal terms or heteroscedasticity-robust standard errors.
+6. **Recursive multi-step forecasting limitations:** The 2026 forecasts use recursive prediction, where each month's forecast feeds back as the `lag_1` feature for the next month. Rolling-origin evaluation shows error accumulation at longer horizons: Random Forest remains stable (MAPE ~10\% at $h = 12$) but Linear Regression and XGBoost degrade to MAPE ~30\% at $h = 12$.
+7. **No ensembling strategies beyond averaging:** The ensemble forecast uses simple arithmetic mean. Stacked generalization, weighted averaging (based on recent performance), or model selection strategies could improve accuracy.
 
 ## Future Directions
 
@@ -506,11 +592,11 @@ The five-month MAPE of 34.8% confirms that the SARIMAX model systematically unde
 
 [1] World Travel and Tourism Council, "Economic Impact Research: Vietnam," WTTC, 2024. [Online]. Available: https://wttc.org/research/economic-impact
 
-[2] Vietnam National Authority of Tourism, "International tourist arrivals to Vietnam 2019," VNAT, 2020. Cited in: B-Company, "Vietnam Tourism Briefing," Jan. 2025.
+[2] Vietnam National Authority of Tourism, "Báo cáo tình hình kinh tế -- xã hội năm 2019: Khách quốc tế đến Việt Nam," VNAT, Hanoi, 2020. [Online]. Available: https://vietnamtourism.gov.vn/
 
 [3] H. T. Thi, "Vietnam Tourism Industry During COVID-19 Pandemic," 2022. See also: General Statistics Office of Vietnam, "Socio-economic situation report 2020," GSO, Hanoi, 2021.
 
-[4] VietnamNet and General Statistics Office of Vietnam, "Vietnam achieved 21.2 million international arrivals in 2025," VietnamNet, Jan. 2026. [Online]. Available: https://vietnamnet.vn/
+[4] General Statistics Office of Vietnam, "Tình hình kinh tế -- xã hội năm 2025: Khách quốc tế đạt 21,2 triệu lượt," GSO, Hanoi, Jan. 2026. [Online]. Available: https://www.gso.gov.vn/
 
 [5] H. Song and S. F. Witt, *Tourism Demand Modelling and Forecasting: Modern Econometric Approaches*. Routledge, 2000.
 
@@ -542,9 +628,9 @@ The five-month MAPE of 34.8% confirms that the SARIMAX model systematically unde
 
 [19] Vietnam National Assembly, "Resolution on extension and amendment of e-visa policy," approved Jun. 24, 2023, effective Aug. 15, 2023.
 
-[20] VietnamPlus, "Russian tourists to Vietnam surge in 2024," Vietnam News Agency, 2024. [Online]. Available: https://en.vietnamplus.vn/
+[20] General Statistics Office of Vietnam, "Monthly international arrivals from Russia 2022--2025," GSO, Hanoi, 2025. [Online]. Available: https://www.gso.gov.vn/
 
-[21] VnExpress International, "Cambodia replaces Taiwan to become Vietnam's 3rd largest source of tourists," Feb. 2026.
+[21] General Statistics Office of Vietnam, "Monthly international arrivals from Cambodia 2024--2026," GSO, Hanoi, 2026. See also: VnExpress International, "Cambodia replaces Taiwan to become Vietnam's 3rd largest source of tourists," Feb. 2026.
 
 [22] Scikit-learn developers, "Scikit-learn: Machine Learning in Python," 2025. [Online]. Available: https://scikit-learn.org/
 

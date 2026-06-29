@@ -129,14 +129,27 @@ agg['lag_12'] = agg['arrivals'].shift(12)
 agg['rolling_mean_12'] = agg['arrivals'].rolling(12, min_periods=1).mean()
 agg_model = agg.dropna(subset=['lag_1', 'lag_12']).copy()
 
-FEATURES = ['year', 'month', 'time_idx', 'lag_1', 'lag_12', 'rolling_mean_12', 'covid_closed']
+# Fourier seasonal terms (2 harmonics)
+for k in range(1, 3):
+    agg_model[f'sin_{k}'] = np.sin(2 * np.pi * k * agg_model['month'] / 12)
+    agg_model[f'cos_{k}'] = np.cos(2 * np.pi * k * agg_model['month'] / 12)
 
-# Train: 2012-2023 (continuous, includes zero-imputed COVID months), Test: 2024-2025
-train_mask = (agg_model['year']>=2012) & (agg_model['year']<=2023)
+# Tet holiday month indicator (Jan or Feb depending on lunar calendar)
+tet_jan_years = [2012, 2014, 2017, 2020, 2023]
+tet_feb_years = [2013, 2015, 2016, 2018, 2019, 2021, 2022, 2024, 2025, 2026]
+agg_model['tet_month'] = 0
+agg_model.loc[(agg_model['year'].isin(tet_jan_years)) & (agg_model['month'] == 1), 'tet_month'] = 1
+agg_model.loc[(agg_model['year'].isin(tet_feb_years)) & (agg_model['month'] == 2), 'tet_month'] = 1
+
+FEATURES = ['year', 'month', 'time_idx', 'lag_1', 'lag_12', 'rolling_mean_12', 'covid_closed',
+            'sin_1', 'cos_1', 'sin_2', 'cos_2', 'tet_month']
+
+# Train: 2013-2023 (continuous, stable 29-31 country coverage), Test: 2024-2025
+train_mask = (agg_model['year']>=2013) & (agg_model['year']<=2023)
 test_mask = (agg_model['year']>=2024) & (agg_model['year']<=2025)
 
-train = agg_model[train_mask]
-test = agg_model[test_mask]
+train = agg_model[train_mask].copy()
+test = agg_model[test_mask].copy()
 X_train, y_train = train[FEATURES].values, train['arrivals'].values
 X_test, y_test = test[FEATURES].values, test['arrivals'].values
 
@@ -144,9 +157,15 @@ X_test, y_test = test[FEATURES].values, test['arrivals'].values
 train_covid = train['covid_closed'].values
 test_covid = test['covid_closed'].values
 
+# Training-set mean for R² baseline
+y_train_mean = y_train.mean()
+
 print(f"Train: {len(train)} months ({train['year'].min()}-{train['year'].max()})")
 print(f"Test:  {len(test)} months ({test['year'].min()}-{test['year'].max()})")
-print(f"  COVID-closed months in training: {train['covid_closed'].sum()}")""")
+print(f"  COVID-closed months in training: {train['covid_closed'].sum()}")
+print(f"  Features ({len(FEATURES)}): {FEATURES}")
+print(f"  Training mean (R² baseline): {y_train_mean:,.0f}")""")
+
 
 # --- EDA ---
 md("## 4. EDA — Xu hướng tổng thể")
@@ -214,10 +233,11 @@ code("""def metrics(y_true, y_pred, name):
     mae = mean_absolute_error(y_true, y_pred)
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
-    # R² = 1 - SS_res/SS_tot where SS_tot uses TEST-set mean (standard sklearn definition)
-    # Negative values indicate performance worse than predicting the test-set mean
-    r2 = r2_score(y_true, y_pred)
-    print(f"  {name:25s} MAE={mae:>12,.0f}  RMSE={rmse:>12,.0f}  MAPE={mape:>6.2f}%  R²={r2:>7.4f}")
+    # R² = 1 - SS_res/SS_tot where SS_tot uses TRAINING-set mean (standard time-series practice)
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - y_train_mean) ** 2)
+    r2 = 1 - ss_res / ss_tot
+    print(f"  {name:25s} MAE={mae:>12,.0f}  RMSE={rmse:>12,.0f}  MAPE={mape:>6.2f}%  R²(train-mean)={r2:>7.4f}")
     return {'Model': name, 'MAE': mae, 'RMSE': rmse, 'MAPE': mape, 'R²': r2}
 
 # Train models with TimeSeriesSplit for hyperparameter search
@@ -266,18 +286,32 @@ print(f"  AIC: {sarimax_fit.aic:.1f}, BIC: {sarimax_fit.bic:.1f}")
 r_sarima = metrics(test_ts, sarima_pred, 'SARIMAX(1,1,1)(1,1,1)_12')
 print("  (Note: one-step-ahead with observed lag values; not recursive multi-step)")
 
+# CRITICAL FIX: Refit SARIMAX through Dec 2025 before forecasting 2026
+# The original model was fitted on 2013-2023 only; get_forecast(steps=12) from that
+# model produces 2024 predictions, not 2026 predictions.
+# Solution: refit on all data through Dec 2025, then forecast 12 months ahead.
+full_for_fc = agg_model[(agg_model['year'] >= 2013) & (agg_model['year'] <= 2025)].copy()
+z_full = np.log(full_for_fc['arrivals'].values.astype(float) + 1)
+exog_full = full_for_fc['covid_closed'].values.reshape(-1, 1)
+
+sarimax_refit = SARIMAX(z_full, order=(1,1,1), seasonal_order=(1,1,1,12),
+                          exog=exog_full,
+                          enforce_stationarity=False, enforce_invertibility=False)
+sarimax_refit_fit = sarimax_refit.fit(disp=False, maxiter=500)
+print(f"\\nSARIMAX refitted on {len(full_for_fc)} months (2013-01 to 2025-12)")
+print(f"  Refitted AIC: {sarimax_refit_fit.aic:.1f}")
+
 # Forecast 12 months ahead (no COVID restrictions in 2026)
 exog_2026 = np.zeros((12, 1))
-fc = sarimax_fit.get_forecast(steps=12, exog=exog_2026)
-z_fc_mean = fc.predicted_mean.values if hasattr(fc.predicted_mean, 'values') else fc.predicted_mean
-z_fc_ci = fc.conf_int(alpha=0.05).values if hasattr(fc.conf_int(alpha=0.05), 'values') else fc.conf_int(alpha=0.05)
+fc = sarimax_refit_fit.get_forecast(steps=12, exog=exog_2026)
+z_fc_mean = np.array(fc.predicted_mean).flatten()
+z_fc_ci_raw = fc.conf_int(alpha=0.05)
+z_fc_ci = np.array(z_fc_ci_raw).reshape(-1, 2)
 
 # Back-transform: exp(z) - 1 (median-scale forecast on original scale)
 fc_mean_orig = np.exp(z_fc_mean) - 1
-lower_orig = np.exp(z_fc_ci[:, 0]) - 1
+lower_orig = np.clip(np.exp(z_fc_ci[:, 0]) - 1, 0, None)
 upper_orig = np.exp(z_fc_ci[:, 1]) - 1
-# Clip lower bound to 0
-lower_orig = np.clip(lower_orig, 0, None)
 
 forecast_df = pd.DataFrame({
     'month': pd.date_range('2026-01-01', periods=12, freq='MS').strftime('%Y-%m'),
@@ -286,7 +320,7 @@ forecast_df = pd.DataFrame({
     'upper_95': np.floor(upper_orig).astype(int)
 })
 forecast_df.to_csv('output/forecast.csv', index=False)
-print(f"\\n2026 SARIMAX Forecast (median-scale back-transform):")
+print(f"\\n2026 SARIMAX Forecast (refitted through Dec 2025):")
 print(forecast_df.to_string(index=False))""")
 
 md("## 13. CIR# (Cox--Ingersoll--Ross Stochastic Differential Equation)")
@@ -375,8 +409,8 @@ plt.tight_layout(); plt.savefig('output/forecast_plot.png', dpi=150, bbox_inches
 
 md("## 16b. Ensemble Forecast (2026) — Recursive Multi-Step")
 code("""# Generate recursive multi-step ensemble forecast for 2026
-# LR, RF, XGBoost use recursive strategy: each month's prediction feeds back as lag_1
-# SARIMAX uses its autoregressive structure
+# LR, RF, XGBoost use recursive strategy with Fourier seasonal features
+# SARIMAX uses its autoregressive structure (refitted through Dec 2025)
 # Ensemble = mean of all four
 
 last_row = agg_model.iloc[-1].copy()
@@ -389,26 +423,33 @@ for m_idx in range(12):
     month_fc = m_idx + 1
     if m_idx == 0:
         prev_arrival = last_row['arrivals']
-        prev_lag12_arr = agg_model.loc[(agg_model['year']==2015) & (agg_model['month']==month_fc), 'arrivals']
+        prev_lag12_arr = agg_model.loc[(agg_model['year']==2025) & (agg_model['month']==month_fc), 'arrivals']
         prev_lag12 = prev_lag12_arr.values[0] if len(prev_lag12_arr) > 0 else last_row['arrivals']
         prev_rolling = agg_model.tail(12)['arrivals'].mean()
     else:
         prev_arrival = ensemble_fc[-1]
-        prev_lag12_arr = agg_model.loc[(agg_model['year']==2015) & (agg_model['month']==month_fc), 'arrivals']
+        prev_lag12_arr = agg_model.loc[(agg_model['year']==2025) & (agg_model['month']==month_fc), 'arrivals']
         prev_lag12 = prev_lag12_arr.values[0] if len(prev_lag12_arr) > 0 else prev_arrival
         if len(ensemble_fc) >= 12:
             prev_rolling = np.mean(ensemble_fc[-12:])
         else:
-            tail_hist = agg_model.tail(max(1, 12-len(ensemble_fc)))['arrivals'].tolist()
+            tail_hist = agg_model.tail(max(1, 12 - len(ensemble_fc)))['arrivals'].tolist()
             prev_rolling = np.mean(tail_hist + ensemble_fc)
 
     time_idx = year_fc + (month_fc - 1) / 12
-    feat_row = np.array([[year_fc, month_fc, time_idx, prev_arrival, prev_lag12, prev_rolling, 0]])
+    sin1 = np.sin(2 * np.pi * month_fc / 12)
+    cos1 = np.cos(2 * np.pi * month_fc / 12)
+    sin2 = np.sin(4 * np.pi * month_fc / 12)
+    cos2 = np.cos(4 * np.pi * month_fc / 12)
+    tet = 1 if ((year_fc in tet_jan_years and month_fc == 1) or
+                (year_fc in tet_feb_years and month_fc == 2)) else 0
+
+    feat_row = np.array([[year_fc, month_fc, time_idx, prev_arrival, prev_lag12, prev_rolling, 0,
+                          sin1, cos1, sin2, cos2, tet]])
 
     lr_fc_list.append(int(np.floor(lr.predict(feat_row)[0])))
     rf_fc_list.append(int(np.floor(rf.predict(feat_row)[0])))
     xgb_fc_list.append(int(np.floor(xgb_m.predict(feat_row)[0])))
-
     ensemble_fc.append(np.mean([lr_fc_list[-1], rf_fc_list[-1], xgb_fc_list[-1], sarimax_only_fc[m_idx]]))
 
 ensemble_df = pd.DataFrame({
