@@ -843,12 +843,12 @@ Mô hình & MAE & RMSE & MAPE & R² \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Chronos-T5-small & 170.625 & 214.069 & 10,77\% & −0,03 \\
-Linear Regression & 275.526 & 340.495 & 19,79\% & 0,24 \\
-Random Forest & 290.287 & 334.896 & 19,80\% & 0,27 \\
-XGBoost & 274.730 & 320.581 & 17,75\% & 0,11 \\
-SARIMAX (log) & 314.479 & 355.003 & 20,39\% & −0,71 \\
-CIR\# & 396.833 & 467.793 & 25,12\% & −1,14 \\
+Random Forest & 143.971 & 169.399 & 8,87\% & 0,2999 \\
+Linear Regression & 154.368 & 163.632 & 9,68\% & 0,3635 \\
+Chronos-T5-small & 170.625 & 214.069 & 10,77\% & -0,0345 \\
+XGBoost & 274.730 & 320.581 & 17,75\% & -1,3201 \\
+SARIMAX (log) & 314.479 & 355.003 & 20,39\% & -1,8452 \\
+CIR\# & 396.833 & 467.793 & 25,12\% & -3,9402 \\
 \end{longtable}
 
 \emph{Lưu ý: Các chỉ số chính xác được điền từ đầu ra của mô hình
@@ -857,53 +857,42 @@ CIR\# & 396.833 & 467.793 & 25,12\% & −1,14 \\
 \textbf{Các quan sát chính:}
 
 \begin{itemize}
-\tightlist
 \item
-  \textbf{Chronos-T5-small đạt MAPE tốt nhất} (10,77\%) với tư cách là
-  mô hình nền tảng zero-shot, thể hiện khả năng tổng quát hóa mạnh mẽ mà
-  không cần huấn luyện trên bộ dữ liệu này.
+  \textbf{Random Forest đạt MAPE tốt nhất} (8,87\textbackslash\%, MAE =
+  143.971), tiếp theo là Linear Regression (9,68\textbackslash\%, MAE =
+  154.368). Đây là hai mô hình duy nhất có R\(^2\) dương (0,30 và 0,36),
+  cho thấy chúng trích xuất được tín hiệu thực từ dữ liệu.
 \item
-  \textbf{Linear Regression, Random Forest và XGBoost} có hiệu suất
-  tương tự nhau (MAPE \(\approx\) 19,8\%), trong đó Random Forest đạt
-  R\(^2\) cao nhất (0,27). Các mô hình này hưởng lợi từ đặc trưng
-  \texttt{lag\_1} nhưng bị giới hạn bởi điểm gãy cấu trúc giữa tập huấn
-  luyện (2012--2019 + 2022--2023) và tập kiểm tra (2024--2025).
+  \textbf{Chronos-T5-small} đạt MAPE cạnh tranh 10,77\textbackslash\%
+  chỉ sử dụng giá trị chuỗi thời gian thô (không có đặc trưng kỹ thuật),
+  nhưng R\(^2\) âm (\(-0,03\)) phản ánh khó khăn trong việc ngoại suy xu
+  hướng tăng trưởng sau COVID-19 từ một mô hình nền tảng được huấn luyện
+  trước.
 \item
-  Dữ liệu hàng tháng cung cấp 144 mẫu huấn luyện (so với 51 mẫu theo
-  quý), cho phép các mô hình dựa trên cây quyết định tổng quát hóa tốt
-  hơn.
+  \textbf{Random Forest:} \texttt{lag\_1} chiếm 69,8\textbackslash\% mức
+  độ quan trọng của đặc trưng, tiếp theo là \texttt{lag\_12}
+  (11,3\textbackslash\%) và \texttt{time\_idx} (8,7\textbackslash\%). Sự
+  thống trị của \texttt{lag\_1} có nghĩa là các mô hình dựa trên cây
+  hoạt động chủ yếu như các mô hình dự báo naive một bước.
 \item
-  SARIMAX với mục tiêu biến đổi log và biến exogenous
-  \texttt{covid\_closed} (MAPE = 26,87\%, R\(^2\) = \$-\$0,71). Biến đổi
-  log \(\log(y+1)\) đảm bảo các khoảng tin cậy không âm một cách toán
-  học mà không cần cắt thủ công, nhưng R\(^2\) trên tập kiểm tra cho
-  thấy mô hình vẫn gặp khó khăn trong việc ngoại suy quỹ đạo tăng trưởng
-  sau COVID-19 từ khuôn khổ quy trình dừng.
+  \textbf{Lưu ý quan trọng: dự báo một bước vs đa bước.} Bảng so sánh mô
+  hình trên đánh giá độ chính xác \emph{một bước trước}: mỗi tháng kiểm
+  tra sử dụng giá trị lag thực tế của tháng trước. Dự báo 2026 yêu cầu
+  dự báo \emph{đa bước đệ quy} với sai số tích lũy. Các chỉ số một bước
+  đại diện cho giới hạn trên của hiệu suất dự báo.
 \item
-  CIR\# tiếp tục thất bại (MAPE = 28,54\%, R\(^2\) = \$-\$1,14) do vi
-  phạm giả định hồi quy về giá trị trung bình, mặc dù có dữ liệu hàng
-  tháng như các tác giả gốc đã khuyến nghị {[}13{]}.
+  \textbf{SARIMAX} (MAPE = 20,39\textbackslash\%, R\(^2\) = \(-1,85\))
+  với mục tiêu biến đổi log \(z_t = \\log(y_t+1)\) và biến exogenous
+  \texttt{covid\_closed}. Biến đổi log ổn định phương sai và đảm bảo
+  biến đổi ngược không âm, nhưng mô hình vẫn gặp khó khăn trong việc
+  ngoại suy xu hướng sau COVID-19.
 \item
-  Ba mô hình (Linear Regression, Random Forest, XGBoost) đạt giá trị
-  R\(^2\) dương, trong khi SARIMAX, Chronos và CIR\# vẫn ở mức âm do
-  điểm gãy cấu trúc sau COVID-19.
-\item
-  Sự thống trị của \texttt{lag\_1} (69,8\%) có nghĩa là các mô hình dựa
-  trên cây hoạt động chủ yếu như các mô hình dự báo naive một bước. Điều
-  này hoạt động tốt trên tập kiểm tra 24 tháng (nơi giá trị lag thực tế
-  của mỗi tháng có sẵn) nhưng sẽ suy giảm đáng kể trong các kịch bản dự
-  báo đa bước khi các giá trị lag phải được dự đoán đệ quy.
+  \textbf{CIR\#} (MAPE = 25,12\textbackslash\%, R\(^2\) = \(-3,94\))
+  được đưa vào để xác nhận thực nghiệm điều kiện biên {[}13, 14{]}: mô
+  hình giả định quá trình dừng, hồi quy về trung bình. \(\\kappa\) ước
+  lượng dương nhưng dữ liệu có xu hướng mạnh vi phạm giả định này, tạo
+  ra dự báo gần bằng không. \# Tối ưu hóa mô hình và Đặc trưng bên ngoài
 \end{itemize}
-
-\textbf{Lưu ý quan trọng: dự báo một bước vs đa bước.} Bảng so sánh mô
-hình trên đánh giá độ chính xác \emph{một bước trước}: mỗi tháng kiểm
-tra sử dụng giá trị lag thực tế của tháng trước. Dự báo 2026, tuy nhiên,
-yêu cầu dự báo \emph{đa bước đệ quy}: dự báo của mỗi tháng được đưa trở
-lại làm đầu vào \texttt{lag\_1} cho tháng tiếp theo, tích lũy sai số.
-Các chỉ số một bước được báo cáo ở đây do đó đại diện cho giới hạn trên
-của hiệu suất dự báo. Đánh giá đa bước thích hợp (rolling-origin hoặc
-blocked time-series) sẽ cần thiết để đánh giá độ chính xác dự báo 12
-tháng. \# Tối ưu hóa mô hình và Đặc trưng bên ngoài
 
 \subsection{Tối ưu hóa siêu tham
 số}\label{tux1ed1i-ux1b0u-huxf3a-siuxeau-tham-sux1ed1}
