@@ -382,7 +382,7 @@ Exchange rates (VND vs. KRW, CNY, USD, JPY, TWD, MYR, THB, RUB) were obtained fr
 
 *Figure shows the SARIMAX-only forecast with 95\% confidence intervals. The ensemble point forecast is reported separately below.*
 
-| Month | Forecast | 95\% CI Lower | 95\% CI Upper |
+| Month | Forecast | 95% CI Lower | 95% CI Upper |
 |-------|----------|--------------|--------------|
 | Jan 2026 | 1,169,591 | 689,385 | 1,984,292 |
 | Feb 2026 | 1,225,010 | 511,886 | 2,931,605 |
@@ -407,7 +407,7 @@ Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMA
 
 ![Ensemble forecasts for top 5 source countries (2026). Model range band shows disagreement between LR, RF, XGBoost, and SARIMAX.](output/country_forecasts_plot.png)
 
-| Month | Hàn Quốc (South Korea) | Trung Quốc | Đài Loan | Nhật Bản | Hoa Kỳ |
+| Month | Hàn Quốc | Trung Quốc | Đài Loan | Nhật Bản | Hoa Kỳ |
 |-------|-------|-------|-------|-------|-------|
 | Jan 2026 | 415,589 | 253,357 | 90,615 | 64,534 | 76,411 |
 | Feb 2026 | 415,133 | 245,562 | 102,170 | 63,645 | 70,282 |
@@ -424,7 +424,7 @@ Ensemble models (averaging Linear Regression, Random Forest, XGBoost, and SARIMA
 
 *Table shows ensemble mean of Linear Regression, Random Forest, XGBoost, and SARIMAX. Model disagreement range: 8.2M–10.1M total.*
 
-The top 5 countries account for 52.3\% of the total 2026 ensemble forecast (9.1M of 14.0M). Hàn Quốc (South Korea) is projected to remain the largest source market, followed by Trung Quốc. The shaded band shows the range between the highest and lowest model predictions — a more interpretable measure of uncertainty than the SARIMAX confidence interval.
+The top 5 countries account for 73.7\% of the total 2026 ensemble forecast (10.3M of 14.0M). Hàn Quốc (South Korea) is projected to remain the largest source market, followed by Trung Quốc. The shaded band shows the range between the highest and lowest model predictions — a more interpretable measure of uncertainty than the SARIMAX confidence interval.
 
 \newpage
 
